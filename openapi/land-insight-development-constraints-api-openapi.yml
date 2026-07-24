@@ -1,0 +1,234 @@
+openapi: 3.0.3
+info:
+  title: LandTech Additional Opportunities Development Constraints API
+  description: 'Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.
+
+    '
+  version: 0.3.0
+servers:
+- url: https://app.land.tech/api
+  description: LandTech API Service
+security:
+- ApiKeyAuth: []
+tags:
+- name: Development Constraints
+  description: 'Endpoint to get details of various development constraints. Includes airport, HS2, rail and building (wharf)  safeguarding. Also includes article 4 and national landscape data.
+
+    '
+paths:
+  /development_constraints/{development_constraints_id}:
+    get:
+      operationId: getDevelopmentConstraint
+      description: Given a development constraints ID, get details about a development constraint
+      summary: Details about a development constraint
+      tags:
+      - Development Constraints
+      parameters:
+      - name: development_constraints_id
+        required: true
+        in: path
+        description: ID for a specific development constraint
+        schema:
+          $ref: '#/components/schemas/DevelopmentConstraintID'
+      responses:
+        '200':
+          description: Details about a development constraint
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DevelopmentConstraintFeature'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /development_constraints:
+    post:
+      operationId: getDevelopmentConstraints
+      description: Given a set of development constraint IDs, get details about development constraints in bulk
+      summary: Bulk - Details about development constraints
+      tags:
+      - Development Constraints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of development constraint IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about development constraints
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DevelopmentConstraintFeatureCollection'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /development_constraints/lite:
+    post:
+      operationId: getDevelopmentConstraintsLite
+      description: Given a set of development constraint IDs, get details about development constraints in bulk without geometry data
+      summary: Bulk - Details about development constraints (without geometry)
+      tags:
+      - Development Constraints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of development constraint IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about development constraints (without geometry)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DevelopmentConstraintFeatureCollectionLite'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+components:
+  schemas:
+    DevelopmentConstraintID:
+      type: string
+      format: uuid
+      description: A development constraints ID in the form of a UUID.
+      example: 68a586f6-991f-4604-b179-512b61f9696f
+    FeatureDataLite:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBaseLite'
+    DevelopmentConstraintFeatureItem:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/DevelopmentConstraintID'
+        type:
+          example: article_4_direction
+        name:
+          example: Victoria Mews, West Green
+        attributes:
+          example:
+          - key: published_date
+            value: 15/06/2022
+          - key: article_4_type
+            value: Article 4(1) affecting other buildings
+          - key: dev_rest_1
+            value: Conversion of single dwellings to HMOs
+    DevelopmentConstraintFeatureCollectionLite:
+      allOf:
+      - $ref: '#/components/schemas/FeaturesLite'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
+    DevelopmentConstraintFeatureCollection:
+      allOf:
+      - $ref: '#/components/schemas/FeaturesLite'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
+    DevelopmentConstraintFeature:
+      allOf:
+      - $ref: '#/components/schemas/FeatureBaseLite'
+      - type: object
+        properties:
+          data:
+            properties:
+              feature:
+                $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
+    FeatureBaseLite:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          nullable: true
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+    FeaturesLite:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureDataLite'
+    Forbidden:
+      oneOf:
+      - type: object
+        required:
+        - user
+        properties:
+          user:
+            type: object
+            required:
+            - state
+            properties:
+              state:
+                type: string
+                enum:
+                - expired
+                - blocked
+                example: expired
+      - type: object
+        required:
+        - message
+        properties:
+          message:
+            type: string
+            example: User not found
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key

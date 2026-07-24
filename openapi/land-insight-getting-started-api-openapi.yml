@@ -1,0 +1,80 @@
+openapi: 3.0.3
+info:
+  title: LandTech Additional Opportunities Getting Started API
+  description: 'Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.
+
+    '
+  version: 0.3.0
+servers:
+- url: https://app.land.tech/api
+  description: LandTech API Service
+security:
+- ApiKeyAuth: []
+tags:
+- name: Getting Started
+  description: Endpoints to help you understand how to interact with the API.
+paths:
+  /status/auth:
+    get:
+      operationId: getAuthStatus
+      summary: Check your authentication is valid
+      description: Responds with the state of your API account.
+      tags:
+      - Getting Started
+      responses:
+        '200':
+          description: User description.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - user
+                properties:
+                  user:
+                    type: object
+                    required:
+                    - state
+                    properties:
+                      state:
+                        type: string
+                        enum:
+                        - active
+                        example: active
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+components:
+  schemas:
+    Forbidden:
+      oneOf:
+      - type: object
+        required:
+        - user
+        properties:
+          user:
+            type: object
+            required:
+            - state
+            properties:
+              state:
+                type: string
+                enum:
+                - expired
+                - blocked
+                example: expired
+      - type: object
+        required:
+        - message
+        properties:
+          message:
+            type: string
+            example: User not found
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key

@@ -1,0 +1,343 @@
+openapi: 3.0.3
+info:
+  title: LandTech Additional Opportunities Power API
+  description: 'Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.
+
+    '
+  version: 0.3.0
+servers:
+- url: https://app.land.tech/api
+  description: LandTech API Service
+security:
+- ApiKeyAuth: []
+tags:
+- name: Power
+  description: Endpoint to get details of substations, lines, cables and towers
+paths:
+  /power/{power_id}:
+    get:
+      operationId: getPower
+      description: Given a power ID, get details about a single unit of power infrastructure
+      summary: Details about a single unit of power infrastructure
+      tags:
+      - Power
+      parameters:
+      - name: power_id
+        required: true
+        in: path
+        description: ID for a specific piece of power infrastructure
+        schema:
+          $ref: '#/components/schemas/PowerID'
+      responses:
+        '200':
+          description: Details about a single unit of power infrastructure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PowerFeature'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /power:
+    post:
+      operationId: getPowers
+      description: Given a set of power IDs, get details about power infrastructure in bulk
+      summary: Bulk - Details about power infrastructure
+      tags:
+      - Power
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of power IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about power infrastructure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PowerFeatureCollection'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /power/lite:
+    post:
+      operationId: getPowersLite
+      description: Given a set of power IDs, get details about power infrastructure in bulk without geometry data
+      summary: Bulk - Details about power infrastructure (without geometry)
+      tags:
+      - Power
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of power IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about power infrastructure (without geometry)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PowerFeatureCollectionLite'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+components:
+  schemas:
+    PowerFeatureCollection:
+      allOf:
+      - $ref: '#/components/schemas/Features'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PowerFeatureItem'
+    Feature:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            feature:
+              $ref: '#/components/schemas/FeatureBase'
+    PowerFeatureItem:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/PowerID'
+        type:
+          example: hv_power_substations
+        name:
+          example: '1172992'
+        attributes:
+          example:
+          - key: rag_status
+            value: UNKNOWN
+          - key: substation_type
+            value: HV
+          - key: voltage_range
+            value: 11kV-1kV
+    FeatureDataLite:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBaseLite'
+    FeatureBase:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          nullable: true
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+        geometries:
+          type: array
+          description: Array of geometries relating to the feature
+          items:
+            type: object
+            properties:
+              area_hectares:
+                type: number
+                format: float
+                nullable: true
+                example: 0.2023428
+              geometry:
+                type: object
+                description: GeoJSON of the feature.
+                oneOf:
+                - $ref: '#/components/schemas/Polygon'
+                - $ref: '#/components/schemas/MultiPolygon'
+    PolygonCoordinates:
+      type: array
+      items:
+        $ref: '#/components/schemas/LinearRingCoordinates'
+    MultiPolygon:
+      description: GeoJSON MultiPolygon
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - MultiPolygon
+          example: MultiPolygon
+          description: the geometry type
+        coordinates:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolygonCoordinates'
+    FeatureData:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBase'
+    LinearRingCoordinates:
+      type: array
+      minItems: 4
+      items:
+        $ref: '#/components/schemas/PointCoordinates'
+    PowerFeature:
+      allOf:
+      - $ref: '#/components/schemas/Feature'
+      - type: object
+        properties:
+          data:
+            properties:
+              feature:
+                $ref: '#/components/schemas/PowerFeatureItem'
+    PointCoordinates:
+      type: array
+      maxItems: 2
+      minItems: 2
+      example:
+      - -0.12755
+      - 51.5073
+      items:
+        type: number
+    PowerID:
+      type: string
+      format: uuid
+      description: A development opportunity ID in the form of a UUID.
+      example: 1679c94a-2158-462f-b924-18acf92e7949
+    PowerFeatureCollectionLite:
+      allOf:
+      - $ref: '#/components/schemas/FeaturesLite'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PowerFeatureItem'
+    Features:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureData'
+    Polygon:
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - Polygon
+          example: Polygon
+          description: the geometry type
+        coordinates:
+          $ref: '#/components/schemas/PolygonCoordinates'
+    FeatureBaseLite:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          nullable: true
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+    FeaturesLite:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureDataLite'
+    Forbidden:
+      oneOf:
+      - type: object
+        required:
+        - user
+        properties:
+          user:
+            type: object
+            required:
+            - state
+            properties:
+              state:
+                type: string
+                enum:
+                - expired
+                - blocked
+                example: expired
+      - type: object
+        required:
+        - message
+        properties:
+          message:
+            type: string
+            example: User not found
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key

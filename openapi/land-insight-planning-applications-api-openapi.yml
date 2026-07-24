@@ -1,0 +1,606 @@
+openapi: 3.0.3
+info:
+  title: LandTech Additional Opportunities Planning Applications API
+  description: 'Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.
+
+    '
+  version: 0.3.0
+servers:
+- url: https://app.land.tech/api
+  description: LandTech API Service
+security:
+- ApiKeyAuth: []
+tags:
+- name: Planning Applications
+  description: Endpoints to search for planning applications and get details on individual applications.
+paths:
+  /planning-applications/search:
+    post:
+      operationId: searchPlanningApplications
+      summary: Search for planning applications
+      description: 'Given a geometry, get a list of planning application references, grouped by the planning authority GSS code.
+
+        '
+      tags:
+      - Planning Applications
+      requestBody:
+        description: A payload, including a GeoJSON geometry.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                geometry:
+                  oneOf:
+                  - $ref: '#/components/schemas/Point'
+                  - $ref: '#/components/schemas/Polygon'
+                  - $ref: '#/components/schemas/MultiPolygon'
+      responses:
+        '200':
+          description: Planning Application Refs
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - applications
+                additionalProperties: false
+                properties:
+                  applications:
+                    $ref: '#/components/schemas/PlanningApplicationRefs'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                errorResponse:
+                  value:
+                    error: 'Missing required body parameter: ''geometry'''
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /planning-applications/{gss_code}/{ref}:
+    get:
+      operationId: getPlanningApplication
+      summary: Details of a planning application
+      description: 'Get detailed information about a planning application, given its local authority GSS code and application reference.
+
+        '
+      tags:
+      - Planning Applications
+      parameters:
+      - in: path
+        name: gss_code
+        required: true
+        schema:
+          $ref: '#/components/schemas/GSSCode'
+        description: The GSS code of a planning authority, e.g. `E09000033`.
+        example: E09000033
+      - in: path
+        name: ref
+        required: true
+        description: The planning application reference declared by the planning authority. It may contain slashes, e.g. `16/11109/FULL`. It's sensible, but not necessary, to "URL encode" this value.
+        schema:
+          type: string
+          minLength: 1
+          example: 16%2F11109%2FFULL
+      responses:
+        '200':
+          description: Planning application details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanningApplication'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: Application not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                errorResponse:
+                  value:
+                    error: Planning application not found
+  /planning-applications/{app_id}:
+    get:
+      operationId: getPlanningApplicationById
+      summary: Details of a planning application via app ID
+      description: 'Get detailed information about a planning application, given a unique planning application ID e.g. a local authority GSS code and reference separated by a plus sign (`+`).
+
+        '
+      tags:
+      - Planning Applications
+      parameters:
+      - in: path
+        name: app_id
+        required: true
+        description: 'An ID comprised of a GSS code and ref separated by a plus sign (`+`) e.g. `E07000112+Y18/1381/FH`. It''s sensible, but not necessary, to "URL encode" this value.
+
+          '
+        schema:
+          $ref: '#/components/schemas/PlanningApplicationId'
+        example: E07000112%2BY18%2F1381%2FFH
+      responses:
+        '200':
+          description: Planning application details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanningApplication'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: Application not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                errorResponse:
+                  value:
+                    error: Planning application not found
+  /planning-applications:
+    post:
+      operationId: getPlanningApplicationByIds
+      summary: Bulk planning application details
+      description: "Get detailed information about a set of planning applications, given a set of unique planning application IDs e.g. a local authority GSS code and reference separated by a plus sign (`+`).\n \n**Schema is subject to change.** ![Beta](https://img.shields.io/badge/Status-Beta-yellow)\n"
+      tags:
+      - Planning Applications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                planning_applications:
+                  type: array
+                  description: 'List of IDs comprised of a GSS code and ref separated by a plus sign (`+`) e.g. `E07000112+Y18/1381/FH`.
+
+                    '
+                  items:
+                    $ref: '#/components/schemas/PlanningApplicationId'
+              required:
+              - planning_applications
+            example:
+              planning_applications:
+              - E07000112+Y18/1381/FH
+              - E09000033+16/02592/LBC
+      responses:
+        '200':
+          description: Planning application details
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlanningApplication'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: Application not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                errorResponse:
+                  value:
+                    error: Planning application not found
+components:
+  schemas:
+    Point:
+      description: GeoJSON Point
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - Point
+          example: Point
+          description: the geometry type
+        coordinates:
+          $ref: '#/components/schemas/PointCoordinates'
+    PolygonCoordinates:
+      type: array
+      items:
+        $ref: '#/components/schemas/LinearRingCoordinates'
+    PlanningApplication:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Internal LandTech ID of the planning application.
+          example: E09000033+16/02592/LBC
+        gss_code:
+          allOf:
+          - $ref: '#/components/schemas/GSSCode'
+          - description: GSS code of the planning authority.
+          - example: E09000033
+        ref:
+          type: string
+          description: Reference number used by the planning authority.
+          example: 16/02592/LBC
+        num_dwellings:
+          type: number
+          description: Number of residential units we have identified the application is for.
+          example: 1
+        address:
+          type: string
+          description: Address of the property the application is for.
+          example: Victoria Gate Lodge Hyde Park Bayswater Road London SW7 1NR
+        title:
+          type: string
+          description: Description of the planning application.
+          example: Internal and external alterations of the lodge including general internal and external repairs and refurbishment.
+        location:
+          description: GeoJSON of the location of the planning application, as a point.
+          allOf:
+          - $ref: '#/components/schemas/Point'
+        boundary:
+          description: GeoJSON of the boundary of the planning application, as a multipolygon, where available.
+          nullable: true
+          type: object
+          allOf:
+          - $ref: '#/components/schemas/MultiPolygon'
+        url:
+          type: string
+          nullable: true
+          description: URL to the planning authority's page. Where possible this links directly to the planning application.
+          example: https://apps.stratford.gov.uk/eplanning/AppDetail.aspx?appkey=OA70D2PM00E00
+        types_derived:
+          description: Identified "types" of the application
+          type: array
+          items:
+            type: string
+            enum:
+            - Full Application
+            - Outline
+            - Discharge of Conditions
+            - GPDR
+            - Reserved Matters
+            - TPO
+            - Listed Building
+            - EIA
+            - Change of Use
+            - Proposal of Application Notice
+        status:
+          type: string
+          nullable: true
+          description: Current status of the application, e.g. Decided.
+          example: Permission with conditions
+        decision:
+          type: string
+          nullable: true
+          description: The decision on the application, e.g. Permit.
+          example: Permission with conditions
+        date_received:
+          type: string
+          format: date-time
+          description: Date the application was received by the authority.
+          example: '2016-07-07T00:00:00.000Z'
+        decision_date:
+          type: string
+          nullable: true
+          format: date-time
+          description: Date the decision was made on the application.
+          example: '2016-09-21T00:00:00.000Z'
+        agent_address:
+          type: string
+          nullable: true
+          description: Address of the agent who submitted the application.
+          example: The Studio, 42 Placeholder Avenue, Fictiontown-upon-Test, EX4 8MP
+        agent_name:
+          type: string
+          nullable: true
+          description: Name of the agent who submitted the application.
+          example: Joe Doe
+        applicant_name:
+          type: string
+          nullable: true
+          description: Name of the person who submitted the application.
+          example: John Smith
+        status_derived:
+          type: string
+          enum:
+          - Approved
+          - Rejected
+          - Pending
+          - Withdrawn
+          - Unknown
+          description: Normalized status of the application.
+          example: Approved
+        updated:
+          type: string
+          format: date-time
+          description: When the application was last processed by LandTech.
+          example: '2023-05-26T03:09:36.191Z'
+        classification:
+          type: string
+          enum:
+          - RESIDENTIAL
+          - COMMERCIAL
+          - MIXED_USE
+          - OTHER
+          description: Classification of the application.
+          example: RESIDENTIAL
+        size:
+          type: number
+          description: Same as num_dwellings.
+          example: 1
+        found_num_dwellings:
+          type: boolean
+          description: Flag stating that we have identified a number of residential units (dwellings).
+          example: false
+        tags:
+          description: A list of "tags" which describe features of the application. Often identifies a specific use class, or can be more generic such as "Demolition", "Hotel" or "Care Home".
+          type: array
+          nullable: true
+          items:
+            type: string
+          example:
+          - Hotel
+          - Demolition
+          - Retail (A1)
+          - Restaurants and cafés (A3)
+          - Office (B1)
+        appeal_case_number:
+          description: The Planning Inspectorate (PINS) Reference Number
+          type: string
+          nullable: true
+          pattern: ^\d{7}$
+          example: '1234567'
+        appeal_type_of_appeal:
+          description: Appeal type
+          type: string
+          nullable: true
+          example: Planning Appeal
+        appeal_type_reason:
+          description: Appeal reason (this field is only populated for certain types of appeals)
+          type: string
+          nullable: true
+          example: 1. Refused planning permission
+        appeal_application_ref:
+          description: Local Planning Authority application reference number relating to the appeal
+          type: string
+          nullable: true
+          example: P1284/13/OUT
+        appeal_planning_authority_name:
+          description: Local Planning Authority Name, if known
+          type: string
+          nullable: true
+          example: London Borough of Barnet
+        appeal_site_address:
+          description: Address of the site
+          type: string
+          nullable: true
+          example: The Annex, 7 Example Crescent, Testford-upon-Mere, XY45 6ZT
+        appeal_decision:
+          description: Appeal decision
+          type: string
+          nullable: true
+          example: Dismissed
+        appeal_decision_date:
+          description: If the Jurisdiction is Transferred then it is the date of the decision made by the Planning Inspectorate (PINS). If the Jurisdiction is Secretary of State then it is the date that the report was sent to the Secretary of State
+          type: string
+          nullable: true
+          example: '2017-08-02T00:00:00.000Z'
+        appeal_received_date:
+          description: Date received in Planning Inspectorate (PINS)
+          type: string
+          format: date-time
+          nullable: true
+          example: '2014-05-15T00:00:00.000Z'
+        appeal_development_type:
+          description: Development type being appealed
+          type: string
+          nullable: true
+          example: Householder developments
+        appeal_inspector_name:
+          description: Planning Inspector's name, if known
+          type: string
+          nullable: true
+          example: James Smith
+        appeal_appellant:
+          description: Appellant's name
+          type: string
+          nullable: true
+          example: James Thompson
+        appeal_updated_at:
+          description: Date the appeal was processed by LandTech
+          type: string
+          nullable: true
+          format: date-time
+          example: '2023-05-26T03:09:36.191Z'
+        is_full_application:
+          type: boolean
+          description: Flag indicating "types_derived" includes "Full Application"
+          example: false
+        is_outline:
+          type: boolean
+          description: Flag indicating "types_derived" includes "Outline"
+          example: false
+        is_discharge_of_conditions:
+          type: boolean
+          description: Flag indicating "types_derived" includes "Discharge of Conditions"
+          example: false
+        is_gpdr:
+          type: boolean
+          description: Flag indicating "types_derived" includes "GPDR" (General Permitted Development - Class R)
+          example: false
+        is_reserved_matters:
+          type: boolean
+          description: Flag indicating "types_derived" includes "Reserved Matters"
+          example: false
+        is_tpo:
+          type: boolean
+          description: Flag indicating "types_derived" includes "TPO" (Tree Preservation Order)
+          example: false
+        is_listed_building:
+          type: boolean
+          description: Flag indicating "types_derived" includes "Listed Building"
+          example: true
+        is_eia:
+          type: boolean
+          description: Flag indicating "types_derived" includes "EIA" (Environmental Impact Assessment)
+          example: false
+        is_change_of_use:
+          type: boolean
+          description: Flag indicating "types_derived" includes "Change of Use"
+          example: false
+        is_uncategorised:
+          type: boolean
+          description: 'Flag indicating we have been unable to "derive" a "type" (i.e: "types_derived" is empty)'
+          example: false
+        is_minor:
+          type: boolean
+          description: Flag indicating we have identified the application is a "minor" application, i.e. Phone or Post Boxes, Kiosks, ATMs, Advertisements, Signage or Lighting.
+          example: false
+        related_applications:
+          allOf:
+          - description: Related planning applications
+          - $ref: '#/components/schemas/PlanningApplicationRefs'
+    PlanningApplicationRefs:
+      type: array
+      items:
+        type: object
+        required:
+        - gss_code
+        - refs
+        additionalProperties: false
+        properties:
+          gss_code:
+            allOf:
+            - $ref: '#/components/schemas/GSSCode'
+            - description: The GSS code of a planning authority, e.g. `E09000033`.
+            - example: E09000033
+          refs:
+            type: array
+            minItems: 1
+            items:
+              type: string
+              description: The planning application reference declared by the planning authority. It may contain slashes, e.g. `16/11109/FULL`.
+              minLength: 1
+              example: 16/02592/LBC
+    MultiPolygon:
+      description: GeoJSON MultiPolygon
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - MultiPolygon
+          example: MultiPolygon
+          description: the geometry type
+        coordinates:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolygonCoordinates'
+    Forbidden:
+      oneOf:
+      - type: object
+        required:
+        - user
+        properties:
+          user:
+            type: object
+            required:
+            - state
+            properties:
+              state:
+                type: string
+                enum:
+                - expired
+                - blocked
+                example: expired
+      - type: object
+        required:
+        - message
+        properties:
+          message:
+            type: string
+            example: User not found
+    GSSCode:
+      type: string
+      description: Geocode as maintained by the United Kingdom's Office for National Statistics (ONS) to represent a wide range of geographical areas of the UK.
+      pattern: ^[EWS]\d{8}$
+      example: E09000033
+    LinearRingCoordinates:
+      type: array
+      minItems: 4
+      items:
+        $ref: '#/components/schemas/PointCoordinates'
+    PointCoordinates:
+      type: array
+      maxItems: 2
+      minItems: 2
+      example:
+      - -0.12755
+      - 51.5073
+      items:
+        type: number
+    Polygon:
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - Polygon
+          example: Polygon
+          description: the geometry type
+        coordinates:
+          $ref: '#/components/schemas/PolygonCoordinates'
+    PlanningApplicationId:
+      type: string
+      description: A unique planning application ID combining a planning authority GSS code and the application reference, separated by a `+` symbol.
+      example: E07000112+Y18/1381/FH
+      pattern: ^[EWS]\d{8}(?:\+|%2B)[\w\-\/%]+$
+    Error:
+      type: object
+      anyOf:
+      - properties:
+          error:
+            type: string
+      - properties:
+          error_msg:
+            type: string
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key

@@ -1,0 +1,527 @@
+openapi: 3.0.3
+info:
+  title: LandTech Additional Opportunities Ownership API
+  description: 'Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.
+
+    '
+  version: 0.3.0
+servers:
+- url: https://app.land.tech/api
+  description: LandTech API Service
+security:
+- ApiKeyAuth: []
+tags:
+- name: Ownership
+  description: Endpoints to get details about land ownership and property information.
+paths:
+  /titles/{title_number}:
+    get:
+      operationId: getTitleDetails
+      summary: Details of a registered title
+      description: 'Get information about a title, given a HM Land Registry title number.
+
+        '
+      tags:
+      - Ownership
+      parameters:
+      - in: path
+        name: title_number
+        required: true
+        schema:
+          $ref: '#/components/schemas/TitleNumber'
+        description: Title number for a parcel of land.
+        example: WT77573
+      responses:
+        '200':
+          description: Title details found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TitleDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /titles:
+    post:
+      operationId: getTitlesBulk
+      summary: Bulk title details
+      description: 'Fetch details for up to 200 titles in a single request.
+
+        '
+      tags:
+      - Ownership
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkTitleRequest'
+      responses:
+        '200':
+          description: Bulk title details or error response.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/BulkTitleResponse'
+                - $ref: '#/components/schemas/BulkTitleError'
+  /properties/{uprn}:
+    get:
+      operationId: getPropertyDetails
+      summary: Details about a property
+      description: 'Get information about a property, given a Unique Property Reference Number (UPRN).
+
+        '
+      tags:
+      - Ownership
+      parameters:
+      - in: path
+        name: uprn
+        required: true
+        schema:
+          $ref: '#/components/schemas/UPRN'
+        description: UPRN for a specific property.
+        example: '100010716016'
+      responses:
+        '200':
+          description: Property Information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyInformation'
+              examples:
+                validResponse:
+                  summary: Valid property information
+                  value:
+                    data:
+                      propertyInformation:
+                        address:
+                          uprn: '100010716016'
+                          full_address: 17 Manor Road, Lancashire, Garstang, PR3 1JR
+                          property_type: Semi-Detached
+                          property_state: In Use
+                          property_class_code: RD03
+                          use_class: Residential (C3)
+                        building_height:
+                          highest_point: 3.7
+                          roof_height: 1.2
+                          no_floors_estimate: 1
+                        epc:
+                          current_energy_rating: D
+                          potential_energy_rating: B
+                          total_floor_area: 103.4
+                nullResponse:
+                  summary: UPRN not found
+                  value:
+                    data:
+                      propertyInformation: null
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: UPRN not supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                errorResponse:
+                  value:
+                    error_msg: route not found
+  /properties:
+    post:
+      operationId: getPropertiesBulk
+      summary: Bulk property details
+      description: 'Fetch details for up to 200 properties in a single request.
+
+        '
+      tags:
+      - Ownership
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkPropertyRequest'
+      responses:
+        '200':
+          description: Bulk property details or error response.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/BulkPropertyResponse'
+                - $ref: '#/components/schemas/BulkPropertyError'
+components:
+  schemas:
+    BulkPropertyRequest:
+      type: object
+      required:
+      - properties
+      properties:
+        properties:
+          type: array
+          description: List of property UPRNs (max 200)
+          maxItems: 200
+          items:
+            type: string
+            example: '100023523019'
+    RegisteredLease:
+      description: Details of a registered lease.
+      type: object
+      nullable: true
+      properties:
+        start_date:
+          description: Lease start date.
+          type: string
+          format: date-time
+          example: '1987-12-18T00:00:00.000Z'
+        end_date:
+          description: Lease end date.
+          type: string
+          format: date-time
+          example: '2112-12-18T00:00:00.000Z'
+    UPRN:
+      type: string
+      description: Unique Property Reference Number (UPRN) is a unique numeric identifier for every addressable location in Great Britain, found in Ordnance Survey's AddressBase products.
+      pattern: ^\d{1,12}$
+    TitleNumber:
+      description: The title number is a unique identifier for registered land in England and Wales, governed by HM Land Registry.
+      type: string
+      example: WT77573
+    PropertyInformation:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            propertyInformation:
+              type: object
+              nullable: true
+              description: Property Information details. Will be `null` if no data is found.
+              properties:
+                address:
+                  type: object
+                  properties:
+                    uprn:
+                      allOf:
+                      - $ref: '#/components/schemas/UPRN'
+                      - description: The UPRN of the property, e.g. `100010716016`.
+                      - example: '100010716016'
+                    full_address:
+                      type: string
+                      description: The full address of the property.
+                      example: 29 Acacia Road, Nuttytown, B4 4NA
+                    property_type:
+                      type: string
+                      description: The type of property (e.g. Residential).
+                      example: Shop / Showroom
+                    property_state:
+                      type: string
+                      nullable: true
+                      description: The current state of the property (e.g. In Use).
+                      enum:
+                      - Demolished
+                      - In Use
+                      - Planning Permission Granted
+                      - Under Construction
+                      - Unoccupied/Vacant/Derelict
+                      example: In Use
+                    property_class_code:
+                      type: string
+                      description: The Ordnance Survey classification code of the property (e.g. RD03).
+                      example: RD03
+                    use_class:
+                      type: string
+                      nullable: true
+                      description: The use class of the property (e.g. Residential (C3)).
+                      example: Residential (C3)
+                building_height:
+                  type: object
+                  nullable: true
+                  properties:
+                    highest_point:
+                      type: number
+                      format: float
+                      nullable: true
+                      description: The highest point of the building in meters.
+                      example: 6.4
+                    roof_height:
+                      type: number
+                      format: float
+                      nullable: true
+                      description: The roof height of the building in meters.
+                      example: 6.1
+                    no_floors_estimate:
+                      type: integer
+                      nullable: true
+                      description: The estimated number of floors in the building.
+                      example: 1
+                epc:
+                  type: object
+                  nullable: false
+                  properties:
+                    current_energy_rating:
+                      type: string
+                      nullable: true
+                      description: The energy rating given in the most recent EPC
+                      example: C
+                    potential_energy_rating:
+                      type: string
+                      nullable: true
+                      description: 'The potential energy rating that could be achievable in the property as listed by the EPC
+
+                        '
+                      example: B
+                    total_floor_area:
+                      type: number
+                      format: float
+                      nullable: true
+                      description: The floor area as listed on the EPC in square metres
+                      example: 160.23
+    Forbidden:
+      oneOf:
+      - type: object
+        required:
+        - user
+        properties:
+          user:
+            type: object
+            required:
+            - state
+            properties:
+              state:
+                type: string
+                enum:
+                - expired
+                - blocked
+                example: expired
+      - type: object
+        required:
+        - message
+        properties:
+          message:
+            type: string
+            example: User not found
+    UltimateOwner:
+      description: Details of ultimate ownership of a company.
+      type: object
+      properties:
+        ultimate_owners:
+          description: List of ultimate owning companies.
+          type: array
+          items:
+            type: object
+            properties:
+              holding_max:
+                description: Maximum percentage of ownership (if available).
+                type: number
+                nullable: true
+                example: 50
+              company:
+                $ref: '#/components/schemas/Company'
+    Company:
+      description: Details of a company that owns the title.
+      type: object
+      properties:
+        company_no:
+          description: The company's registered number (if available).
+          type: string
+          nullable: true
+          example: 02127408
+        name:
+          description: Name of the company.
+          type: string
+          example: REDWOOD (LIGHT INDUSTRIAL) PROPCO LIMITED
+        addresses:
+          $ref: '#/components/schemas/Address'
+        proprietorship:
+          description: Type of proprietorship.
+          type: string
+          example: Private Limited Company
+        is_foreign:
+          description: Whether the company is foreign owned.
+          type: boolean
+          nullable: true
+          example: true
+    Address:
+      description: The associated property address. Can be empty.
+      type: array
+      items:
+        type: string
+      example:
+      - Unipart House, Cowley, Oxford, OX4 2PG
+    OwnerDetails:
+      description: Details of the registered owner.
+      type: object
+      properties:
+        last_ownership_change:
+          description: Date of last ownership change.
+          type: string
+          nullable: true
+          format: date-time
+          example: '2008-10-13T00:00:00.000Z'
+        company:
+          allOf:
+          - $ref: '#/components/schemas/Company'
+          - $ref: '#/components/schemas/UltimateOwner'
+    BulkTitleError:
+      type: object
+      required:
+      - errors
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            required:
+            - message
+            properties:
+              message:
+                type: string
+                example: Variable "$titles" of required type "[String!]!" was not provided.
+              locations:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    line:
+                      type: integer
+                    column:
+                      type: integer
+              extensions:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: BAD_USER_INPUT
+    BulkTitleResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            title:
+              type: array
+              items:
+                $ref: '#/components/schemas/TitleDetails'
+    TitleDetails:
+      description: Full details of a land title.
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            title:
+              type: object
+              properties:
+                title_no:
+                  $ref: '#/components/schemas/TitleNumber'
+                tenure:
+                  description: The tenure type of the title.
+                  type: string
+                  enum:
+                  - FREEHOLD
+                  - LEASEHOLD
+                  - UNKNOWN_OTHER
+                  example: FREEHOLD
+                addresses:
+                  $ref: '#/components/schemas/Address'
+                registered_lease:
+                  $ref: '#/components/schemas/RegisteredLease'
+                properties:
+                  description: 'A list of Unique Property Reference Numbers (UPRNs) formally  associated with the title''s land parcel. Can be empty.
+
+                    '
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/UPRN'
+                  example:
+                  - '100080312053'
+                properties_intersects:
+                  type: array
+                  description: 'A list of Unique Property Reference Numbers (UPRNs) that reside within  the title''s land parcel, but are not formally associated with the title. Can be empty.
+
+                    '
+                  items:
+                    $ref: '#/components/schemas/UPRN'
+                  example:
+                  - '10091868676'
+                  - '10023302495'
+                owners:
+                  description: A list of registered owners. Can be empty.
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/OwnerDetails'
+    BulkTitleRequest:
+      type: object
+      required:
+      - titles
+      properties:
+        titles:
+          type: array
+          description: List of title numbers (max 200)
+          maxItems: 200
+          items:
+            type: string
+            example: SGL235730
+    BulkPropertyResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            property:
+              type: array
+              items:
+                $ref: '#/components/schemas/PropertyInformation'
+    BulkPropertyError:
+      type: object
+      required:
+      - errors
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            required:
+            - message
+            properties:
+              message:
+                type: string
+                example: Variable "$properties" of required type "[String!]!" was not provided.
+              locations:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    line:
+                      type: integer
+                    column:
+                      type: integer
+              extensions:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: BAD_USER_INPUT
+    Error:
+      type: object
+      anyOf:
+      - properties:
+          error:
+            type: string
+      - properties:
+          error_msg:
+            type: string
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key

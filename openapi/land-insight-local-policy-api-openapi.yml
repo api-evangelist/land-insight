@@ -1,0 +1,349 @@
+openapi: 3.0.3
+info:
+  title: LandTech Additional Opportunities Local Policy API
+  description: 'Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.
+
+    '
+  version: 0.3.0
+servers:
+- url: https://app.land.tech/api
+  description: LandTech API Service
+security:
+- ApiKeyAuth: []
+tags:
+- name: Local Policy
+  description: Endpoint to get details of local plan policies
+paths:
+  /local_plan_policy/{local_plan_policy_id}:
+    get:
+      operationId: getLocalPlanPolicy
+      description: Given a local policy ID, get details about a single local plan policy
+      summary: Details about a single local plan policy
+      tags:
+      - Local Policy
+      parameters:
+      - name: local_plan_policy_id
+        required: true
+        in: path
+        description: ID for a specific local plan policy
+        schema:
+          $ref: '#/components/schemas/LocalPlanPolicyID'
+      responses:
+        '200':
+          description: Details about a local plan policy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocalPlanPolicyFeature'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /local_plan_policy:
+    post:
+      operationId: getLocalPlanPolicies
+      description: Given a set of local plan policy IDs, get details about local plan policies in bulk
+      summary: Bulk - Details about local plan policies
+      tags:
+      - Local Policy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of local plan policy IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about local plan policies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocalPlanPolicyFeatureCollection'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /local_plan_policy/lite:
+    post:
+      operationId: getLocalPlanPoliciesLite
+      description: Given a set of local plan policy IDs, get details about local plan policies in bulk without geometry data
+      summary: Bulk - Details about local plan policies (without geometry)
+      tags:
+      - Local Policy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of local plan policy IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about local plan policies (without geometry)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocalPlanPolicyFeatureCollectionLite'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+components:
+  schemas:
+    Feature:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            feature:
+              $ref: '#/components/schemas/FeatureBase'
+    FeatureDataLite:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBaseLite'
+    FeatureBase:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          nullable: true
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+        geometries:
+          type: array
+          description: Array of geometries relating to the feature
+          items:
+            type: object
+            properties:
+              area_hectares:
+                type: number
+                format: float
+                nullable: true
+                example: 0.2023428
+              geometry:
+                type: object
+                description: GeoJSON of the feature.
+                oneOf:
+                - $ref: '#/components/schemas/Polygon'
+                - $ref: '#/components/schemas/MultiPolygon'
+    PolygonCoordinates:
+      type: array
+      items:
+        $ref: '#/components/schemas/LinearRingCoordinates'
+    LocalPlanPolicyFeature:
+      allOf:
+      - $ref: '#/components/schemas/Feature'
+      - type: object
+        properties:
+          data:
+            properties:
+              feature:
+                $ref: '#/components/schemas/LocalPlanPolicyFeatureItem'
+    MultiPolygon:
+      description: GeoJSON MultiPolygon
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - MultiPolygon
+          example: MultiPolygon
+          description: the geometry type
+        coordinates:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolygonCoordinates'
+    LocalPlanPolicyFeatureCollection:
+      allOf:
+      - $ref: '#/components/schemas/Features'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LocalPlanPolicyFeatureItem'
+    LinearRingCoordinates:
+      type: array
+      minItems: 4
+      items:
+        $ref: '#/components/schemas/PointCoordinates'
+    PointCoordinates:
+      type: array
+      maxItems: 2
+      minItems: 2
+      example:
+      - -0.12755
+      - 51.5073
+      items:
+        type: number
+    LocalPlanPolicyID:
+      type: string
+      format: uuid
+      description: A policy ID in the form of a UUID.
+      example: 038278e1-b3a9-4941-a08e-66fd9610338f
+    FeatureData:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBase'
+    LocalPlanPolicyFeatureCollectionLite:
+      allOf:
+      - $ref: '#/components/schemas/FeaturesLite'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LocalPlanPolicyFeatureItem'
+    LocalPlanPolicyFeatureItem:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/LocalPlanPolicyID'
+        type:
+          example: community_allocation
+        name:
+          example: BURIAL GROUND BRADWELL
+        attributes:
+          example:
+          - key: allocation_type
+            value: Community
+          - key: unit_count
+            value: ''
+          - key: allocation_notes
+            value: Community Facilities
+          - key: hectares
+            value: '1.50'
+          - key: site_reference
+            value: C19
+          - key: policy_reference
+            value: ''
+    Features:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureData'
+    Polygon:
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - Polygon
+          example: Polygon
+          description: the geometry type
+        coordinates:
+          $ref: '#/components/schemas/PolygonCoordinates'
+    FeatureBaseLite:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          nullable: true
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+    FeaturesLite:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureDataLite'
+    Forbidden:
+      oneOf:
+      - type: object
+        required:
+        - user
+        properties:
+          user:
+            type: object
+            required:
+            - state
+            properties:
+              state:
+                type: string
+                enum:
+                - expired
+                - blocked
+                example: expired
+      - type: object
+        required:
+        - message
+        properties:
+          message:
+            type: string
+            example: User not found
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key

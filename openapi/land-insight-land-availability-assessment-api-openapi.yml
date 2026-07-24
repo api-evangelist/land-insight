@@ -1,0 +1,339 @@
+openapi: 3.0.3
+info:
+  title: LandTech Additional Opportunities Land Availability Assessment API
+  description: 'Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.
+
+    '
+  version: 0.3.0
+servers:
+- url: https://app.land.tech/api
+  description: LandTech API Service
+security:
+- ApiKeyAuth: []
+tags:
+- name: Land Availability Assessment
+  description: Endpoint to get details about Land Availability Assessment sites
+paths:
+  /shlaa/{shlaa_id}:
+    get:
+      operationId: getShlaa
+      description: Given an ID, get details about an individual Land Availability Assessment
+      summary: Details about an individual SHLAA
+      tags:
+      - Land Availability Assessment
+      parameters:
+      - name: shlaa_id
+        required: true
+        in: path
+        description: ID for a specific Land Availability Assessment
+        schema:
+          $ref: '#/components/schemas/ShlaaID'
+      responses:
+        '200':
+          description: Details about a Land Availability Assessments site
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShlaaFeature'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /shlaa:
+    post:
+      operationId: getShlaas
+      description: Given a set of IDs, get details about Land Availability Assessments in bulk
+      summary: Bulk - Details about SHLAA
+      tags:
+      - Land Availability Assessment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of SHLAA IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about Land Availability Assessments sites
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SHLAAFeatureCollection'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /shlaa/lite:
+    post:
+      operationId: getShlaasLite
+      description: Given a set of IDs, get details about Land Availability Assessments in bulk without geometry data
+      summary: Bulk - Details about SHLAA (without geometry)
+      tags:
+      - Land Availability Assessment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of SHLAA IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about Land Availability Assessments (without geometry)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SHLAAFeatureCollectionLite'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+components:
+  schemas:
+    FeatureBase:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          nullable: true
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+        geometries:
+          type: array
+          description: Array of geometries relating to the feature
+          items:
+            type: object
+            properties:
+              area_hectares:
+                type: number
+                format: float
+                nullable: true
+                example: 0.2023428
+              geometry:
+                type: object
+                description: GeoJSON of the feature.
+                oneOf:
+                - $ref: '#/components/schemas/Polygon'
+                - $ref: '#/components/schemas/MultiPolygon'
+    Feature:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            feature:
+              $ref: '#/components/schemas/FeatureBase'
+    PolygonCoordinates:
+      type: array
+      items:
+        $ref: '#/components/schemas/LinearRingCoordinates'
+    MultiPolygon:
+      description: GeoJSON MultiPolygon
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - MultiPolygon
+          example: MultiPolygon
+          description: the geometry type
+        coordinates:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolygonCoordinates'
+    ShlaaFeatureItem:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ShlaaID'
+        type:
+          example: shlaa_positive
+        name:
+          example: null
+        attributes:
+          example:
+          - key: conclusion
+            value: Developable Sites - Years 11-15
+    FeatureDataLite:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBaseLite'
+    ShlaaID:
+      type: string
+      format: uuid
+      description: A SHLAA ID in the form of a UUID.
+      example: 6b3cda6f-5c0e-4415-8f4e-4b7a4b4e1574
+    LinearRingCoordinates:
+      type: array
+      minItems: 4
+      items:
+        $ref: '#/components/schemas/PointCoordinates'
+    PointCoordinates:
+      type: array
+      maxItems: 2
+      minItems: 2
+      example:
+      - -0.12755
+      - 51.5073
+      items:
+        type: number
+    SHLAAFeatureCollection:
+      allOf:
+      - $ref: '#/components/schemas/Features'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShlaaFeatureItem'
+    SHLAAFeatureCollectionLite:
+      allOf:
+      - $ref: '#/components/schemas/FeaturesLite'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShlaaFeatureItem'
+    FeatureData:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBase'
+    ShlaaFeature:
+      allOf:
+      - $ref: '#/components/schemas/Feature'
+      - type: object
+        properties:
+          data:
+            properties:
+              feature:
+                $ref: '#/components/schemas/ShlaaFeatureItem'
+    Features:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureData'
+    Polygon:
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - Polygon
+          example: Polygon
+          description: the geometry type
+        coordinates:
+          $ref: '#/components/schemas/PolygonCoordinates'
+    FeatureBaseLite:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          nullable: true
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+    FeaturesLite:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureDataLite'
+    Forbidden:
+      oneOf:
+      - type: object
+        required:
+        - user
+        properties:
+          user:
+            type: object
+            required:
+            - state
+            properties:
+              state:
+                type: string
+                enum:
+                - expired
+                - blocked
+                example: expired
+      - type: object
+        required:
+        - message
+        properties:
+          message:
+            type: string
+            example: User not found
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key

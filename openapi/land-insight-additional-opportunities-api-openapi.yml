@@ -1,0 +1,354 @@
+openapi: 3.0.3
+info:
+  title: LandTech Additional Opportunities API
+  description: 'Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.
+
+    '
+  version: 0.3.0
+servers:
+- url: https://app.land.tech/api
+  description: LandTech API Service
+security:
+- ApiKeyAuth: []
+tags:
+- name: Additional Opportunities
+  description: Endpoint to get details of sites from Homes England Land Hub
+paths:
+  /additional_opportunities/{additional_opportunities_id}:
+    get:
+      operationId: getAdditionalOpportunity
+      description: Given an additional opportunity ID, get details about a Homes England Land Hub site
+      summary: Details about a Homes England Land Hub site
+      tags:
+      - Additional Opportunities
+      parameters:
+      - name: additional_opportunities_id
+        required: true
+        in: path
+        description: ID for a specific homes england land hub site
+        schema:
+          $ref: '#/components/schemas/AdditionalOpportunityID'
+      responses:
+        '200':
+          description: Details about a Homes England Land Hub site
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdditionalOpportunityFeature'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /additional_opportunities:
+    post:
+      operationId: getAdditionalOpportunities
+      description: Given a set of additional opportunity IDs, get details about Homes England Land Hub sites in bulk
+      summary: Bulk - Details about Homes England Land Hub sites
+      tags:
+      - Additional Opportunities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of additional opportunity IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 1679c94a-2158-462f-b924-18acf92e7949
+      responses:
+        '200':
+          description: Details about Homes England Land Hub sites
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdditionalOpportunityFeatureCollection'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /additional_opportunities/lite:
+    post:
+      operationId: getAdditionalOpportunitiesLite
+      description: Given a set of additional opportunity IDs, get details about Homes England Land Hub sites in bulk without geometry data
+      summary: Bulk - Details about Homes England Land Hub sites (without geometry)
+      tags:
+      - Additional Opportunities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of additional opportunity IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 1679c94a-2158-462f-b924-18acf92e7949
+      responses:
+        '200':
+          description: Details about Homes England Land Hub sites (without geometry)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdditionalOpportunityFeatureCollectionLite'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+components:
+  schemas:
+    Features:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureData'
+    FeatureBase:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          nullable: true
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+        geometries:
+          type: array
+          description: Array of geometries relating to the feature
+          items:
+            type: object
+            properties:
+              area_hectares:
+                type: number
+                format: float
+                nullable: true
+                example: 0.2023428
+              geometry:
+                type: object
+                description: GeoJSON of the feature.
+                oneOf:
+                - $ref: '#/components/schemas/Polygon'
+                - $ref: '#/components/schemas/MultiPolygon'
+    FeatureDataLite:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBaseLite'
+    PolygonCoordinates:
+      type: array
+      items:
+        $ref: '#/components/schemas/LinearRingCoordinates'
+    MultiPolygon:
+      description: GeoJSON MultiPolygon
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - MultiPolygon
+          example: MultiPolygon
+          description: the geometry type
+        coordinates:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolygonCoordinates'
+    AdditionalOpportunityFeature:
+      allOf:
+      - $ref: '#/components/schemas/Feature'
+      - type: object
+        properties:
+          data:
+            properties:
+              feature:
+                $ref: '#/components/schemas/AdditionalOpportunityFeatureItem'
+    FeatureData:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBase'
+    Feature:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            feature:
+              $ref: '#/components/schemas/FeatureBase'
+    LinearRingCoordinates:
+      type: array
+      minItems: 4
+      items:
+        $ref: '#/components/schemas/PointCoordinates'
+    PointCoordinates:
+      type: array
+      maxItems: 2
+      minItems: 2
+      example:
+      - -0.12755
+      - 51.5073
+      items:
+        type: number
+    AdditionalOpportunityID:
+      type: string
+      format: uuid
+      description: A Homes England Land Hub ID in the form of a UUID.
+      example: 1540e735-9df0-4095-8df2-03f370847609
+    AdditionalOpportunityFeatureCollection:
+      allOf:
+      - $ref: '#/components/schemas/Features'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdditionalOpportunityFeatureItem'
+    Polygon:
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - Polygon
+          example: Polygon
+          description: the geometry type
+        coordinates:
+          $ref: '#/components/schemas/PolygonCoordinates'
+    AdditionalOpportunityFeatureItem:
+      allOf:
+      - type: object
+        properties:
+          id:
+            $ref: '#/components/schemas/AdditionalOpportunityID'
+          type:
+            example: land_hub_on_market
+          name:
+            example: Land Hub Site 824
+          attributes:
+            example:
+            - key: zz_land_hub_developer_guidance
+              value: https://www.gov.uk/guidance/how-homes-england-sells-land-for-housing-led-developments
+            - key: site_name
+              value: Land retained in Crawley including Car Park At Boulevard East & W and Adv. Pillars Crawley RH10 1XH
+            - key: site_size_(acres)
+              value: '2'
+            - key: disposal_route
+              value: Advertised
+            - key: current_market_status
+              value: On market
+            - key: contact_details
+              value: landenquiries@homesengland.gov.uk
+            - key: zz_land_hub_register_for_access
+              value: https://www.gov.uk/guidance/apply-to-join-the-delivery-partner-dynamic-purchasing-system
+            - key: proposed_use
+              value: Employment
+    AdditionalOpportunityFeatureCollectionLite:
+      allOf:
+      - $ref: '#/components/schemas/FeaturesLite'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdditionalOpportunityFeatureItem'
+    FeatureBaseLite:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          nullable: true
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+    FeaturesLite:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureDataLite'
+    Forbidden:
+      oneOf:
+      - type: object
+        required:
+        - user
+        properties:
+          user:
+            type: object
+            required:
+            - state
+            properties:
+              state:
+                type: string
+                enum:
+                - expired
+                - blocked
+                example: expired
+      - type: object
+        required:
+        - message
+        properties:
+          message:
+            type: string
+            example: User not found
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
