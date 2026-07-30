@@ -1,25 +1,304 @@
 aid: land-insight
 name: Land Insight
-description: Land Insight is a company surfaced as a portfolio company of seedcamp and added to the API
-  Evangelist network as a stub for enrichment. This profile is a lead awaiting the enrichment pipeline.
+description: >-
+  LandTech (land.tech) is a UK property technology company whose LandInsight platform is used by
+  developers, land agents, planners and investors to source and assess development sites. It combines
+  HM Land Registry ownership and title data, planning applications, local plan policy, development
+  constraints (Green Belt, flood zones, Article 4 directions, heritage designations), Land Availability
+  Assessments, brownfield and regeneration opportunities, EPC and property attributes, and electricity
+  network / renewable energy infrastructure into a single map-based product. Alongside LandInsight the
+  company ships LandFund for development finance appraisal and Give My View for community engagement.
+  The LandTech API exposes the same UK land and planning datasets as a paid HTTP product so customers
+  can feed parcel search, ownership, planning application and constraint data into their own internal
+  or customer-facing systems.
 url: https://raw.githubusercontent.com/api-evangelist/land-insight/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
 x-backed-by:
 - seedcamp
-x-tier: stub
-x-tier-reason: portfolio-lead
+accessModel:
+  pricing: unknown
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Self-serve signup
+  confidence: medium
+  source:
+  - authentication
+  generated: '2026-07-22'
+  method: derived
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-07-19'
+image: https://land.tech/favicon.ico
 tags:
 - Company
-apis: []
+- Real Estate
+- Property
+- Land
+- Planning
+- Geospatial
+- Data
+- United Kingdom
+- PropTech
+- Construction
+apis:
+- aid: land-insight:land-insight-additional-opportunities-api
+  name: Land Insight Additional Opportunities API
+  description: Endpoint to get details of sites from Homes England Land Hub
+  humanURL: https://land.tech/api
+  baseURL: https://app.land.tech/api
+  tags:
+  - Additional Opportunities
+  properties:
+  - type: OpenAPI
+    url: openapi/land-insight-additional-opportunities-api-openapi.yml
+  - type: Documentation
+    url: https://developers.land.tech/openapi
+  - type: APIReference
+    url: https://developers.land.tech/openapi
+  - type: GettingStarted
+    url: https://developers.land.tech/openapi/getting-started/getauthstatus
+- aid: land-insight:land-insight-development-constraints-api
+  name: Land Insight Development Constraints API
+  description: >-
+    Endpoint to get details of various development constraints. Includes airport, HS2, rail and building
+    (wharf)  safeguarding. Also includes article 4 and national landscape data.
+  humanURL: https://land.tech/api
+  baseURL: https://app.land.tech/api
+  tags:
+  - Development Constraints
+  properties:
+  - type: OpenAPI
+    url: openapi/land-insight-development-constraints-api-openapi.yml
+  - type: Documentation
+    url: https://developers.land.tech/openapi
+  - type: APIReference
+    url: https://developers.land.tech/openapi
+  - type: GettingStarted
+    url: https://developers.land.tech/openapi/getting-started/getauthstatus
+- aid: land-insight:land-insight-development-opportunities-api
+  name: Land Insight Development Opportunities API
+  description: Endpoint to get details of Named Regeneration Areas and Area Action Plans
+  humanURL: https://land.tech/api
+  baseURL: https://app.land.tech/api
+  tags:
+  - Development Opportunities
+  properties:
+  - type: OpenAPI
+    url: openapi/land-insight-development-opportunities-api-openapi.yml
+  - type: Documentation
+    url: https://developers.land.tech/openapi
+  - type: APIReference
+    url: https://developers.land.tech/openapi
+  - type: GettingStarted
+    url: https://developers.land.tech/openapi/getting-started/getauthstatus
+- aid: land-insight:land-insight-getting-started-api
+  name: Land Insight Getting Started API
+  description: Endpoints to help you understand how to interact with the API.
+  humanURL: https://land.tech/api
+  baseURL: https://app.land.tech/api
+  tags:
+  - Getting Started
+  properties:
+  - type: OpenAPI
+    url: openapi/land-insight-getting-started-api-openapi.yml
+  - type: Documentation
+    url: https://developers.land.tech/openapi
+  - type: APIReference
+    url: https://developers.land.tech/openapi
+  - type: GettingStarted
+    url: https://developers.land.tech/openapi/getting-started/getauthstatus
+- aid: land-insight:land-insight-land-availability-assessment-api
+  name: Land Insight Land Availability Assessment API
+  description: Endpoint to get details about Land Availability Assessment sites
+  humanURL: https://land.tech/api
+  baseURL: https://app.land.tech/api
+  tags:
+  - Land Availability Assessment
+  properties:
+  - type: OpenAPI
+    url: openapi/land-insight-land-availability-assessment-api-openapi.yml
+  - type: Documentation
+    url: https://developers.land.tech/openapi
+  - type: APIReference
+    url: https://developers.land.tech/openapi
+  - type: GettingStarted
+    url: https://developers.land.tech/openapi/getting-started/getauthstatus
+- aid: land-insight:land-insight-local-policy-api
+  name: Land Insight Local Policy API
+  description: Endpoint to get details of local plan policies
+  humanURL: https://land.tech/api
+  baseURL: https://app.land.tech/api
+  tags:
+  - Local Policy
+  properties:
+  - type: OpenAPI
+    url: openapi/land-insight-local-policy-api-openapi.yml
+  - type: Documentation
+    url: https://developers.land.tech/openapi
+  - type: APIReference
+    url: https://developers.land.tech/openapi
+  - type: GettingStarted
+    url: https://developers.land.tech/openapi/getting-started/getauthstatus
+- aid: land-insight:land-insight-ownership-api
+  name: Land Insight Ownership API
+  description: Endpoints to get details about land ownership and property information.
+  humanURL: https://land.tech/api
+  baseURL: https://app.land.tech/api
+  tags:
+  - Ownership
+  properties:
+  - type: OpenAPI
+    url: openapi/land-insight-ownership-api-openapi.yml
+  - type: Documentation
+    url: https://developers.land.tech/openapi
+  - type: APIReference
+    url: https://developers.land.tech/openapi
+  - type: GettingStarted
+    url: https://developers.land.tech/openapi/getting-started/getauthstatus
+- aid: land-insight:land-insight-parcels-api
+  name: Land Insight Parcels API
+  description: Endpoints to search for parcels and associated attributes.
+  humanURL: https://land.tech/api
+  baseURL: https://app.land.tech/api
+  tags:
+  - Parcels
+  properties:
+  - type: OpenAPI
+    url: openapi/land-insight-parcels-api-openapi.yml
+  - type: Documentation
+    url: https://developers.land.tech/openapi
+  - type: APIReference
+    url: https://developers.land.tech/openapi
+  - type: GettingStarted
+    url: https://developers.land.tech/openapi/getting-started/getauthstatus
+- aid: land-insight:land-insight-planning-applications-api
+  name: Land Insight Planning Applications API
+  description: >-
+    Endpoints to search for planning applications and get details on individual applications.
+  humanURL: https://land.tech/api
+  baseURL: https://app.land.tech/api
+  tags:
+  - Planning Applications
+  properties:
+  - type: OpenAPI
+    url: openapi/land-insight-planning-applications-api-openapi.yml
+  - type: Documentation
+    url: https://developers.land.tech/openapi
+  - type: APIReference
+    url: https://developers.land.tech/openapi
+  - type: GettingStarted
+    url: https://developers.land.tech/openapi/getting-started/getauthstatus
+- aid: land-insight:land-insight-power-api
+  name: Land Insight Power API
+  description: Endpoint to get details of substations, lines, cables and towers
+  humanURL: https://land.tech/api
+  baseURL: https://app.land.tech/api
+  tags:
+  - Power
+  properties:
+  - type: OpenAPI
+    url: openapi/land-insight-power-api-openapi.yml
+  - type: Documentation
+    url: https://developers.land.tech/openapi
+  - type: APIReference
+    url: https://developers.land.tech/openapi
+  - type: GettingStarted
+    url: https://developers.land.tech/openapi/getting-started/getauthstatus
+- aid: land-insight:land-insight-renewable-energy-planning-db-api
+  name: Land Insight Renewable Energy Planning DB API
+  description: Endpoint to get details on sites from the Renewable Energy Planning Database
+  humanURL: https://land.tech/api
+  baseURL: https://app.land.tech/api
+  tags:
+  - Renewable Energy Planning DB
+  properties:
+  - type: OpenAPI
+    url: openapi/land-insight-renewable-energy-planning-db-api-openapi.yml
+  - type: Documentation
+    url: https://developers.land.tech/openapi
+  - type: APIReference
+    url: https://developers.land.tech/openapi
+  - type: GettingStarted
+    url: https://developers.land.tech/openapi/getting-started/getauthstatus
+- aid: land-insight:land-insight-strategic-industrial-location-api
+  name: Land Insight Strategic Industrial Location API
+  description: Endpoint for details on strategic industrial location
+  humanURL: https://land.tech/api
+  baseURL: https://app.land.tech/api
+  tags:
+  - Strategic Industrial Location
+  properties:
+  - type: OpenAPI
+    url: openapi/land-insight-strategic-industrial-location-api-openapi.yml
+  - type: Documentation
+    url: https://developers.land.tech/openapi
+  - type: APIReference
+    url: https://developers.land.tech/openapi
+  - type: GettingStarted
+    url: https://developers.land.tech/openapi/getting-started/getauthstatus
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: TrustCenter
+  url: security/land-insight-trust-center.yml
 - type: Website
-  url: http://land.tech
+  url: https://land.tech
+- type: DeveloperPortal
+  url: https://developers.land.tech/
+- type: Documentation
+  url: https://developers.land.tech/openapi
+- type: APIReference
+  url: https://developers.land.tech/openapi
+- type: GettingStarted
+  url: https://developers.land.tech/openapi/getting-started/getauthstatus
+- type: Support
+  url: https://support.land.tech/en/
+- type: Blog
+  url: https://land.tech/blog
+- type: GitHubOrganization
+  url: https://github.com/landtechnologies
+- type: Packages
+  url: packages/land-insight-packages.yml
+- type: Pricing
+  url: https://land.tech/pricing
+- type: SignUp
+  url: https://app.land.tech/landinsight/
+- type: TermsOfService
+  url: https://land.tech/legal/website_terms_of_use
+- type: PrivacyPolicy
+  url: https://land.tech/legal/privacy
+- type: Compliance
+  url: https://land.tech/blog/security
+- type: Authentication
+  url: authentication/land-insight-authentication.yml
+- type: Conventions
+  url: conventions/land-insight-conventions.yml
+- type: ErrorCatalog
+  url: errors/land-insight-problem-types.yml
+- type: Lifecycle
+  url: lifecycle/land-insight-lifecycle.yml
+- type: Conformance
+  url: conformance/land-insight-conformance.yml
+- type: DataModel
+  url: data-model/land-insight-data-model.yml
+- type: DomainSecurity
+  url: security/land-insight-domain-security.yml
+- type: WellKnown
+  url: well-known/land-insight-well-known.yml
+- type: LLMsTxt
+  url: llms/land-insight-llms.txt
+- type: MCPServer
+  url: mcp/land-insight-mcp.yml
+- type: AgentSkill
+  url: skills/_index.yml
+x-enrichment:
+  date: '2026-07-19'
+  status: backfilled
+  pass: local-v1
+  note: backfilled from .gitignore signal + verified work evidence
