@@ -1,0 +1,187 @@
+generated: '2026-07-19'
+method: derived
+source: openapi/land-insight-api-openapi.yml
+summary: >-
+  The LandTech data model is a land-parcel-centric graph. The parcel is the hub entity: it links out
+  to HM Land Registry titles, to Ordnance Survey properties (UPRNs), to planning applications, and to
+  four families of overlay layers (local plan policy, development constraints, development
+  opportunities, land availability assessments) plus power infrastructure and industrial location
+  layers. Overlay layers attach through a shared CoveredEntities shape that pairs a feature id with a
+  coverage ratio, so the relationship carries how much of the parcel the layer covers.
+entities:
+- name: Parcel
+  id_field: parcel_id
+  id_format: uuid
+  schema: ParcelDetailsItem
+  operations: [getParcel, getParcelsBulk, searchParcels, searchParcelsAdvanced]
+  fields: [parcel_id, parcel_size, developed_area_ratio, titles, properties, properties_intersects,
+    planning_apps, local_plan_policy, development_constraints, development_opportunities, shlaa]
+- name: Title
+  id_field: title_no
+  id_format: HM Land Registry title number
+  id_issuer: HM Land Registry
+  schema: TitleDetails
+  operations: [getTitleDetails, getTitlesBulk]
+  fields: [title_no, tenure, addresses, registered_lease, properties, properties_intersects, owners]
+- name: Property
+  id_field: uprn
+  id_format: numeric string, 1-12 digits
+  id_issuer: Ordnance Survey AddressBase
+  schema: PropertyInformation
+  operations: [getPropertyDetails, getPropertiesBulk]
+  fields: [address, building_height, epc, property_type, property_state, property_class_code, use_class]
+- name: Owner
+  schema: OwnerDetails
+  embedded_in: Title
+  fields: [last_ownership_change, company, ultimate_owner]
+  id_issuer: Companies House
+- name: PlanningApplication
+  id_field: id
+  id_format: '<gss_code>+<ref>'
+  schema: PlanningApplication
+  operations: [getPlanningApplication, getPlanningApplicationById, getPlanningApplicationByIds,
+    searchPlanningApplications]
+  fields: [id, gss_code, ref, num_dwellings, address, status, decision, date_received, decision_date,
+    applicant_name, agent_name, classification, boundary, related_applications, appeal_case_number,
+    appeal_decision]
+- name: Region
+  id_field: gss_code
+  id_format: '^[EWS]\d{8}$'
+  id_issuer: UK Office for National Statistics
+  schema: RegionDetail
+  operations: [getRegions]
+  note: A region is a local authority; it is the required entry point for parcel search.
+- name: LocalPlanPolicy
+  id_field: local_plan_policy_id
+  schema: LocalPlanPolicyFeatureItem
+  operations: [getLocalPlanPolicy, getLocalPlanPolicies, getLocalPlanPoliciesLite]
+- name: DevelopmentConstraint
+  id_field: development_constraints_id
+  schema: DevelopmentConstraintFeatureItem
+  operations: [getDevelopmentConstraint, getDevelopmentConstraints, getDevelopmentConstraintsLite]
+  covers: [airport safeguarding, HS2 safeguarding, rail safeguarding, wharf safeguarding,
+    Article 4 directions, national landscape, flood risk zones, heritage land, listed buildings,
+    conservation areas, protected areas, green belt, agricultural land classification,
+    neighbourhood plan areas, rights of way]
+- name: DevelopmentOpportunity
+  id_field: development_opportunities_id
+  schema: DevelopmentOpportunityFeatureItem
+  operations: [getDevelopmentOpportunity, getDevelopmentOpportunities, getDevelopmentOpportunitiesLite]
+  covers: [named regeneration areas, area action plans, declassified green belt, brownfield register]
+- name: LandAvailabilityAssessment
+  id_field: shlaa_id
+  schema: ShlaaFeatureItem
+  operations: [getShlaa, getShlaas, getShlaasLite]
+- name: AdditionalOpportunity
+  id_field: additional_opportunities_id
+  schema: AdditionalOpportunityFeatureItem
+  operations: [getAdditionalOpportunity, getAdditionalOpportunities, getAdditionalOpportunitiesLite]
+  source_registry: Homes England Land Hub
+- name: StrategicIndustrialLocation
+  id_field: sil_id
+  schema: SilFeatureItem
+  operations: [getSil, getSils, getSilsLite]
+- name: Power
+  id_field: power_id
+  schema: PowerFeatureItem
+  operations: [getPower, getPowers, getPowersLite]
+- name: RenewableEnergyProject
+  id_field: repd_id
+  schema: RepdFeatureItem
+  operations: [getRepd, getRepds, getRepdsLite]
+  source_registry: Renewable Energy Planning Database
+relationships:
+- from: Parcel
+  to: Title
+  kind: has_many
+  via: titles
+  via_type: TitleNumber[]
+  nullable: true
+- from: Parcel
+  to: Property
+  kind: has_many
+  via: properties
+  via_type: UPRN[]
+  note: UPRNs formally associated with a parcel title.
+- from: Parcel
+  to: Property
+  kind: has_many
+  via: properties_intersects
+  via_type: UPRN[]
+  note: UPRNs that fall inside the parcel geometry but are not formally associated with the title.
+- from: Parcel
+  to: PlanningApplication
+  kind: has_many
+  via: planning_apps
+  via_type: PlanningApplicationId[]
+- from: Parcel
+  to: LocalPlanPolicy
+  kind: has_many
+  via: local_plan_policy
+  via_type: map<layer_name, CoveredEntities>
+  carries: coverage ratio per feature
+- from: Parcel
+  to: DevelopmentConstraint
+  kind: has_many
+  via: development_constraints
+  via_type: map<layer_name, CoveredEntities>
+  carries: coverage ratio per feature
+- from: Parcel
+  to: DevelopmentOpportunity
+  kind: has_many
+  via: development_opportunities
+  via_type: map<layer_name, CoveredEntities>
+  carries: coverage ratio per feature
+- from: Parcel
+  to: LandAvailabilityAssessment
+  kind: has_many
+  via: shlaa
+  via_type: map<layer_name, CoveredEntities>
+  carries: coverage ratio per feature
+- from: Title
+  to: Property
+  kind: has_many
+  via: properties
+  via_type: UPRN[]
+- from: Title
+  to: Property
+  kind: has_many
+  via: properties_intersects
+  via_type: UPRN[]
+- from: Title
+  to: Owner
+  kind: has_many
+  via: owners
+  via_type: OwnerDetails[]
+- from: Title
+  to: RegisteredLease
+  kind: has_one
+  via: registered_lease
+- from: PlanningApplication
+  to: Region
+  kind: belongs_to
+  via: gss_code
+  via_type: GSSCode
+- from: PlanningApplication
+  to: PlanningApplication
+  kind: has_many
+  via: related_applications
+- from: Region
+  to: Parcel
+  kind: has_many
+  via: searchParcels request filter
+  note: Region GSS code is the required search key rather than a stored back-reference.
+shared_shapes:
+- name: CoveredEntities
+  shape: '[{ id: <feature id>, coverage: <0..1> }]'
+  used_by: [local_plan_policy, development_constraints, development_opportunities, shlaa]
+- name: Feature
+  shape: '{ data: { feature: <FeatureItem> } }'
+  used_by: [LocalPlanPolicyFeature, PowerFeature, ShlaaFeature, DevelopmentConstraintFeature,
+    DevelopmentOpportunityFeature, SilFeature, RepdFeature, AdditionalOpportunityFeature]
+external_identifier_registries:
+  title_no: HM Land Registry
+  uprn: Ordnance Survey AddressBase
+  gss_code: UK Office for National Statistics
+  company: Companies House
+  repd_id: Renewable Energy Planning Database

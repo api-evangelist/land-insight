@@ -1,0 +1,5480 @@
+openapi: 3.0.3
+info:
+  title: LandTech API
+  description: >
+    Search for land parcels and retrieve detailed insights on ownership,
+    planning applications and property details.
+  version: 0.3.0
+servers:
+  - url: https://app.land.tech/api
+    description: LandTech API Service
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    Forbidden:
+      oneOf:
+        - type: object
+          required:
+            - user
+          properties:
+            user:
+              type: object
+              required:
+                - state
+              properties:
+                state:
+                  type: string
+                  enum:
+                    - expired
+                    - blocked
+                  example: expired
+        - type: object
+          required:
+            - message
+          properties:
+            message:
+              type: string
+              example: User not found
+    GSSCode:
+      type: string
+      description: >-
+        Geocode as maintained by the United Kingdom's Office for National
+        Statistics (ONS) to represent a wide range of geographical areas of the
+        UK.
+      pattern: ^[EWS]\d{8}$
+      example: E09000033
+    RegionDetail:
+      type: object
+      required:
+        - gss_code
+      properties:
+        gss_code:
+          allOf:
+            - $ref: '#/components/schemas/GSSCode'
+            - description: The GSS code of a local authority, e.g. `E06000023`.
+            - example: E06000023
+        name:
+          type: string
+          description: The descriptive name of the region.
+          example: Bristol, City of
+    ParcelSize:
+      type: object
+      properties:
+        min:
+          type: number
+          format: float
+          description: The minimum parcel size in square metres.
+          example: 2023.43
+        max:
+          type: number
+          format: float
+          description: The maximum parcel size in square metres.
+          example: 4046.86
+    ParcelTenure:
+      type: array
+      items:
+        type: string
+        enum:
+          - freehold
+          - leasehold
+        example: freehold
+        default: freehold
+    ParcelSearchRequest:
+      type: object
+      required:
+        - region
+      properties:
+        region:
+          allOf:
+            - $ref: '#/components/schemas/GSSCode'
+            - description: A region code (e.g. GSS code for UK Local Authority Districts).
+            - example: E06000023
+        parcel_size:
+          allOf:
+            - $ref: '#/components/schemas/ParcelSize'
+            - description: >-
+                An optional filter for parcel size in square metres. The max or
+                min can be omitted, so for example to find parcels larger than
+                1ha (10,000sqm) you can use {"min": 10000}.
+        tenure:
+          allOf:
+            - $ref: '#/components/schemas/ParcelTenure'
+          description: >-
+            An optional filter for parcel tenures (i.e. freehold or leasehold).
+            If omitted, only parcels which include freeholdings will be
+            returned. To search for leaseholds, or both, supply ["leasehold"] or
+            ["freehold", "leasehold"].
+    ParcelId:
+      type: string
+      format: uuid
+      description: A parcel ID in the form of a UUID.
+      example: 2a5ad2c7-29ef-d609-8ade-36eef8e3a072
+    ParcelIds:
+      type: object
+      required:
+        - parcel_ids
+      properties:
+        parcel_ids:
+          type: array
+          description: A list of parcel UUIDs.
+          maxItems: 100000
+          items:
+            $ref: '#/components/schemas/ParcelId'
+    AdditionalOpportunities:
+      type: object
+      title: Additional Opportunities
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+            - additional-opportunities-id
+          example: additional-opportunities-id
+        values:
+          type: array
+          description: >-
+            A list of additional opportunities with associated keys and checked
+            status.
+          items:
+            type: object
+            required:
+              - key
+              - checked
+            properties:
+              key:
+                type: string
+                description: The key representing the additional opportunity type.
+                enum:
+                  - declassified_green_belt
+                x-enumDescriptions:
+                  declassified_green_belt: Declassified Green Belt
+                example: declassified_green_belt
+              checked:
+                type: boolean
+                description: >-
+                  Indicates whether this additional opportunity type is selected
+                  or not.
+                enum:
+                  - true
+                example: true
+          example:
+            - key: declassified_green_belt
+              checked: true
+        must:
+          type: string
+          enum:
+            - MATCH_ANY
+            - MATCH_NONE
+          description: The match type for filtering the additional opportunities options.
+          example: MATCH_ANY
+      required:
+        - values
+        - must
+        - id
+    AgriculturalLandClassification:
+      type: object
+      title: Agricultural Land Classification
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+            - agricultural-land-classification-id
+          example: agricultural-land-classification-id
+        values:
+          type: array
+          description: >-
+            A list of agricultural land classification values with associated
+            keys, names, and checked status.
+          items:
+            type: object
+            required:
+              - key
+            properties:
+              key:
+                type: string
+                description: >-
+                  The key representing the agricultural land classification
+                  type.
+                enum:
+                  - grade_1
+                  - grade_2
+                  - grade_3a
+                  - grade_3
+                  - grade_3b
+                  - grade_4
+                  - grade_5
+                  - non_agricultural
+                x-enumDescriptions:
+                  grade_1: Grade 1
+                  grade_2: Grade 2
+                  grade_3a: Grade 3a
+                  grade_3: Grade 3
+                  grade_3b: Grade 3b
+                  grade_4: Grade 4
+                  grade_5: Grade 5
+                  non_agricultural: Non Agricultural
+                example: grade_1
+              checked:
+                type: boolean
+                description: >-
+                  Indicates whether this agricultural land classification type
+                  is selected or not.
+                example: true
+          example:
+            - key: grade_1
+              checked: true
+            - key: grade_3a
+              checked: true
+        must:
+          type: string
+          enum:
+            - MATCH_ANY
+            - MATCH_NONE
+          description: >-
+            The match type for filtering the agricultural land classification
+            options.
+          example: MATCH_ANY
+      required:
+        - values
+        - must
+        - id
+    Transport:
+      type: object
+      title: Transport
+      properties:
+        key:
+          type: string
+          enum:
+            - transport
+          description: The key representing the transport category.
+          example: transport
+        checked:
+          type: boolean
+          description: Indicates whether the transport category is selected.
+          example: true
+          enum:
+            - true
+        items:
+          type: array
+          description: A list of specific transport amenities.
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+                enum:
+                  - shortest_distance_bus_stop
+                  - shortest_distance_train_station
+                  - shortest_distance_metro_station
+                x-enumDescriptions:
+                  shortest_distance_bus_stop: Shortest distance to bus stop
+                  shortest_distance_train_station: Shortest distance to train station
+                  shortest_distance_metro_station: Shortest distance to metro station
+                description: The key representing the specific transport amenity.
+                example: shortest_distance_bus_stop
+              checked:
+                description: Indicates whether this specific transport amenity is selected.
+                example: true
+                type: boolean
+                enum:
+                  - true
+          example:
+            - key: shortest_distance_bus_stop
+              checked: true
+            - key: shortest_distance_train_station
+              checked: true
+      required:
+        - key
+        - checked
+        - items
+    Education:
+      type: object
+      title: Education
+      properties:
+        key:
+          type: string
+          enum:
+            - education
+          description: The key representing the education category.
+          example: education
+        checked:
+          type: boolean
+          description: Indicates whether the education category is selected.
+          example: true
+          enum:
+            - true
+        items:
+          type: array
+          description: A list of specific education amenities.
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+                enum:
+                  - shortest_distance_primary_school
+                  - shortest_distance_secondary_school
+                  - shortest_distance_further_education
+                  - shortest_distance_primary_school_independent
+                  - shortest_distance_secondary_school_independent
+                  - shortest_distance_further_education_independent
+                x-enumDescriptions:
+                  shortest_distance_primary_school: Shortest distance to primary school
+                  shortest_distance_secondary_school: Shortest distance to secondary school
+                  shortest_distance_further_education: Shortest distance to further education
+                  shortest_distance_primary_school_independent: Shortest distance to independent primary school
+                  shortest_distance_secondary_school_independent: Shortest distance to independent secondary school
+                  shortest_distance_further_education_independent: Shortest distance to independent further education
+                description: The key representing the specific education amenity.
+                example: shortest_distance_primary_school
+              checked:
+                description: Indicates whether this specific education amenity is selected.
+                example: true
+                type: boolean
+                enum:
+                  - true
+          example:
+            - key: shortest_distance_primary_school
+              checked: true
+            - key: shortest_distance_secondary_school
+              checked: true
+      required:
+        - key
+        - checked
+        - items
+    Retail:
+      type: object
+      title: Retail
+      properties:
+        key:
+          type: string
+          enum:
+            - retail
+          description: The key representing the retail category.
+          example: retail
+        checked:
+          description: Indicates whether the retail category is selected.
+          type: boolean
+          example: true
+          enum:
+            - true
+        items:
+          type: array
+          description: A list of specific retail amenities.
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+                enum:
+                  - shortest_distance_supermarkets_and_convenience_stores
+                x-enumDescriptions:
+                  shortest_distance_supermarkets_and_convenience_stores: Shortest distance to supermarkets and convenience stores
+                description: The key representing the specific retail amenity.
+                example: shortest_distance_supermarkets_and_convenience_stores
+              checked:
+                description: Indicates whether this specific retail amenity is selected.
+                example: true
+                type: boolean
+                enum:
+                  - true
+          example:
+            - key: shortest_distance_supermarkets_and_convenience_stores
+              checked: true
+      required:
+        - key
+        - checked
+        - items
+    Healthcare:
+      type: object
+      title: Health Care
+      properties:
+        key:
+          type: string
+          enum:
+            - healthcare
+          description: The key representing the healthcare category.
+          example: healthcare
+        checked:
+          type: boolean
+          enum:
+            - true
+          description: Indicates whether the healthcare category is selected.
+          example: true
+        items:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            title: Healthcare - Sub Categories
+            properties:
+              key:
+                type: string
+                description: The key representing the specific healthcare amenity.
+                enum:
+                  - shortest_distance_gp_surgeries
+                  - shortest_distance_pharmacies
+                  - shortest_distance_clinics
+                  - shortest_distance_dentists
+                  - shortest_distance_hospitals
+                x-enumDescriptions:
+                  shortest_distance_gp_surgeries: Shortest distance to GP surgeries
+                  shortest_distance_pharmacies: Shortest distance to pharmacies
+                  shortest_distance_clinics: Shortest distance to clinics
+                  shortest_distance_dentists: Shortest distance to dentists
+                  shortest_distance_hospitals: Shortest distance to hospitals
+                example: shortest_distance_gp_surgeries
+              checked:
+                description: >-
+                  Indicates whether this specific healthcare amenity is
+                  selected.
+                type: boolean
+                example: true
+                enum:
+                  - true
+            required:
+              - key
+              - checked
+          example:
+            - key: shortest_distance_gp_surgeries
+              checked: true
+            - key: shortest_distance_pharmacies
+              checked: true
+      required:
+        - key
+        - checked
+        - items
+    AmenitiesTypeFilter:
+      type: object
+      title: Amenities Filter
+      properties:
+        id:
+          type: string
+          enum:
+            - amenities-type-filter
+          example: amenities-type-filter
+          description: The unique identifier for the amenities filter.
+        values:
+          type: array
+          items:
+            anyOf:
+              - $ref: '#/components/schemas/Transport'
+              - $ref: '#/components/schemas/Education'
+              - $ref: '#/components/schemas/Retail'
+              - $ref: '#/components/schemas/Healthcare'
+          description: >
+            A list of amenities to be filtered. 
+
+            Each item in the list represents a specific amenity type and its
+            associated options.
+          minItems: 1
+          example:
+            - key: transport
+              checked: true
+              items:
+                - key: shortest_distance_bus_stop
+                  checked: true
+            - key: education
+              checked: true
+              items:
+                - key: shortest_distance_primary_school
+                  checked: true
+        must:
+          type: string
+          enum:
+            - MATCH_ANY
+            - MATCH_NONE
+          description: The match type for filtering the use class options.
+          example: MATCH_ANY
+          default: MATCH_ANY
+        type:
+          type: string
+          enum:
+            - nested-checkbox
+          description: The type of filter, which is always nested-checkbox in this case.
+          example: nested-checkbox
+          default: nested-checkbox
+      required:
+        - id
+        - values
+        - must
+        - type
+    AmenitiesDistanceFilter:
+      type: object
+      title: Amenities Distance Filter
+      properties:
+        id:
+          type: string
+          enum:
+            - amenities-distance-filter
+          example: amenities-distance-filter
+          description: The unique identifier for the amenities distance filter.
+        value:
+          type: number
+          format: float
+          description: The maximum distance for filtering amenities, in meters.
+          example: 600
+      required:
+        - id
+        - value
+    AmenitiesFilter:
+      type: object
+      title: Amenities Filter
+      properties:
+        id:
+          type: string
+          enum:
+            - amenities-filter
+          example: amenities-filter
+          description: The unique identifier for the amenities filter.
+        type:
+          type: string
+          enum:
+            - compound
+          example: compound
+          description: The type of filter, which is always compound in this case.
+        filters:
+          type: array
+          items:
+            minItems: 2
+            maxItems: 2
+            anyOf:
+              - $ref: '#/components/schemas/AmenitiesTypeFilter'
+              - $ref: '#/components/schemas/AmenitiesDistanceFilter'
+          description: >
+            A list of filters to be applied. 
+
+            Must include at least one: AmenitiesTypeFilter and only one
+            AmenitiesDistanceFilter.
+          example:
+            - id: amenities-type-filter
+              values:
+                - key: transport
+                  checked: true
+                  items:
+                    - key: shortest_distance_bus_stop
+                      checked: true
+              must: MATCH_ANY
+              type: nested-checkbox
+            - id: amenities-distance-filter
+              value: 200
+        must:
+          type: string
+          enum:
+            - MATCH_ALL
+            - MATCH_NONE
+          description: The match type for combining the filters.
+          example: MATCH_ALL
+          default: MATCH_ALL
+      required:
+        - id
+        - filters
+        - must
+        - type
+    Article4:
+      type: object
+      title: Article 4 (London)
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+            - article-four-id
+          example: article-four-id
+        values:
+          type: array
+          description: A list of article 4 values with associated keys, checked status.
+          items:
+            type: object
+            required:
+              - key
+              - checked
+            properties:
+              key:
+                type: string
+                description: The key representing the article 4 type.
+                enum:
+                  - article_4_ma
+                  - article_4_hmo
+                  - article_4_other
+                  - article_4_unknown
+                x-enumDescriptions:
+                  article_4_ma: MA
+                  article_4_hmo: HMO
+                  article_4_other: Other
+                  article_4_unknown: Unknown
+                example: article_4_hmo
+              checked:
+                type: boolean
+                description: Indicates whether this constraint type is selected or not.
+                enum:
+                  - true
+                example: true
+        must:
+          type: string
+          enum:
+            - MATCH_ANY
+            - MATCH_NONE
+          description: The match type for filtering the article 4 options.
+          example: MATCH_NONE
+      required:
+        - id
+        - values
+        - must
+    CompanyStatus:
+      type: object
+      title: Company Status
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+            - company-status-id
+          example: company-status-id
+        values:
+          type: array
+          description: >-
+            A list of company status types with associated keys and checked
+            status.
+          items:
+            type: object
+            required:
+              - key
+              - checked
+            properties:
+              key:
+                type: string
+                description: The key representing the company status type.
+                enum:
+                  - active
+                  - active_proposal_to_strike_off
+                  - administration_order
+                  - administrative_receiver
+                  - in_administration
+                  - in_administration_administrative_receiver
+                  - in_administration_receiver_manager
+                  - liquidation
+                  - live_but_receiver_manager_on_at_least_one_charge
+                  - receiver_manager_administrative_receiver
+                  - receivership
+                  - voluntary_arrangement
+                  - voluntary_arrangement_administrative_receiver
+                  - voluntary_arrangement_receiver_manager
+                x-enumDescriptions:
+                  active: Active
+                  active_proposal_to_strike_off: Active - Proposal To Strike Off
+                  administration_order: Administration Order
+                  administrative_receiver: Administrative Receiver
+                  in_administration: In Administration
+                  in_administration_administrative_receiver: In Administration/Administrative Receiver
+                  in_administration_receiver_manager: In Administration/Receiver Manager
+                  liquidation: Liquidation
+                  live_but_receiver_manager_on_at_least_one_charge: Live But Receiver Manager On At Least One Charge
+                  receiver_manager_administrative_receiver: Receiver Manager / Administrative Receiver
+                  receivership: Receivership
+                  voluntary_arrangement: Voluntary Arrangement
+                  voluntary_arrangement_administrative_receiver: Voluntary Arrangement / Administrative Receiver
+                  voluntary_arrangement_receiver_manager: Voluntary Arrangement / Receiver Manager
+                example: active
+              checked:
+                type: boolean
+                description: Indicates whether this company status type is selected or not.
+                enum:
+                  - true
+                example: true
+        must:
+          type: string
+          enum:
+            - MATCH_ANY
+            - MATCH_NONE
+          description: The match type for filtering the company status options.
+          example: MATCH_ANY
+      required:
+        - values
+        - must
+        - id
+    ConstraintsAdopted:
+      type: object
+      title: Constraints - Adopted Constraints
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+            - adopted-constraints-id
+          example: adopted-constraints-id
+        values:
+          type: array
+          description: A list of constraint values with associated keys, checked status.
+          items:
+            type: object
+            required:
+              - key
+              - checked
+            properties:
+              key:
+                type: string
+                description: The key representing the constraint type.
+                enum:
+                  - protected_areas_outer
+                  - heritage_land_listed_buildings_outer
+                  - flood_zone_2_env_agency
+                  - flood_zone_3_env_agency
+                  - very_low_risk_of_flooding_from_rivers_and_seas
+                  - low_risk_of_flooding_from_rivers_and_seas
+                  - medium_risk_of_flooding_from_rivers_and_seas
+                  - high_risk_of_flooding_from_rivers_and_seas
+                  - conservation_areas_outer
+                  - employment_area_outer
+                  - settlement_boundaries_outer
+                  - green_belt_outer
+                  - nutrient_neutrality
+                  - protected_views_outer
+                  - safe_guarding_outer
+                  - metropolitan_open_land_outer
+                  - open_space_outer
+                  - rights_of_way
+                  - tree_preservation_orders
+                  - national_landscape
+                x-enumDescriptions:
+                  protected_areas_outer: Protected Areas
+                  heritage_land_listed_buildings_outer: Heritage Land/Listed Buildings
+                  flood_zone_2_env_agency: Flood Zone 2
+                  flood_zone_3_env_agency: Flood Zone 3
+                  very_low_risk_of_flooding_from_rivers_and_seas: Very Low Risk (Flood Risk)
+                  low_risk_of_flooding_from_rivers_and_seas: Low Risk (Flood Risk)
+                  medium_risk_of_flooding_from_rivers_and_seas: Medium Risk (Flood Risk)
+                  high_risk_of_flooding_from_rivers_and_seas: High Risk (Flood Risk)
+                  conservation_areas_outer: Conservation Areas
+                  employment_area_outer: Employment Area
+                  settlement_boundaries_outer: Settlement Boundaries
+                  green_belt_outer: Green Belt
+                  nutrient_neutrality: Nutrient Neutrality
+                  protected_views_outer: Protected Views
+                  safe_guarding_outer: Safe Guarded Sites
+                  metropolitan_open_land_outer: Metropolitan Open Land (Open Land/Green Space)
+                  open_space_outer: Open Space (Open Land/Green Space)
+                  rights_of_way: Rights of Way
+                  tree_preservation_orders: Tree Preservation Orders
+                  national_landscape: National Landscape (AONB)
+                example: protected_areas_outer
+              checked:
+                type: boolean
+                description: Indicates whether this constraint type is selected or not.
+                enum:
+                  - true
+                example: true
+        must:
+          type: string
+          enum:
+            - MATCH_ALL
+            - MATCH_NONE
+          description: The match type for filtering the constraints options.
+          example: MATCH_NONE
+      required:
+        - values
+        - must
+        - id
+    ConstraintsEmerging:
+      type: object
+      title: Constraints - Emerging Constraints
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+            - emerging-constraints-id
+          example: emerging-constraints-id
+        values:
+          type: array
+          description: >-
+            A list of constraint values with associated keys, checked status,
+            and child constraints.
+          items:
+            type: object
+            required:
+              - key
+              - checked
+            properties:
+              key:
+                type: string
+                description: The key representing the constraint type.
+                enum:
+                  - conservation_areas_outer
+                  - employment_area_outer
+                  - metropolitan_open_land_outer
+                  - open_space_outer
+                  - protected_areas_outer
+                  - protected_views_outer
+                  - safe_guarding_outer
+                  - settlement_boundaries_outer
+                x-enumDescriptions:
+                  conservation_areas_outer: Conservation Areas
+                  employment_area_outer: Employment Area
+                  metropolitan_open_land_outer: Metropolitan Open Land (Open Land/Green Space)
+                  open_space_outer: Open Space (Open Land/Green Space)
+                  protected_areas_outer: Protected Areas
+                  protected_views_outer: Protected Views
+                  safe_guarding_outer: Safe Guarded Sites
+                  settlement_boundaries_outer: Settlement Boundaries
+                example: conservation_areas_outer
+              checked:
+                type: boolean
+                description: Indicates whether this constraint type is selected or not.
+                enum:
+                  - true
+                example: true
+        must:
+          type: string
+          enum:
+            - MATCH_ALL
+            - MATCH_NONE
+          description: The match type for filtering the constraints options.
+          example: MATCH_NONE
+      required:
+        - values
+        - must
+        - id
+    DevelopedArea:
+      type: object
+      title: Developed Area
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+            - developed-area-id
+          example: developed-area-id
+        range:
+          type: array
+          description: >
+            `[1, 45]` represents a range from **1% to 45%**.
+
+
+            An array with 2 items that represent the range of percentages for
+            the developed area.
+
+            The first item is the minimum value, and the second item is the
+            maximum value.
+          items:
+            type: number
+            format: integer
+          minItems: 2
+          maxItems: 2
+          example:
+            - 1
+            - 45
+        rangeType:
+          type: string
+          description: The type of range being used (e.g., percentage).
+          enum:
+            - percentage
+          example: percentage
+      required:
+        - id
+        - range
+        - rangeType
+    GreyBeltFavourability:
+      type: object
+      title: Grey belt favourability
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+            - grey-belt-type-id
+          example: grey-belt-type-id
+        values:
+          type: array
+          description: A list of grey belt land favourability.
+          items:
+            type: object
+            required:
+              - key
+              - checked
+            properties:
+              key:
+                type: string
+                description: The key representing the grey belt land favourability type.
+                enum:
+                  - grey_belt_land_more_favourable
+                  - grey_belt_land_average_favourability
+                  - grey_belt_land_less_favourable
+                x-enumDescriptions:
+                  grey_belt_land_more_favourable: More favourable
+                  grey_belt_land_average_favourability: Average favourability
+                  grey_belt_land_less_favourable: Less favourable
+                example: grey_belt_land_more_favourable
+              checked:
+                type: boolean
+                description: Indicates whether this favourability type is selected or not.
+                enum:
+                  - true
+                example: true
+        must:
+          type: string
+          enum:
+            - MATCH_ANY
+            - MATCH_NONE
+          description: >-
+            The match type for filtering the grey belt land favourability
+            options.
+          example: MATCH_ANY
+      required:
+        - values
+        - must
+        - id
+    LandAvailabilityAssessment:
+      type: object
+      title: Land Availability Assessment
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+            - land-availability-assessment-id
+          example: land-availability-assessment-id
+        values:
+          type: array
+          description: >-
+            A list of land availability assessment types with associated keys
+            and checked status.
+          items:
+            type: object
+            required:
+              - key
+              - checked
+            properties:
+              key:
+                type: string
+                description: The key representing the land availability assessment type.
+                enum:
+                  - negative
+                  - neutral
+                  - positive
+                x-enumDescriptions:
+                  negative: Negative
+                  neutral: Neutral
+                  positive: Positive
+                example: negative
+              checked:
+                type: boolean
+                description: >-
+                  Indicates whether this land availability assessment type is
+                  selected or not.
+                enum:
+                  - true
+                example: true
+        must:
+          type: string
+          enum:
+            - MATCH_ANY
+            - MATCH_NONE
+          description: >-
+            The match type for filtering the land availability assessment
+            options.
+          example: MATCH_ANY
+      required:
+        - values
+        - must
+        - id
+    LeaseEndDate:
+      type: object
+      title: Lease End Date
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+            - lease-end-date
+          example: lease-end-date
+        range:
+          type: array
+          description: >
+            `["2025-02-01T00:00:00.000Z", "2025-09-30T23:59:59.999Z"]` 
+
+            represents a range from **Feb 1st 2025 to Sep 30th 2025 at 23:59**.
+
+            An array with 2 items that represent the range of dates for the
+            lease end date.
+
+
+            The first item is the start date, and the second item is the end
+            date.
+          items:
+            type: string
+            format: date-time
+          minItems: 2
+          maxItems: 2
+          example:
+            - '2025-02-01T00:00:00.000Z'
+            - '2025-09-30T22:59:59.999Z'
+      required:
+        - id
+        - range
+    LeaseStartDate:
+      type: object
+      title: Lease Start Date
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+            - lease-start-date
+          example: lease-start-date
+        range:
+          type: array
+          description: >
+            `["2025-01-01T00:00:00.000Z", "2025-08-31T22:59:59.999Z"]` 
+
+            represents a range from **Jan 1st 2025 to Aug 31st 2025 at 22:59**.
+
+            An array with 2 items that represent the range of dates for the
+            lease start date.
+
+
+            The first item is the start date, and the second item is the end
+            date.
+          items:
+            type: string
+            format: date-time
+          minItems: 2
+          maxItems: 2
+          example:
+            - '2025-01-01T00:00:00.000Z'
+            - '2025-08-31T22:59:59.999Z'
+      required:
+        - id
+        - range
+    OwnershipType:
+      type: object
+      title: Ownership Type
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+            - ownership-type-id
+          example: ownership-type-id
+        values:
+          type: array
+          description: A list of ownership types with associated keys, checked status.
+          items:
+            type: object
+            required:
+              - key
+              - checked
+            properties:
+              key:
+                type: string
+                description: The key representing the ownership type.
+                enum:
+                  - corporate_body
+                  - company
+                  - council
+                  - housing_association
+                  - private
+                x-enumDescriptions:
+                  corporate_body: Corporate Body
+                  company: Company
+                  council: Council
+                  housing_association: Housing Association
+                  private: Private
+                example: company
+              checked:
+                type: boolean
+                description: Indicates that this value is selected.
+                enum:
+                  - true
+                example: true
+        must:
+          type: string
+          enum:
+            - MATCH_ANY
+            - MATCH_NONE
+          description: Can match any or match all of the items passed.
+          example: MATCH_ANY
+          default: MATCH_ANY
+      required:
+        - values
+        - must
+        - id
+    ParcelSize-2:
+      type: object
+      title: Parcel Size
+      properties:
+        id:
+          type: string
+          example: lot-area-id
+          enum:
+            - lot-area-id
+          description: The unique identifier for the lot area.
+        range:
+          type: array
+          description: >
+            `[0, 2000]` represents a range from **0 meters to 2000 meters
+            (2km)**.
+
+
+            An array with 2 items that represent the range of values for the
+            parcel size.
+
+            The first item is the minimum value, and the second item is the
+            maximum value.
+          items:
+            type: number
+            format: float
+          minItems: 2
+          maxItems: 2
+          example:
+            - 0
+            - 500
+        type:
+          type: string
+          description: The type of range.
+          enum:
+            - number-range
+          example: number-range
+        rangeType:
+          type: string
+          description: The type of range being used (e.g., area).
+          enum:
+            - area
+          example: area
+      required:
+        - id
+        - range
+        - type
+        - rangeType
+    PlanningApplicationsMultiTextFilter:
+      type: object
+      title: Planning Applications Multi Text Filter
+      properties:
+        id:
+          type: string
+          enum:
+            - planning-applications-multi-text-filter-id
+          description: The unique identifier for the multi-text filter.
+          example: planning-applications-multi-text-filter-id
+        must:
+          type: string
+          description: The match type for filtering the search tags.
+          enum:
+            - MATCH_ALL
+          example: MATCH_ALL
+          default: MATCH_ALL
+        searchTags:
+          type: array
+          minItems: 1
+          items:
+            type: string
+          description: The list of search tags to filter the planning applications.
+          example:
+            - tag1
+            - tag2
+            - tag3
+      required:
+        - id
+        - must
+        - searchTags
+    PlanningApplicationsSubmissionDateFilter:
+      type: object
+      title: Planning Applications Submission Date Filter
+      properties:
+        id:
+          type: string
+          enum:
+            - planning-applications-submission-date
+          example: planning-applications-submission-date
+          description: The unique identifier for submission date range to filter.
+        range:
+          type: array
+          items:
+            type: string
+            format: date-time
+          minItems: 2
+          maxItems: 2
+          description: >-
+            The range of submission dates for filtering the planning
+            applications.
+          example:
+            - '2023-01-01T00:00:00Z'
+            - '2023-12-31T23:59:59Z'
+      required:
+        - id
+        - range
+    PlanningApplicationsNumberOfUnitsFilter:
+      type: object
+      title: Planning Applications Number of Units Filter
+      properties:
+        id:
+          type: string
+          enum:
+            - planning-applications-number-of-units
+          description: The unique identifier for the number of units filter.
+          example: planning-applications-number-of-units
+        range:
+          type: array
+          description: >-
+            The range of number of units for filtering the planning
+            applications.
+          items:
+            type: number
+          minItems: 2
+          maxItems: 2
+          example:
+            - 1
+            - 5
+        rangeType:
+          type: string
+          enum:
+            - basic
+            - area
+            - percentage
+          description: Specifies the units represented by the numerical range values.
+          default: basic
+          example: basic
+      required:
+        - id
+        - range
+        - rangeType
+    PlanningApplications:
+      type: object
+      title: Planning Applications Filter
+      properties:
+        id:
+          type: string
+          enum:
+            - planning-applications-id
+          example: planning-applications-id
+          description: The unique identifier for the planning applications filter.
+        type:
+          type: string
+          enum:
+            - compound
+          example: compound
+          description: The type of filter, which is always compound in this case.
+        filters:
+          type: array
+          minItems: 3
+          maxItems: 3
+          description: |
+            A list of filters to be applied. 
+            Must include: 
+            * only one of multi text filter.
+            * only one of submission date filter.
+            * only one of units filter.
+          items:
+            type: object
+            anyOf:
+              - $ref: '#/components/schemas/PlanningApplicationsMultiTextFilter'
+              - $ref: '#/components/schemas/PlanningApplicationsSubmissionDateFilter'
+              - $ref: '#/components/schemas/PlanningApplicationsNumberOfUnitsFilter'
+        must:
+          type: string
+          enum:
+            - MATCH_ALL
+            - MATCH_NONE
+          description: The match type for combining the filters.
+          example: MATCH_ALL
+          default: MATCH_ALL
+      required:
+        - id
+        - filters
+        - must
+        - type
+    PowerDistanceTypeFilter:
+      type: object
+      title: Power Distance Type Filter
+      properties:
+        id:
+          type: string
+          enum:
+            - power-distance-type-filter
+          example: power-distance-type-filter
+          description: The unique identifier for the power distance type filter.
+        values:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                enum:
+                  - shortest_distance_grid_power_substations
+                  - shortest_distance_bulk_power_substations
+                  - shortest_distance_primary_power_substations
+                  - shortest_distance_hv_power_substations
+                  - shortest_distance_power_cables
+                  - shortest_distance_power_overhead_lines
+                  - shortest_distance_power_towers
+                x-enumDescriptions:
+                  shortest_distance_grid_power_substations: Distance to the nearest grid power substation
+                  shortest_distance_bulk_power_substations: Distance to the nearest bulk power substation
+                  shortest_distance_primary_power_substations: Distance to the nearest primary power substation
+                  shortest_distance_hv_power_substations: Distance to the nearest high-voltage power substation
+                  shortest_distance_power_cables: Distance to the nearest power cable
+                  shortest_distance_power_overhead_lines: Distance to the nearest overhead power line
+                  shortest_distance_power_towers: Distance to the nearest power tower
+                description: The key representing the type of power distance.
+              checked:
+                type: boolean
+                description: Indicates whether this specific power type is selected.
+            required:
+              - key
+              - checked
+          description: |
+            List of power distance types with their selection status.
+          example:
+            - key: shortest_distance_grid_power_substations
+              checked: false
+            - key: shortest_distance_bulk_power_substations
+              checked: false
+            - key: shortest_distance_primary_power_substations
+              checked: false
+            - key: shortest_distance_hv_power_substations
+              checked: false
+            - key: shortest_distance_power_cables
+              checked: false
+            - key: shortest_distance_power_overhead_lines
+              checked: false
+            - key: shortest_distance_power_towers
+              checked: true
+      required:
+        - id
+        - values
+    PowerDistanceFilter:
+      type: object
+      title: Power Distance Filter
+      properties:
+        id:
+          type: string
+          enum:
+            - power-distance-filter
+          example: power-distance-filter
+          description: The unique identifier for the power distance filter.
+        value:
+          type: number
+          example: 5000
+          description: The distance value for the power distance filter, in meters.
+      required:
+        - id
+        - value
+    PowerDistance:
+      type: object
+      title: Power Distance Filter
+      properties:
+        id:
+          type: string
+          enum:
+            - power-distance-type-id
+          example: power-distance-type-id
+          description: The unique identifier for the distance from power filter.
+        type:
+          type: string
+          enum:
+            - compound
+          example: compound
+          description: The type of filter, which is always compound in this case.
+        filters:
+          type: array
+          items:
+            minItems: 2
+            maxItems: 2
+            anyOf:
+              - $ref: '#/components/schemas/PowerDistanceTypeFilter'
+              - $ref: '#/components/schemas/PowerDistanceFilter'
+          description: >
+            A list of filters to be applied. 
+
+            Must include at least one: PowerDistanceTypeFilter and only one
+            PowerDistanceFilter.
+          example:
+            - id: power-distance-type-filter
+              values:
+                - key: shortest_distance_grid_power_substations
+                  name: >-
+                    sidebar.react.search_sidebar.power_distance.grid_power_substations
+                  checked: false
+                - key: shortest_distance_bulk_power_substations
+                  name: >-
+                    sidebar.react.search_sidebar.power_distance.bulk_power_substations
+                  checked: false
+                - key: shortest_distance_primary_power_substations
+                  name: >-
+                    sidebar.react.search_sidebar.power_distance.primary_power_substations
+                  checked: false
+                - key: shortest_distance_hv_power_substations
+                  name: >-
+                    sidebar.react.search_sidebar.power_distance.hv_power_substations
+                  checked: false
+                - key: shortest_distance_power_cables
+                  name: sidebar.react.search_sidebar.power_distance.power_cables
+                  checked: false
+                - key: shortest_distance_power_overhead_lines
+                  name: >-
+                    sidebar.react.search_sidebar.power_distance.power_overhead_lines
+                  checked: false
+                - key: shortest_distance_power_towers
+                  name: sidebar.react.search_sidebar.power_distance.power_towers
+                  checked: true
+              must: MATCH_ALL
+              type: nested-checkbox
+            - id: power-distance-filter
+              value: 5000
+        must:
+          type: string
+          enum:
+            - MATCH_ALL
+            - MATCH_NONE
+          description: The match type for combining the filters.
+          example: MATCH_ALL
+          default: MATCH_ALL
+      required:
+        - id
+        - filters
+        - must
+        - type
+    ProprietorName:
+      type: object
+      title: Owner Name
+      properties:
+        id:
+          type: string
+          enum:
+            - proprietor-name
+          example: proprietor-name
+          description: The unique identifier for the owner name filter.
+        must:
+          type: string
+          enum:
+            - CONTAIN
+            - NOT_CONTAIN
+          description: The match type for filtering the owner name.
+          example: CONTAIN
+        text:
+          type: string
+          description: The text value to search for in owner name.
+          example: foo
+      required:
+        - id
+        - must
+        - text
+    PropertyState:
+      type: object
+      title: Property State
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+            - property-state-id
+          example: property-state-id
+        values:
+          type: array
+          description: >-
+            A list of property state values with associated keys and checked
+            status.
+          items:
+            type: object
+            required:
+              - key
+              - checked
+            properties:
+              key:
+                type: string
+                description: The key representing the property state type.
+                enum:
+                  - demolished
+                  - in_use
+                  - planning_permission_granted
+                  - property_state
+                  - under_construction
+                  - unoccupied_vacant_derelict
+                x-enumDescriptions:
+                  demolished: Demolished
+                  in_use: In Use
+                  planning_permission_granted: Planning Permission Granted
+                  property_state: Unclassified
+                  under_construction: Under Construction
+                  unoccupied_vacant_derelict: Unoccupied/Vacant/Derelict
+                example: demolished
+              checked:
+                type: boolean
+                description: Indicates whether this property state type is selected or not.
+                enum:
+                  - true
+                example: true
+        must:
+          type: string
+          enum:
+            - MATCH_ANY
+            - MATCH_NONE
+          description: The match type for filtering the property state options.
+          example: MATCH_ANY
+      required:
+        - values
+        - must
+        - id
+    RegionFilter:
+      type: object
+      title: Region
+      properties:
+        id:
+          type: string
+          enum:
+            - region-id
+          example: region-id
+          description: The unique identifier for the region filter.
+        region:
+          allOf:
+            - $ref: '#/components/schemas/GSSCode'
+            - description: A region code (e.g. GSS code for UK Local Authority Districts).
+            - example: E06000023
+      required:
+        - id
+        - region
+    RegenerationZonesAdopted:
+      type: object
+      title: Regeneration Zones - Adopted
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+            - regeneration-zones-adopted-id
+          example: regeneration-zones-adopted-id
+        values:
+          type: array
+          description: >-
+            A list of regeneration zone values with associated keys and checked
+            status.
+          items:
+            type: object
+            required:
+              - key
+            properties:
+              key:
+                type: string
+                description: The key representing the regeneration zone type.
+                enum:
+                  - area_action_plans
+                  - named_regeneration_areas
+                x-enumDescriptions:
+                  area_action_plans: Area Action Plans
+                  named_regeneration_areas: Named Regeneration Areas
+                example: area_action_plans
+              checked:
+                type: boolean
+                description: >-
+                  Indicates whether this regeneration zone type is selected or
+                  not.
+                example: true
+        must:
+          type: string
+          enum:
+            - MATCH_ANY
+            - MATCH_NONE
+          description: The match type for filtering the regeneration zone options.
+          example: MATCH_ANY
+      required:
+        - values
+        - must
+        - id
+    RegenerationZonesEmerging:
+      type: object
+      title: Regeneration Zones - Emerging
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+            - regeneration-zones-emerging-id
+          example: regeneration-zones-emerging-id
+        values:
+          type: array
+          description: >-
+            A list of regeneration zone values with associated keys and checked
+            status.
+          items:
+            type: object
+            required:
+              - key
+            properties:
+              key:
+                type: string
+                description: The key representing the regeneration zone type.
+                enum:
+                  - area_action_plans
+                  - named_regeneration_areas
+                x-enumDescriptions:
+                  area_action_plans: Area Action Plans
+                  named_regeneration_areas: Named Regeneration Areas
+                example: area_action_plans
+              checked:
+                type: boolean
+                description: >-
+                  Indicates whether this regeneration zone type is selected or
+                  not.
+                example: true
+        must:
+          type: string
+          enum:
+            - MATCH_ANY
+            - MATCH_NONE
+          description: The match type for filtering the regeneration zone options.
+          example: MATCH_ANY
+      required:
+        - values
+        - must
+        - id
+    PointCoordinates:
+      type: array
+      maxItems: 2
+      minItems: 2
+      example:
+        - -0.12755
+        - 51.5073
+      items:
+        type: number
+    LinearRingCoordinates:
+      type: array
+      minItems: 4
+      items:
+        $ref: '#/components/schemas/PointCoordinates'
+    PolygonCoordinates:
+      type: array
+      items:
+        $ref: '#/components/schemas/LinearRingCoordinates'
+    Polygon:
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+            - Polygon
+          example: Polygon
+          description: the geometry type
+        coordinates:
+          $ref: '#/components/schemas/PolygonCoordinates'
+    PointWithRadius:
+      title: Point with Radius
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+        - type
+        - coordinates
+        - radius_metres
+      properties:
+        type:
+          type: string
+          enum:
+            - Point
+          example: Point
+          description: the geometry type
+        coordinates:
+          $ref: '#/components/schemas/PointCoordinates'
+        radius_metres:
+          type: number
+          example: 100
+          description: |
+            The radius around the point in metres.
+    SearchLocation:
+      type: object
+      title: Search Location
+      properties:
+        id:
+          type: string
+          example: search-location-id
+          enum:
+            - search-location-id
+          description: The unique identifier for the search location filter.
+        location:
+          description: >
+            ## Polygon:
+
+
+            A GeoJSON polygon.
+
+
+            Polygon is defined by one or more linear rings.
+
+            The first ring represents the outer boundary (shell), and any
+            additional rings represent holes (interior boundaries).
+
+            Each ring is a closed line made up of an array of at least four
+            coordinate pairs,
+
+            where the first and last positions are identical to close the shape.
+
+
+            Coordinates follow the format `[longitude, latitude]`.
+
+            A Polygon must not intersect itself and must follow the right-hand
+            rule for winding order.
+
+
+            ---
+
+
+            ### Useful links:
+
+            - [GeoJSON
+            Specification](https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6)
+
+            - [GeoJSON.io - Online Tool](https://geojson.io/)
+
+
+            ---
+
+
+
+            ### Simple Polygon Example:
+
+
+            ```
+              {
+                "coordinates": [
+                  [
+                    [-0.14929038118364701, 51.536142527775894],
+                    [-0.1511502946380574, 51.536606841918456],
+                    [-0.15158046405704795, 51.53662282512096],
+                    [-0.15314734138883068, 51.53638304796348],
+                    [-0.15551325060320664, 51.5358605395725],
+                    [-0.15853824326276822, 51.535146678003656],
+                    [-0.16127849793295468, 51.53438900786796],
+                    [-0.1629081211282255, 51.533737304067245],
+                    [-0.16433232531409203, 51.532317284173246],
+                    [-0.16515124173966456, 51.53147677320297],
+                    [-0.16517750702064404, 51.530486405978394],
+                    [-0.16470453397198526, 51.52968949678419],
+                    [-0.16419787377387252, 51.52924454958466],
+                    [-0.16160535022888212, 51.52759132355445],
+                    [-0.15956874947798383, 51.52617575757168],
+                    [-0.15845578053699683, 51.52486257411584],
+                    [-0.15534964384988825, 51.52369876908375],
+                    [-0.145932851559877, 51.525347514462425],
+                    [-0.1459570444773135, 51.52897366493096],
+                    [-0.1460084744027199, 51.53010860617948],
+                    [-0.14805040702364636, 51.53477548344256],
+                    [-0.1484858923158754, 51.53564562001867],
+                    [-0.14929038118364701, 51.536142527775894]
+                  ]
+                ],
+                "type": "Polygon"
+              }
+            ```
+
+
+            ---
+
+
+            ### Polygon including a hole:
+
+            ```
+              {
+                "coordinates": [
+                  [
+                    [-0.14929038118364701, 51.536142527775894],
+                    [-0.1511502946380574, 51.536606841918456],
+                    [-0.15158046405704795, 51.53662282512096],
+                    [-0.15314734138883068, 51.53638304796348],
+                    [-0.15551325060320664, 51.5358605395725],
+                    [-0.15853824326276822, 51.535146678003656],
+                    [-0.16127849793295468, 51.53438900786796],
+                    [-0.1629081211282255, 51.533737304067245],
+                    [-0.16433232531409203, 51.532317284173246],
+                    [-0.16515124173966456, 51.53147677320297],
+                    [-0.16517750702064404, 51.530486405978394],
+                    [-0.16470453397198526, 51.52968949678419],
+                    [-0.16419787377387252, 51.52924454958466],
+                    [-0.16160535022888212, 51.52759132355445],
+                    [-0.15956874947798383, 51.52617575757168],
+                    [-0.15845578053699683, 51.52486257411584],
+                    [-0.15534964384988825, 51.52369876908375],
+                    [-0.145932851559877, 51.525347514462425],
+                    [-0.1459570444773135, 51.52897366493096],
+                    [-0.1460084744027199, 51.53010860617948],
+                    [-0.14805040702364636, 51.53477548344256],
+                    [-0.1484858923158754, 51.53564562001867],
+                    [-0.14929038118364701, 51.536142527775894]
+                  ],
+                  [
+                    [-0.1528028809015325, 51.52903093393792],
+                    [-0.15190063187328917, 51.52866837902546],
+                    [-0.15133992236366112, 51.52809880224876],
+                    [-0.15122810383141427, 51.527513054250775],
+                    [-0.15152242033633456, 51.52697809355044],
+                    [-0.1520289119160907, 51.52648937141588],
+                    [-0.15293715205308445, 51.52626119797495],
+                    [-0.15374870651484684, 51.526168806088194],
+                    [-0.15455587449918085, 51.526286175974064],
+                    [-0.15575918093998098, 51.527008428928156],
+                    [-0.1560404186055564, 51.52770737376511],
+                    [-0.15562500260159595, 51.52840462735193],
+                    [-0.15509228496867422, 51.528778327054],
+                    [-0.15410266542014028, 51.52909488998242],
+                    [-0.1533836641634707, 51.529096986799686],
+                    [-0.1528028809015325, 51.52903093393792]
+                  ]
+                ],
+                "type": "Polygon"
+              }
+            ```
+
+
+            ---
+
+
+            ## Point with Radius:
+
+            A GeoJSON point with a radius in metres.
+
+
+            Coordinates follow the format `[longitude, latitude]`.
+
+
+            ### Example of a Point with Radius:
+
+
+            ```
+              {
+                "coordinates": [-0.081547, 51.521412],
+                "radius_metres": 100,
+                "type": "Point"
+              }
+            ```
+          oneOf:
+            - $ref: '#/components/schemas/Polygon'
+            - $ref: '#/components/schemas/PointWithRadius'
+        must:
+          type: string
+          description: The condition that must be met for the location filter.
+          enum:
+            - INTERSECT
+          example: INTERSECT
+      required:
+        - id
+        - location
+        - must
+    SiteAllocationsAdopted:
+      type: object
+      title: Site Allocations - Adopted
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+            - site-allocations-id
+          example: site-allocations-id
+        values:
+          type: array
+          description: >-
+            A list of site allocation types with associated keys and checked
+            status.
+          items:
+            type: object
+            required:
+              - key
+              - checked
+            properties:
+              key:
+                type: string
+                description: The key representing the site allocation type.
+                enum:
+                  - commercial_allocation
+                  - community_allocation
+                  - employment_allocation
+                  - mixed_use_allocation
+                  - residential_allocation
+                  - uncategorised_allocation
+                x-enumDescriptions:
+                  commercial_allocation: Commercial Allocation
+                  community_allocation: Community Allocation
+                  employment_allocation: Employment Allocation
+                  mixed_use_allocation: Mixed Use Allocation
+                  residential_allocation: Residential Allocation
+                  uncategorised_allocation: Uncategorised
+                example: commercial_allocation
+              checked:
+                type: boolean
+                description: >-
+                  Indicates whether this site allocation type is selected or
+                  not.
+                enum:
+                  - true
+                example: true
+        must:
+          type: string
+          enum:
+            - MATCH_ANY
+            - MATCH_NONE
+          description: The match type for filtering the site allocation options.
+          example: MATCH_ANY
+      required:
+        - values
+        - must
+        - id
+    SiteAllocationsEmerging:
+      type: object
+      title: Site Allocations - Emerging
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+            - site-allocations-emerging-id
+          example: site-allocations-emerging-id
+        values:
+          type: array
+          description: >-
+            A list of site allocation types with associated keys and checked
+            status.
+          items:
+            type: object
+            required:
+              - key
+              - checked
+            properties:
+              key:
+                type: string
+                description: The key representing the site allocation type.
+                enum:
+                  - commercial_allocation
+                  - community_allocation
+                  - employment_allocation
+                  - mixed_use_allocation
+                  - residential_allocation
+                  - uncategorised_allocation
+                x-enumDescriptions:
+                  commercial_allocation: Commercial Allocation
+                  community_allocation: Community Allocation
+                  employment_allocation: Employment Allocation
+                  mixed_use_allocation: Mixed Use Allocation
+                  residential_allocation: Residential Allocation
+                  uncategorised_allocation: Uncategorised
+                example: commercial_allocation
+              checked:
+                type: boolean
+                description: >-
+                  Indicates whether this site allocation type is selected or
+                  not.
+                enum:
+                  - true
+                example: true
+        must:
+          type: string
+          enum:
+            - MATCH_ANY
+            - MATCH_NONE
+          description: The match type for filtering the site allocation options.
+          example: MATCH_ANY
+      required:
+        - values
+        - must
+        - id
+    Tenure:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+            - tenure-uk
+          example: tenure-uk
+        values:
+          type: array
+          description: A list of tenure values with associated keys and checked status.
+          items:
+            type: object
+            required:
+              - key
+              - checked
+            properties:
+              key:
+                type: string
+                description: The key representing the tenure type.
+                enum:
+                  - freehold
+                  - leasehold
+                x-enumDescriptions:
+                  freehold: Freehold
+                  leasehold: Leasehold
+                example: freehold
+              checked:
+                type: boolean
+                description: Indicates whether this constraint type is selected or not.
+                enum:
+                  - true
+                example: true
+        must:
+          type: string
+          enum:
+            - MATCH_ANY
+            - MATCH_NONE
+          description: The match type for filtering the tenure options.
+          example: MATCH_ANY
+      required:
+        - values
+        - must
+        - id
+    UseClassB2:
+      type: object
+      title: Use Class - B2
+      properties:
+        key:
+          type: string
+          enum:
+            - B2
+          x-enumDescriptions:
+            B2: General industrial
+          example: B2
+        checked:
+          type: boolean
+          enum:
+            - true
+          example: true
+      required:
+        - key
+        - checked
+    UseClassB8:
+      type: object
+      title: Use Class - B8
+      properties:
+        key:
+          type: string
+          enum:
+            - B8
+          x-enumDescriptions:
+            B8: Storage or distribution
+          example: B8
+        checked:
+          type: boolean
+          enum:
+            - true
+          example: true
+      required:
+        - key
+        - checked
+    UseClassC1:
+      type: object
+      title: Use Class - C1
+      properties:
+        key:
+          type: string
+          enum:
+            - C1
+          x-enumDescriptions:
+            C1: Hotels
+          example: C1
+        checked:
+          type: boolean
+          enum:
+            - true
+          example: true
+      required:
+        - key
+        - checked
+    UseClassC2:
+      type: object
+      title: Use Class - C2
+      properties:
+        key:
+          type: string
+          enum:
+            - C2
+          x-enumDescriptions:
+            C2: Residential institutions
+          example: C2
+        checked:
+          type: boolean
+          enum:
+            - true
+          example: true
+      required:
+        - key
+        - checked
+    UseClassC2A:
+      type: object
+      title: Use Class - C2A
+      properties:
+        key:
+          type: string
+          enum:
+            - C2A
+          x-enumDescriptions:
+            C2A: Secure Residential Institution
+          example: C2A
+        checked:
+          type: boolean
+          enum:
+            - true
+          example: true
+      required:
+        - key
+        - checked
+    UseClassC3:
+      type: object
+      title: Use Class - C3
+      properties:
+        key:
+          type: string
+          enum:
+            - C3
+          x-enumDescriptions:
+            C3: Dwellinghouses
+          example: C3
+        checked:
+          type: boolean
+          enum:
+            - true
+          example: true
+      required:
+        - key
+        - checked
+    UseClassC4:
+      type: object
+      title: Use Class - C4
+      properties:
+        key:
+          type: string
+          enum:
+            - C4
+          x-enumDescriptions:
+            C4: Houses in multiple occupation
+          example: C4
+        checked:
+          type: boolean
+          enum:
+            - true
+          example: true
+      required:
+        - key
+        - checked
+    UseClassEItem:
+      type: object
+      title: Use Class - E Item
+      properties:
+        key:
+          type: string
+          enum:
+            - E(a)
+            - E(b)
+            - E(c)
+            - E(c)(i)
+            - E(d)
+            - E(e)
+            - E(f)
+            - E(g)(i)
+          x-enumDescriptions:
+            E(a): Retail of goods other than hot food
+            E(b): Sale of food and drink for consumption (mostly) on the premises
+            E(c): >-
+              Provision of financial services, professional services or other
+              commercial/business services
+            E(c)(i): Provision of financial services
+            E(d): >-
+              Indoor sport and recreation (excluding swimming pools or skating
+              rinks)
+            E(e): Provision of medical or health services
+            E(f): Creche, day nursery or day centre
+            E(g)(i): Offices to carry out operational functions
+          example: E(a)
+        checked:
+          type: boolean
+          enum:
+            - true
+          example: true
+      required:
+        - key
+        - checked
+    UseClassE:
+      type: object
+      title: Use Class - E
+      properties:
+        key:
+          type: string
+          enum:
+            - E
+          x-enumDescriptions:
+            E: Commercial, Business and Service
+          example: E
+        checked:
+          type: boolean
+          enum:
+            - true
+          example: true
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/UseClassEItem'
+      required:
+        - key
+        - checked
+        - items
+    UseClassF1Item:
+      type: object
+      title: Use Class - F1 Item
+      properties:
+        key:
+          type: string
+          enum:
+            - F.1(a)
+            - F.1(b)
+            - F.1(c)
+            - F.1(d)
+            - F.1(f)
+            - F.1(g)
+          x-enumDescriptions:
+            F.1(a): Provision of education e.g. schools
+            F.1(b): Display of works of art
+            F.1(c): Museums
+            F.1(d): Public libraries or public reading rooms
+            F.1(f): Public worship or religious instruction
+            F.1(g): Law courts
+          example: F.1(a)
+        checked:
+          type: boolean
+          enum:
+            - true
+          example: true
+      required:
+        - key
+        - checked
+    UseClassF1:
+      type: object
+      title: Use Class - F1
+      properties:
+        key:
+          type: string
+          x-enumDescriptions:
+            F.1: Learning and non-residential institutions
+          example: F.1
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/UseClassF1Item'
+      required:
+        - key
+        - items
+    UseClassF2Item:
+      type: object
+      title: Use Class - F.2
+      properties:
+        key:
+          type: string
+          enum:
+            - F.2(b)
+            - F.2(c)
+            - F.2(d)
+          x-enumDescriptions:
+            F.2(b): >-
+              Halls or meeting places for the principal use of the local
+              community
+            F.2(c): Areas for outdoor sports and recreation
+            F.2(d): Indoor or outdoor swimming pools or skating rinks
+          example: F.2(b)
+        checked:
+          type: boolean
+          enum:
+            - true
+          example: true
+      required:
+        - key
+        - checked
+    UseClassF2:
+      type: object
+      title: Use Class - F2
+      properties:
+        key:
+          type: string
+          x-enumDescriptions:
+            F.2: Local community uses
+          example: F.2
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/UseClassF2Item'
+    UseClassSuiGenerisItem:
+      type: object
+      title: Use Class - Sui Generis - Item
+      properties:
+        key:
+          type: string
+          enum:
+            - i-Agricultural
+            - ii-Agricultural
+            - iii-Amusements
+            - iv-Bingo-Hall
+            - v-Car
+            - vi-Farm
+            - vii-Garage
+            - ix-Grazing
+            - x-Holiday
+            - xi-Licensed
+            - xii-Lock
+            - xiii-Permanent
+            - xiv-Petrol
+            - xv-car-parking
+            - xvi-Public
+            - xvii-Recreational
+          x-enumDescriptions:
+            i-Agricultural: Agricultural
+            ii-Agricultural: >-
+              Applicable to land in farm ownership and not run as a separate
+              business enterprise
+            iii-Amusements: Amusements
+            iv-Bingo-Hall: >-
+              Bingo Hall / Cinema / Conference / Exhibition Centre / Theatre /
+              Concert Hall
+            v-Car: >-
+              Car / Coach / Commercial Vehicle / Taxi Parking / Park And Ride
+              Site
+            vi-Farm: Farm / Non-Residential Associated Building
+            vii-Garage: Garage
+            ix-Grazing: Grazing Land
+            x-Holiday: Holiday / Campsite
+            xi-Licensed: Licensed Private Members' Club
+            xii-Lock: Lock-Up Garage / Garage Court
+            xiii-Permanent: Permanent Crop / Crop Rotation
+            xiv-Petrol: Petrol Filling Station
+            xv-car-parking: Public Car Parking
+            xvi-Public: Public House / Bar / Nightclub
+            xvii-Recreational: Recreational / Social Club
+          example: i-Agricultural
+        checked:
+          type: boolean
+          enum:
+            - true
+          example: true
+      required:
+        - key
+        - checked
+    UseClassSuiGeneris:
+      type: object
+      title: Use Class - Sui Generis
+      properties:
+        key:
+          type: string
+          enum:
+            - sui-generis
+          x-enumDescriptions:
+            sui-generis: Sui Generis
+          example: sui-generis
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/UseClassSuiGenerisItem'
+    UseClass:
+      type: object
+      title: Use Class
+      properties:
+        id:
+          type: string
+          enum:
+            - use-class-nested-id
+          example: use-class-nested-id
+          description: The unique identifier for the use class filter.
+        values:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/UseClassB2'
+              - $ref: '#/components/schemas/UseClassB8'
+              - $ref: '#/components/schemas/UseClassC1'
+              - $ref: '#/components/schemas/UseClassC2'
+              - $ref: '#/components/schemas/UseClassC2A'
+              - $ref: '#/components/schemas/UseClassC3'
+              - $ref: '#/components/schemas/UseClassC4'
+              - $ref: '#/components/schemas/UseClassE'
+              - $ref: '#/components/schemas/UseClassF1'
+              - $ref: '#/components/schemas/UseClassF2'
+              - $ref: '#/components/schemas/UseClassSuiGeneris'
+        must:
+          type: string
+          enum:
+            - MATCH_ANY
+            - MATCH_NONE
+          description: The match type for filtering the use class options.
+          example: MATCH_ANY
+          default: MATCH_ANY
+        type:
+          type: string
+          enum:
+            - nested-checkbox
+          example: nested-checkbox
+          default: nested-checkbox
+      required:
+        - id
+        - values
+        - must
+        - type
+    ParcelSearchRequestAdvanced:
+      type: object
+      required:
+        - search_filter
+      properties:
+        search_filter:
+          type: object
+          required:
+            - ALL
+          properties:
+            ALL:
+              type: array
+              description: Array of search criteria to match using AND logic
+              minItems: 1
+              items:
+                anyOf:
+                  - $ref: '#/components/schemas/AdditionalOpportunities'
+                    description: An optional filter for additional opportunities.
+                  - $ref: '#/components/schemas/AgriculturalLandClassification'
+                    description: An optional filter for agricultural land classification.
+                  - $ref: '#/components/schemas/AmenitiesFilter'
+                    description: An optional filter for amenities.
+                  - $ref: '#/components/schemas/Article4'
+                    description: >-
+                      An optional filter for Article 4 constraints within
+                      London.
+                  - $ref: '#/components/schemas/CompanyStatus'
+                    description: An optional filter for company status.
+                  - $ref: '#/components/schemas/ConstraintsAdopted'
+                    description: An optional filter for adopted constraints.
+                  - $ref: '#/components/schemas/ConstraintsEmerging'
+                    description: An optional filter for emerging constraints.
+                  - $ref: '#/components/schemas/DevelopedArea'
+                    description: An optional filter for developed area percentage.
+                  - $ref: '#/components/schemas/GreyBeltFavourability'
+                    description: An optional filter for green belt status.
+                  - $ref: '#/components/schemas/LandAvailabilityAssessment'
+                    description: An optional filter for land availability assessment.
+                  - $ref: '#/components/schemas/LeaseEndDate'
+                    description: An optional filter for lease end date.
+                  - $ref: '#/components/schemas/LeaseStartDate'
+                    description: An optional filter for lease start date.
+                  - $ref: '#/components/schemas/OwnershipType'
+                    description: An optional filter for ownership type.
+                  - $ref: '#/components/schemas/ParcelSize-2'
+                    description: An optional filter for parcel size in square metres.
+                  - $ref: '#/components/schemas/PlanningApplications'
+                    description: An optional filter for planning applications.
+                  - $ref: '#/components/schemas/PowerDistance'
+                    description: An optional filter for distance to nearby power sources.
+                  - $ref: '#/components/schemas/ProprietorName'
+                    description: An optional filter for proprietor name.
+                  - $ref: '#/components/schemas/PropertyState'
+                    description: An optional filter for property state.
+                  - $ref: '#/components/schemas/RegionFilter'
+                    description: An optional filter for region.
+                  - $ref: '#/components/schemas/RegenerationZonesAdopted'
+                    description: An optional filter for adopted regeneration zones.
+                  - $ref: '#/components/schemas/RegenerationZonesEmerging'
+                    description: An optional filter for emerging regeneration zones.
+                  - $ref: '#/components/schemas/SearchLocation'
+                    description: An optional filter for searching location.
+                  - $ref: '#/components/schemas/SiteAllocationsAdopted'
+                    description: An optional filter for adopted site allocations.
+                  - $ref: '#/components/schemas/SiteAllocationsEmerging'
+                    description: An optional filter for emerging site allocations.
+                  - $ref: '#/components/schemas/Tenure'
+                    description: An optional filter for tenure type.
+                  - $ref: '#/components/schemas/UseClass'
+                    description: An optional filter for use classes.
+    TitleNumber:
+      description: >-
+        The title number is a unique identifier for registered land in England
+        and Wales, governed by HM Land Registry.
+      type: string
+      example: WT77573
+    UPRN:
+      type: string
+      description: >-
+        Unique Property Reference Number (UPRN) is a unique numeric identifier
+        for every addressable location in Great Britain, found in Ordnance
+        Survey's AddressBase products.
+      pattern: ^\d{1,12}$
+    PlanningApplicationId:
+      type: string
+      description: >-
+        A unique planning application ID combining a planning authority GSS code
+        and the application reference, separated by a `+` symbol.
+      example: E07000112+Y18/1381/FH
+      pattern: ^[EWS]\d{8}(?:\+|%2B)[\w\-\/%]+$
+    CoveredEntities:
+      type: array
+      items:
+        type: object
+        required:
+          - id
+        properties:
+          id:
+            type: string
+          coverage:
+            type: number
+            description: >-
+              How much of the site has been overlapped by the entity. Decimal
+              ranging from 0 to 1.0
+            example: 0.618
+    MultiPolygon:
+      description: GeoJSON MultiPolygon
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+            - MultiPolygon
+          example: MultiPolygon
+          description: the geometry type
+        coordinates:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolygonCoordinates'
+    ParcelDetailsItem:
+      type: object
+      description: Parcel details. Will be `null` if the parcel is not found.
+      properties:
+        parcel_id:
+          $ref: '#/components/schemas/ParcelId'
+        parcel_size:
+          type: number
+          format: float
+          description: The size of the parcel in square metres.
+          example: 18336.97
+        developed_area_ratio:
+          type: number
+          format: float
+          description: >-
+            The ratio of developed area to total parcel area. Can range from 0
+            if the parcel is undeveloped, up to 1.0 when developed 100%.
+          minimum: 0
+          maximum: 1
+          example: 0.2865
+        titles:
+          type: array
+          description: >-
+            A list of HM Land Registry title numbers associated with the parcel.
+            Can be null.
+          nullable: true
+          items:
+            $ref: '#/components/schemas/TitleNumber'
+          example:
+            - K375897
+            - TT17693
+        properties:
+          type: array
+          description: >
+            A list of Unique Property Reference Numbers (UPRNs) formally 
+            associated with a parcel title. Can be empty.
+          items:
+            $ref: '#/components/schemas/UPRN'
+          example:
+            - '50121170'
+            - '50100934'
+            - '10015394608'
+        properties_intersects:
+          type: array
+          description: >
+            A list of Unique Property Reference Numbers (UPRNs) that reside
+            within  the title's land parcel, but are not formally associated
+            with the title. Can be empty.
+          items:
+            $ref: '#/components/schemas/UPRN'
+          example:
+            - '10091868676'
+            - '10023302495'
+        planning_apps:
+          type: array
+          description: >-
+            A list of planning applications associated with the parcel. Can be
+            empty.
+          items:
+            $ref: '#/components/schemas/PlanningApplicationId'
+          example:
+            - E07000112+Y18/1381/FH
+            - E07000112+Y10/0641/SH
+        local_plan_policy:
+          type: object
+          description: Local policies on the parcel. Includes Local Planning Authority.
+          additionalProperties:
+            $ref: '#/components/schemas/CoveredEntities'
+          example:
+            local_planning_authority:
+              - id: 35d7e882-1583-4c02-9930-a665fae9ac6e
+                coverage": 1
+            settlement_boundaries:
+              - id: 9b58f3b3f4e0dd2dc74250da414786d5
+                coverage: 0.54
+            local_industrial_location:
+              - id: cf056e75-5487-454f-8270-d4c60aa1fee4
+                coverage: 0.43
+        development_constraints:
+          type: object
+          description: |
+            Development constraints affecting the parcel including:
+              - Airport Safeguarding
+              - HS2 Safeguarding
+              - Rail Safeguarding
+              - Building (Wharf) Safeguarding
+              - Article 4 Directions
+              - National Landscape Data
+              - Flood Risk Zones
+              - Flood Zones
+              - Heritage Land / Listed Buildings
+              - Conservation Areas
+              - Protected Areas
+              - Green Belt
+              - Agricultural Land Classification
+              - Neighbourhood Plan Areas
+              - Rights of Way
+          additionalProperties:
+            $ref: '#/components/schemas/CoveredEntities'
+          example:
+            rail_safeguarded_land:
+              - id: 1251c801-ea1c-4e74-9234-2933a38644b3
+                coverage: 1
+        development_opportunities:
+          type: object
+          description: |
+            Development Opportunites including: 
+              - Named Regeneration Areas
+              - Area Action Plans
+              - Declassified Green Belt
+              - Brownfield Register
+          additionalProperties:
+            $ref: '#/components/schemas/CoveredEntities'
+          example:
+            area_action_plans:
+              - id: 836cc2d8-4596-4bb6-9630-a6429c93305f
+                coverage: 1
+        shlaa:
+          type: object
+          description: >-
+            Strategic Housing Land Availability Assessments applying on the
+            parcel.
+          additionalProperties:
+            $ref: '#/components/schemas/CoveredEntities'
+          example:
+            shlaa_positive:
+              - id: 6b3cda6f-5c0e-4415-8f4e-4b7a4b4e1574
+                coverage: 1
+        strategic_industrial_location:
+          type: object
+          description: Strategic Industrial Locations (SIL) applying on the parcel.
+          additionalProperties:
+            $ref: '#/components/schemas/CoveredEntities'
+          example:
+            strategic_industrial_location:
+              - id: f6ffcea7-2fa7-48d3-b598-278090565311
+                coverage: 1
+        additional_opportunities:
+          type: object
+          description: Designated sites from Homes England Land Hub
+          additionalProperties:
+            $ref: '#/components/schemas/CoveredEntities'
+          example:
+            land_hub_on_market:
+              - id: dd169de034a2de3d490e5d4c9a454460
+                coverage: 1
+        power:
+          type: object
+          description: >-
+            Power infrastructure (e.g., substations, towers, cables, lines)
+            located within or near the parcel.
+          additionalProperties:
+            type: array
+            items:
+              type: object
+              required:
+                - distance
+              properties:
+                id:
+                  type: string
+                  example: 7e47387c-8852-4265-834c-b98f5e3a222d
+                distance:
+                  description: >-
+                    Distance of the power infrastructure unit from the parcel
+                    (in meters). A distance of zero indicates that the unit is
+                    located within the parcel itself.
+                  type: number
+                  example: 0
+          example:
+            hv_power_substations:
+              - id: 7e47387c-8852-4265-834c-b98f5e3a222d
+                distance: 0
+            power_cables:
+              - distance: 12.5
+        renewable_energy_planning_db:
+          type: object
+          description: >-
+            Renewable power generation projects on the parcel, sourced from
+            Renewable Energy Planning Database.
+          additionalProperties:
+            $ref: '#/components/schemas/CoveredEntities'
+          example:
+            repd_solar:
+              - id: fe76f6b7-f7ee-4a79-a161-66821246a68b
+                coverage: 1
+        geometry:
+          type: object
+          description: GeoJSON of the boundary of the parcel.
+          oneOf:
+            - $ref: '#/components/schemas/Polygon'
+            - $ref: '#/components/schemas/MultiPolygon'
+          example:
+            type: MultiPolygon
+            coordinates:
+              - - - - 1.07466
+                    - 51.07292
+                  - - 1.07427
+                    - 55.07204
+                  - - 1.07773
+                    - 55.0723
+                  - - 1.07466
+                    - 55.07292
+    ParcelDetails:
+      type: object
+      properties:
+        data:
+          type: object
+          nullable: true
+          properties:
+            parcel:
+              $ref: '#/components/schemas/ParcelDetailsItem'
+    BulkParcelRequest:
+      type: object
+      required:
+        - parcel_ids
+      properties:
+        parcel_ids:
+          type: array
+          description: List of parcel IDs (max 50)
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/ParcelId'
+    BulkParcelResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            parcel:
+              type: array
+              items:
+                $ref: '#/components/schemas/ParcelDetailsItem'
+    BulkParcelBadRequest:
+      type: object
+      required:
+        - error_msg
+      properties:
+        error_msg:
+          type: string
+          example: |
+            Body must be valid JSON object in the form of:
+              { "parcel_ids": ["valid_uuid_0", "valid_uuid_1", "valid_uuid_N"] }
+          description: Error message detailing the required request format.
+    Point:
+      description: GeoJSON Point
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+            - Point
+          example: Point
+          description: the geometry type
+        coordinates:
+          $ref: '#/components/schemas/PointCoordinates'
+    PlanningApplicationRefs:
+      type: array
+      items:
+        type: object
+        required:
+          - gss_code
+          - refs
+        additionalProperties: false
+        properties:
+          gss_code:
+            allOf:
+              - $ref: '#/components/schemas/GSSCode'
+              - description: The GSS code of a planning authority, e.g. `E09000033`.
+              - example: E09000033
+          refs:
+            type: array
+            minItems: 1
+            items:
+              type: string
+              description: >-
+                The planning application reference declared by the planning
+                authority. It may contain slashes, e.g. `16/11109/FULL`.
+              minLength: 1
+              example: 16/02592/LBC
+    Error:
+      type: object
+      anyOf:
+        - properties:
+            error:
+              type: string
+        - properties:
+            error_msg:
+              type: string
+    PlanningApplication:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Internal LandTech ID of the planning application.
+          example: E09000033+16/02592/LBC
+        gss_code:
+          allOf:
+            - $ref: '#/components/schemas/GSSCode'
+            - description: GSS code of the planning authority.
+            - example: E09000033
+        ref:
+          type: string
+          description: Reference number used by the planning authority.
+          example: 16/02592/LBC
+        num_dwellings:
+          type: number
+          description: >-
+            Number of residential units we have identified the application is
+            for.
+          example: 1
+        address:
+          type: string
+          description: Address of the property the application is for.
+          example: Victoria Gate Lodge Hyde Park Bayswater Road London SW7 1NR
+        title:
+          type: string
+          description: Description of the planning application.
+          example: >-
+            Internal and external alterations of the lodge including general
+            internal and external repairs and refurbishment.
+        location:
+          description: GeoJSON of the location of the planning application, as a point.
+          allOf:
+            - $ref: '#/components/schemas/Point'
+        boundary:
+          description: >-
+            GeoJSON of the boundary of the planning application, as a
+            multipolygon, where available.
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/MultiPolygon'
+        url:
+          type: string
+          nullable: true
+          description: >-
+            URL to the planning authority's page. Where possible this links
+            directly to the planning application.
+          example: >-
+            https://apps.stratford.gov.uk/eplanning/AppDetail.aspx?appkey=OA70D2PM00E00
+        types_derived:
+          description: Identified "types" of the application
+          type: array
+          items:
+            type: string
+            enum:
+              - Full Application
+              - Outline
+              - Discharge of Conditions
+              - GPDR
+              - Reserved Matters
+              - TPO
+              - Listed Building
+              - EIA
+              - Change of Use
+              - Proposal of Application Notice
+        status:
+          type: string
+          nullable: true
+          description: Current status of the application, e.g. Decided.
+          example: Permission with conditions
+        decision:
+          type: string
+          nullable: true
+          description: The decision on the application, e.g. Permit.
+          example: Permission with conditions
+        date_received:
+          type: string
+          format: date-time
+          description: Date the application was received by the authority.
+          example: '2016-07-07T00:00:00.000Z'
+        decision_date:
+          type: string
+          nullable: true
+          format: date-time
+          description: Date the decision was made on the application.
+          example: '2016-09-21T00:00:00.000Z'
+        agent_address:
+          type: string
+          nullable: true
+          description: Address of the agent who submitted the application.
+          example: The Studio, 42 Placeholder Avenue, Fictiontown-upon-Test, EX4 8MP
+        agent_name:
+          type: string
+          nullable: true
+          description: Name of the agent who submitted the application.
+          example: Joe Doe
+        applicant_name:
+          type: string
+          nullable: true
+          description: Name of the person who submitted the application.
+          example: John Smith
+        status_derived:
+          type: string
+          enum:
+            - Approved
+            - Rejected
+            - Pending
+            - Withdrawn
+            - Unknown
+          description: Normalized status of the application.
+          example: Approved
+        updated:
+          type: string
+          format: date-time
+          description: When the application was last processed by LandTech.
+          example: '2023-05-26T03:09:36.191Z'
+        classification:
+          type: string
+          enum:
+            - RESIDENTIAL
+            - COMMERCIAL
+            - MIXED_USE
+            - OTHER
+          description: Classification of the application.
+          example: RESIDENTIAL
+        size:
+          type: number
+          description: Same as num_dwellings.
+          example: 1
+        found_num_dwellings:
+          type: boolean
+          description: >-
+            Flag stating that we have identified a number of residential units
+            (dwellings).
+          example: false
+        tags:
+          description: >-
+            A list of "tags" which describe features of the application. Often
+            identifies a specific use class, or can be more generic such as
+            "Demolition", "Hotel" or "Care Home".
+          type: array
+          nullable: true
+          items:
+            type: string
+          example:
+            - Hotel
+            - Demolition
+            - Retail (A1)
+            - Restaurants and cafés (A3)
+            - Office (B1)
+        appeal_case_number:
+          description: The Planning Inspectorate (PINS) Reference Number
+          type: string
+          nullable: true
+          pattern: ^\d{7}$
+          example: '1234567'
+        appeal_type_of_appeal:
+          description: Appeal type
+          type: string
+          nullable: true
+          example: Planning Appeal
+        appeal_type_reason:
+          description: >-
+            Appeal reason (this field is only populated for certain types of
+            appeals)
+          type: string
+          nullable: true
+          example: 1. Refused planning permission
+        appeal_application_ref:
+          description: >-
+            Local Planning Authority application reference number relating to
+            the appeal
+          type: string
+          nullable: true
+          example: P1284/13/OUT
+        appeal_planning_authority_name:
+          description: Local Planning Authority Name, if known
+          type: string
+          nullable: true
+          example: London Borough of Barnet
+        appeal_site_address:
+          description: Address of the site
+          type: string
+          nullable: true
+          example: The Annex, 7 Example Crescent, Testford-upon-Mere, XY45 6ZT
+        appeal_decision:
+          description: Appeal decision
+          type: string
+          nullable: true
+          example: Dismissed
+        appeal_decision_date:
+          description: >-
+            If the Jurisdiction is Transferred then it is the date of the
+            decision made by the Planning Inspectorate (PINS). If the
+            Jurisdiction is Secretary of State then it is the date that the
+            report was sent to the Secretary of State
+          type: string
+          nullable: true
+          example: '2017-08-02T00:00:00.000Z'
+        appeal_received_date:
+          description: Date received in Planning Inspectorate (PINS)
+          type: string
+          format: date-time
+          nullable: true
+          example: '2014-05-15T00:00:00.000Z'
+        appeal_development_type:
+          description: Development type being appealed
+          type: string
+          nullable: true
+          example: Householder developments
+        appeal_inspector_name:
+          description: Planning Inspector's name, if known
+          type: string
+          nullable: true
+          example: James Smith
+        appeal_appellant:
+          description: Appellant's name
+          type: string
+          nullable: true
+          example: James Thompson
+        appeal_updated_at:
+          description: Date the appeal was processed by LandTech
+          type: string
+          nullable: true
+          format: date-time
+          example: '2023-05-26T03:09:36.191Z'
+        is_full_application:
+          type: boolean
+          description: Flag indicating "types_derived" includes "Full Application"
+          example: false
+        is_outline:
+          type: boolean
+          description: Flag indicating "types_derived" includes "Outline"
+          example: false
+        is_discharge_of_conditions:
+          type: boolean
+          description: Flag indicating "types_derived" includes "Discharge of Conditions"
+          example: false
+        is_gpdr:
+          type: boolean
+          description: >-
+            Flag indicating "types_derived" includes "GPDR" (General Permitted
+            Development - Class R)
+          example: false
+        is_reserved_matters:
+          type: boolean
+          description: Flag indicating "types_derived" includes "Reserved Matters"
+          example: false
+        is_tpo:
+          type: boolean
+          description: >-
+            Flag indicating "types_derived" includes "TPO" (Tree Preservation
+            Order)
+          example: false
+        is_listed_building:
+          type: boolean
+          description: Flag indicating "types_derived" includes "Listed Building"
+          example: true
+        is_eia:
+          type: boolean
+          description: >-
+            Flag indicating "types_derived" includes "EIA" (Environmental Impact
+            Assessment)
+          example: false
+        is_change_of_use:
+          type: boolean
+          description: Flag indicating "types_derived" includes "Change of Use"
+          example: false
+        is_uncategorised:
+          type: boolean
+          description: >-
+            Flag indicating we have been unable to "derive" a "type" (i.e:
+            "types_derived" is empty)
+          example: false
+        is_minor:
+          type: boolean
+          description: >-
+            Flag indicating we have identified the application is a "minor"
+            application, i.e. Phone or Post Boxes, Kiosks, ATMs, Advertisements,
+            Signage or Lighting.
+          example: false
+        related_applications:
+          allOf:
+            - description: Related planning applications
+            - $ref: '#/components/schemas/PlanningApplicationRefs'
+    Address:
+      description: The associated property address. Can be empty.
+      type: array
+      items:
+        type: string
+      example:
+        - Unipart House, Cowley, Oxford, OX4 2PG
+    RegisteredLease:
+      description: Details of a registered lease.
+      type: object
+      nullable: true
+      properties:
+        start_date:
+          description: Lease start date.
+          type: string
+          format: date-time
+          example: '1987-12-18T00:00:00.000Z'
+        end_date:
+          description: Lease end date.
+          type: string
+          format: date-time
+          example: '2112-12-18T00:00:00.000Z'
+    Company:
+      description: Details of a company that owns the title.
+      type: object
+      properties:
+        company_no:
+          description: The company's registered number (if available).
+          type: string
+          nullable: true
+          example: '02127408'
+        name:
+          description: Name of the company.
+          type: string
+          example: REDWOOD (LIGHT INDUSTRIAL) PROPCO LIMITED
+        addresses:
+          $ref: '#/components/schemas/Address'
+        proprietorship:
+          description: Type of proprietorship.
+          type: string
+          example: Private Limited Company
+        is_foreign:
+          description: Whether the company is foreign owned.
+          type: boolean
+          nullable: true
+          example: true
+    UltimateOwner:
+      description: Details of ultimate ownership of a company.
+      type: object
+      properties:
+        ultimate_owners:
+          description: List of ultimate owning companies.
+          type: array
+          items:
+            type: object
+            properties:
+              holding_max:
+                description: Maximum percentage of ownership (if available).
+                type: number
+                nullable: true
+                example: 50
+              company:
+                $ref: '#/components/schemas/Company'
+    OwnerDetails:
+      description: Details of the registered owner.
+      type: object
+      properties:
+        last_ownership_change:
+          description: Date of last ownership change.
+          type: string
+          nullable: true
+          format: date-time
+          example: '2008-10-13T00:00:00.000Z'
+        company:
+          allOf:
+            - $ref: '#/components/schemas/Company'
+            - $ref: '#/components/schemas/UltimateOwner'
+    TitleDetails:
+      description: Full details of a land title.
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            title:
+              type: object
+              properties:
+                title_no:
+                  $ref: '#/components/schemas/TitleNumber'
+                tenure:
+                  description: The tenure type of the title.
+                  type: string
+                  enum:
+                    - FREEHOLD
+                    - LEASEHOLD
+                    - UNKNOWN_OTHER
+                  example: FREEHOLD
+                addresses:
+                  $ref: '#/components/schemas/Address'
+                registered_lease:
+                  $ref: '#/components/schemas/RegisteredLease'
+                properties:
+                  description: >
+                    A list of Unique Property Reference Numbers (UPRNs)
+                    formally  associated with the title's land parcel. Can be
+                    empty.
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/UPRN'
+                  example:
+                    - '100080312053'
+                properties_intersects:
+                  type: array
+                  description: >
+                    A list of Unique Property Reference Numbers (UPRNs) that
+                    reside within  the title's land parcel, but are not formally
+                    associated with the title. Can be empty.
+                  items:
+                    $ref: '#/components/schemas/UPRN'
+                  example:
+                    - '10091868676'
+                    - '10023302495'
+                owners:
+                  description: A list of registered owners. Can be empty.
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/OwnerDetails'
+    BulkTitleRequest:
+      type: object
+      required:
+        - titles
+      properties:
+        titles:
+          type: array
+          description: List of title numbers (max 200)
+          maxItems: 200
+          items:
+            type: string
+            example: SGL235730
+    BulkTitleResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            title:
+              type: array
+              items:
+                $ref: '#/components/schemas/TitleDetails'
+    BulkTitleError:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                example: >-
+                  Variable "$titles" of required type "[String!]!" was not
+                  provided.
+              locations:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    line:
+                      type: integer
+                    column:
+                      type: integer
+              extensions:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: BAD_USER_INPUT
+    PropertyInformation:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            propertyInformation:
+              type: object
+              nullable: true
+              description: >-
+                Property Information details. Will be `null` if no data is
+                found.
+              properties:
+                address:
+                  type: object
+                  properties:
+                    uprn:
+                      allOf:
+                        - $ref: '#/components/schemas/UPRN'
+                        - description: The UPRN of the property, e.g. `100010716016`.
+                        - example: '100010716016'
+                    full_address:
+                      type: string
+                      description: The full address of the property.
+                      example: 29 Acacia Road, Nuttytown, B4 4NA
+                    property_type:
+                      type: string
+                      description: The type of property (e.g. Residential).
+                      example: Shop / Showroom
+                    property_state:
+                      type: string
+                      nullable: true
+                      description: The current state of the property (e.g. In Use).
+                      enum:
+                        - Demolished
+                        - In Use
+                        - Planning Permission Granted
+                        - Under Construction
+                        - Unoccupied/Vacant/Derelict
+                      example: In Use
+                    property_class_code:
+                      type: string
+                      description: >-
+                        The Ordnance Survey classification code of the property
+                        (e.g. RD03).
+                      example: RD03
+                    use_class:
+                      type: string
+                      nullable: true
+                      description: The use class of the property (e.g. Residential (C3)).
+                      example: Residential (C3)
+                building_height:
+                  type: object
+                  nullable: true
+                  properties:
+                    highest_point:
+                      type: number
+                      format: float
+                      nullable: true
+                      description: The highest point of the building in meters.
+                      example: 6.4
+                    roof_height:
+                      type: number
+                      format: float
+                      nullable: true
+                      description: The roof height of the building in meters.
+                      example: 6.1
+                    no_floors_estimate:
+                      type: integer
+                      nullable: true
+                      description: The estimated number of floors in the building.
+                      example: 1
+                epc:
+                  type: object
+                  nullable: false
+                  properties:
+                    current_energy_rating:
+                      type: string
+                      nullable: true
+                      description: The energy rating given in the most recent EPC
+                      example: C
+                    potential_energy_rating:
+                      type: string
+                      nullable: true
+                      description: >
+                        The potential energy rating that could be achievable in
+                        the property as listed by the EPC
+                      example: B
+                    total_floor_area:
+                      type: number
+                      format: float
+                      nullable: true
+                      description: The floor area as listed on the EPC in square metres
+                      example: 160.23
+    BulkPropertyRequest:
+      type: object
+      required:
+        - properties
+      properties:
+        properties:
+          type: array
+          description: List of property UPRNs (max 200)
+          maxItems: 200
+          items:
+            type: string
+            example: '100023523019'
+    BulkPropertyResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            property:
+              type: array
+              items:
+                $ref: '#/components/schemas/PropertyInformation'
+    BulkPropertyError:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                example: >-
+                  Variable "$properties" of required type "[String!]!" was not
+                  provided.
+              locations:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    line:
+                      type: integer
+                    column:
+                      type: integer
+              extensions:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: BAD_USER_INPUT
+    ShlaaID:
+      type: string
+      format: uuid
+      description: A SHLAA ID in the form of a UUID.
+      example: 6b3cda6f-5c0e-4415-8f4e-4b7a4b4e1574
+    FeatureBase:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          nullable: true
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+        geometries:
+          type: array
+          description: Array of geometries relating to the feature
+          items:
+            type: object
+            properties:
+              area_hectares:
+                type: number
+                format: float
+                nullable: true
+                example: 0.2023428
+              geometry:
+                type: object
+                description: GeoJSON of the feature.
+                oneOf:
+                  - $ref: '#/components/schemas/Polygon'
+                  - $ref: '#/components/schemas/MultiPolygon'
+    Feature:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            feature:
+              $ref: '#/components/schemas/FeatureBase'
+    ShlaaFeatureItem:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ShlaaID'
+        type:
+          example: shlaa_positive
+        name:
+          example: null
+        attributes:
+          example:
+            - key: conclusion
+              value: Developable Sites - Years 11-15
+    ShlaaFeature:
+      allOf:
+        - $ref: '#/components/schemas/Feature'
+        - type: object
+          properties:
+            data:
+              properties:
+                feature:
+                  $ref: '#/components/schemas/ShlaaFeatureItem'
+    DevelopmentConstraintID:
+      type: string
+      format: uuid
+      description: A development constraints ID in the form of a UUID.
+      example: 68a586f6-991f-4604-b179-512b61f9696f
+    FeatureBaseLite:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          nullable: true
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+    DevelopmentConstraintFeatureItem:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/DevelopmentConstraintID'
+        type:
+          example: article_4_direction
+        name:
+          example: Victoria Mews, West Green
+        attributes:
+          example:
+            - key: published_date
+              value: 15/06/2022
+            - key: article_4_type
+              value: Article 4(1) affecting other buildings
+            - key: dev_rest_1
+              value: Conversion of single dwellings to HMOs
+    DevelopmentConstraintFeature:
+      allOf:
+        - $ref: '#/components/schemas/FeatureBaseLite'
+        - type: object
+          properties:
+            data:
+              properties:
+                feature:
+                  $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
+    AdditionalOpportunityID:
+      type: string
+      format: uuid
+      description: A Homes England Land Hub ID in the form of a UUID.
+      example: 1540e735-9df0-4095-8df2-03f370847609
+    AdditionalOpportunityFeatureItem:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/AdditionalOpportunityID'
+            type:
+              example: land_hub_on_market
+            name:
+              example: Land Hub Site 824
+            attributes:
+              example:
+                - key: zz_land_hub_developer_guidance
+                  value: >-
+                    https://www.gov.uk/guidance/how-homes-england-sells-land-for-housing-led-developments
+                - key: site_name
+                  value: >-
+                    Land retained in Crawley including Car Park At Boulevard
+                    East & W and Adv. Pillars Crawley RH10 1XH
+                - key: site_size_(acres)
+                  value: '2'
+                - key: disposal_route
+                  value: Advertised
+                - key: current_market_status
+                  value: On market
+                - key: contact_details
+                  value: landenquiries@homesengland.gov.uk
+                - key: zz_land_hub_register_for_access
+                  value: >-
+                    https://www.gov.uk/guidance/apply-to-join-the-delivery-partner-dynamic-purchasing-system
+                - key: proposed_use
+                  value: Employment
+    AdditionalOpportunityFeature:
+      allOf:
+        - $ref: '#/components/schemas/Feature'
+        - type: object
+          properties:
+            data:
+              properties:
+                feature:
+                  $ref: '#/components/schemas/AdditionalOpportunityFeatureItem'
+    FeatureData:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBase'
+    Features:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureData'
+    AdditionalOpportunityFeatureCollection:
+      allOf:
+        - $ref: '#/components/schemas/Features'
+        - type: object
+          properties:
+            data:
+              properties:
+                features:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/AdditionalOpportunityFeatureItem'
+    FeatureDataLite:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBaseLite'
+    FeaturesLite:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureDataLite'
+    AdditionalOpportunityFeatureCollectionLite:
+      allOf:
+        - $ref: '#/components/schemas/FeaturesLite'
+        - type: object
+          properties:
+            data:
+              properties:
+                features:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/AdditionalOpportunityFeatureItem'
+    DevelopmentOpportunityID:
+      type: string
+      format: uuid
+      description: A development opportunity ID in the form of a UUID.
+      example: 836cc2d8-4596-4bb6-9630-a6429c93305f
+    DevelopmentOpportunityFeatureItem:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/DevelopmentOpportunityID'
+        type:
+          example: area_action_plans
+        name:
+          example: Action Areas
+        attributes:
+          example: null
+    DevelopmentOpportunityFeature:
+      allOf:
+        - $ref: '#/components/schemas/Feature'
+        - type: object
+          properties:
+            data:
+              properties:
+                feature:
+                  $ref: '#/components/schemas/DevelopmentOpportunityFeatureItem'
+    PowerID:
+      type: string
+      format: uuid
+      description: A development opportunity ID in the form of a UUID.
+      example: 1679c94a-2158-462f-b924-18acf92e7949
+    PowerFeatureItem:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/PowerID'
+        type:
+          example: hv_power_substations
+        name:
+          example: '1172992'
+        attributes:
+          example:
+            - key: rag_status
+              value: UNKNOWN
+            - key: substation_type
+              value: HV
+            - key: voltage_range
+              value: 11kV-1kV
+    PowerFeature:
+      allOf:
+        - $ref: '#/components/schemas/Feature'
+        - type: object
+          properties:
+            data:
+              properties:
+                feature:
+                  $ref: '#/components/schemas/PowerFeatureItem'
+    SilID:
+      type: string
+      format: uuid
+      description: A SIL ID in the form of a UUID.
+      example: c6f0312f-841b-46e3-93f5-eb4257c7b5ae
+    SilFeatureItem:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/PowerID'
+        type:
+          example: strategic_industrial_location
+        name:
+          example: Strategic Industrial Location
+        attributes:
+          example: null
+    SilFeature:
+      allOf:
+        - $ref: '#/components/schemas/Feature'
+        - type: object
+          properties:
+            data:
+              properties:
+                feature:
+                  $ref: '#/components/schemas/SilFeatureItem'
+    RepdID:
+      type: string
+      format: uuid
+      description: A REPD ID in the form of a UUID.
+      example: 947fa210-e051-4256-829e-5f3de5bacbd3
+    RepdFeatureItem:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/RepdID'
+        type:
+          example: repd_wind
+        name:
+          example: Loganswell Farm
+        attributes:
+          example:
+            - key: planning_authority
+              value: East Renfrewshire Council
+            - key: planning_application_submitted
+              value: 15/04/2014
+            - key: planning_application_withdrawn
+              value: 18/09/2014
+            - key: abc_planning_application_reference
+              value: 2014/0250/TP
+            - key: number_of_turbines
+              value: '66'
+            - key: abc_development_status
+              value: Planning Application Withdrawn
+            - key: abc_installed_capacity_(mw)
+              value: '16'
+            - key: a_site_name
+              value: Loganswell Farm
+            - key: turbine_capacity_(mw)
+              value: '0.25'
+            - key: a_technology_type
+              value: Wind Onshore
+            - key: ab_operator_or_applicant
+              value: Lifetime Energy
+            - key: abc_site_address
+              value: >-
+                Land At Loganswell Farm 443 Ayr Road Loganswell East
+                Renfrewshire G77 6RY
+            - key: reference
+              value: '4396'
+            - key: last_updated
+              value: 01/09/2014
+    RepdFeature:
+      allOf:
+        - $ref: '#/components/schemas/Feature'
+        - type: object
+          properties:
+            data:
+              properties:
+                feature:
+                  $ref: '#/components/schemas/RepdFeatureItem'
+    LocalPlanPolicyID:
+      type: string
+      format: uuid
+      description: A policy ID in the form of a UUID.
+      example: 038278e1-b3a9-4941-a08e-66fd9610338f
+    LocalPlanPolicyFeatureItem:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/LocalPlanPolicyID'
+        type:
+          example: community_allocation
+        name:
+          example: BURIAL GROUND BRADWELL
+        attributes:
+          example:
+            - key: allocation_type
+              value: Community
+            - key: unit_count
+              value: ''
+            - key: allocation_notes
+              value: Community Facilities
+            - key: hectares
+              value: '1.50'
+            - key: site_reference
+              value: C19
+            - key: policy_reference
+              value: ''
+    LocalPlanPolicyFeature:
+      allOf:
+        - $ref: '#/components/schemas/Feature'
+        - type: object
+          properties:
+            data:
+              properties:
+                feature:
+                  $ref: '#/components/schemas/LocalPlanPolicyFeatureItem'
+    DevelopmentConstraintFeatureCollection:
+      allOf:
+        - $ref: '#/components/schemas/FeaturesLite'
+        - type: object
+          properties:
+            data:
+              properties:
+                features:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
+    DevelopmentConstraintFeatureCollectionLite:
+      allOf:
+        - $ref: '#/components/schemas/FeaturesLite'
+        - type: object
+          properties:
+            data:
+              properties:
+                features:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
+    DevelopmentOpportunityFeatureCollection:
+      allOf:
+        - $ref: '#/components/schemas/Features'
+        - type: object
+          properties:
+            data:
+              properties:
+                features:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/DevelopmentOpportunityFeatureItem'
+    DevelopmentOpportunityFeatureCollectionLite:
+      allOf:
+        - $ref: '#/components/schemas/FeaturesLite'
+        - type: object
+          properties:
+            data:
+              properties:
+                features:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/DevelopmentOpportunityFeatureItem'
+    SHLAAFeatureCollection:
+      allOf:
+        - $ref: '#/components/schemas/Features'
+        - type: object
+          properties:
+            data:
+              properties:
+                features:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ShlaaFeatureItem'
+    SHLAAFeatureCollectionLite:
+      allOf:
+        - $ref: '#/components/schemas/FeaturesLite'
+        - type: object
+          properties:
+            data:
+              properties:
+                features:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ShlaaFeatureItem'
+    PowerFeatureCollection:
+      allOf:
+        - $ref: '#/components/schemas/Features'
+        - type: object
+          properties:
+            data:
+              properties:
+                features:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/PowerFeatureItem'
+    PowerFeatureCollectionLite:
+      allOf:
+        - $ref: '#/components/schemas/FeaturesLite'
+        - type: object
+          properties:
+            data:
+              properties:
+                features:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/PowerFeatureItem'
+    SilFeatureCollection:
+      allOf:
+        - $ref: '#/components/schemas/Features'
+        - type: object
+          properties:
+            data:
+              properties:
+                features:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/SilFeatureItem'
+    SilFeatureCollectionLite:
+      allOf:
+        - $ref: '#/components/schemas/FeaturesLite'
+        - type: object
+          properties:
+            data:
+              properties:
+                features:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/SilFeatureItem'
+    RepdFeatureCollection:
+      allOf:
+        - $ref: '#/components/schemas/Features'
+        - type: object
+          properties:
+            data:
+              properties:
+                features:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/RepdFeatureItem'
+    RepdFeatureCollectionLite:
+      allOf:
+        - $ref: '#/components/schemas/FeaturesLite'
+        - type: object
+          properties:
+            data:
+              properties:
+                features:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/RepdFeatureItem'
+    LocalPlanPolicyFeatureCollection:
+      allOf:
+        - $ref: '#/components/schemas/Features'
+        - type: object
+          properties:
+            data:
+              properties:
+                features:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/LocalPlanPolicyFeatureItem'
+    LocalPlanPolicyFeatureCollectionLite:
+      allOf:
+        - $ref: '#/components/schemas/FeaturesLite'
+        - type: object
+          properties:
+            data:
+              properties:
+                features:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/LocalPlanPolicyFeatureItem'
+security:
+  - ApiKeyAuth: []
+tags:
+  - name: Getting Started
+    description: Endpoints to help you understand how to interact with the API.
+  - name: Parcels
+    description: Endpoints to search for parcels and associated attributes.
+  - name: Ownership
+    description: Endpoints to get details about land ownership and property information.
+  - name: Planning Applications
+    description: >-
+      Endpoints to search for planning applications and get details on
+      individual applications.
+  - name: Local Policy
+    description: Endpoint to get details of local plan policies
+  - name: Development Constraints
+    description: >
+      Endpoint to get details of various development constraints. Includes
+      airport, HS2, rail and building (wharf)  safeguarding. Also includes
+      article 4 and national landscape data.
+  - name: Development Opportunities
+    description: Endpoint to get details of Named Regeneration Areas and Area Action Plans
+  - name: Land Availability Assessment
+    description: Endpoint to get details about Land Availability Assessment sites
+  - name: Strategic Industrial Location
+    description: Endpoint for details on strategic industrial location
+  - name: Additional Opportunities
+    description: Endpoint to get details of sites from Homes England Land Hub
+  - name: Power
+    description: Endpoint to get details of substations, lines, cables and towers
+  - name: Renewable Energy Planning DB
+    description: >-
+      Endpoint to get details on sites from the Renewable Energy Planning
+      Database
+paths:
+  /status/auth:
+    get:
+      operationId: getAuthStatus
+      summary: Check your authentication is valid
+      description: Responds with the state of your API account.
+      tags:
+        - Getting Started
+      responses:
+        '200':
+          description: User description.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - user
+                properties:
+                  user:
+                    type: object
+                    required:
+                      - state
+                    properties:
+                      state:
+                        type: string
+                        enum:
+                          - active
+                        example: active
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /regions:
+    get:
+      operationId: getRegions
+      summary: List available regions
+      description: >
+        List the GSS code and name of known regions (local authorities), that
+        can be used when searching for parcels.
+      tags:
+        - Parcels
+      responses:
+        '200':
+          description: A list of regions available.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      regions:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/RegionDetail'
+              examples:
+                validResponse:
+                  summary: Parcels found
+                  value:
+                    data:
+                      regions:
+                        - gss_code: E06000023
+                          name: Bristol, City of
+                        - gss_code: E09000033
+                          name: Westminster
+                        - gss_code: E07000112
+                          name: Folkestone and Hythe
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /parcels/search:
+    post:
+      operationId: searchParcels
+      summary: Search for parcels
+      description: >
+        Given a region GSS code and optional parcel size, retrieve a list of
+        parcel IDs. The maximum number of IDs returned is 100,000.
+      tags:
+        - Parcels
+      requestBody:
+        description: A payload including a region and optional parcel size filters.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParcelSearchRequest'
+      responses:
+        '200':
+          description: A list of parcel IDs matching the search criteria.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParcelIds'
+              examples:
+                validResponse:
+                  summary: Parcels found
+                  value:
+                    parcel_ids:
+                      - 533bdf35-c073-5433-b225-076b625d22f9
+                      - 7da6fe12-6f0a-3d16-5bf0-3c80839256b5
+                      - 7fc7684c-bf0f-8710-327e-78d26f9c313e
+                emptyResponse:
+                  summary: No parcels found
+                  value:
+                    parcel_ids: []
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /parcels/advanced-search:
+    post:
+      operationId: searchParcelsAdvanced
+      summary: Advanced parcel search - beta
+      description: >
+        Retrieve a list of parcel IDs based on a set of filters. The maximum
+        number of IDs returned is 100,000.
+         
+        **Schema is subject to change.**
+        ![Beta](https://img.shields.io/badge/Status-Beta-yellow)
+      tags:
+        - Parcels
+      requestBody:
+        description: A payload including all parcel filters.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParcelSearchRequestAdvanced'
+            example:
+              search_filter:
+                ALL:
+                  - id: tenure-uk
+                    values:
+                      - key: freehold
+                        checked: true
+                      - key: leasehold
+                    must: MATCH_ANY
+                  - id: use-class-nested-id
+                    values:
+                      - key: E
+                        items:
+                          - key: E(a)
+                            checked: true
+                          - key: E(b)
+                            checked: true
+                      - key: sui-generis
+                        items:
+                          - key: i-Agricultural
+                            checked: true
+                    must: MATCH_ANY
+                  - id: adopted-constraints-id
+                    values:
+                      - key: very_low_risk_of_flooding_from_rivers_and_seas
+                        checked: true
+                      - key: low_risk_of_flooding_from_rivers_and_seas
+                        checked: true
+                    must: MATCH_NONE
+                    type: nested-checkbox
+                  - id: ownership-type-id
+                    values:
+                      - key: private
+                        checked: true
+                    must: MATCH_NONE
+      responses:
+        '200':
+          description: A list of parcel IDs matching the search criteria.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParcelIds'
+              examples:
+                validResponse:
+                  summary: Parcels found
+                  value:
+                    parcel_ids:
+                      - 533bdf35-c073-5433-b225-076b625d22f9
+                      - 7da6fe12-6f0a-3d16-5bf0-3c80839256b5
+                      - 7fc7684c-bf0f-8710-327e-78d26f9c313e
+                emptyResponse:
+                  summary: No parcels found
+                  value:
+                    parcel_ids: []
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /parcels/{parcel_id}:
+    get:
+      operationId: getParcel
+      summary: Details about a parcel
+      description: >
+        Given a parcel ID, get the parcel details including associated titles,
+        properties and planning applications.
+      tags:
+        - Parcels
+      parameters:
+        - in: path
+          name: parcel_id
+          required: true
+          schema:
+            $ref: '#/components/schemas/ParcelId'
+          description: A parcel ID
+          example: 2a5ad2c7-29ef-d609-8ade-36eef8e3a072
+      responses:
+        '200':
+          description: Parcel Details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParcelDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /parcels:
+    post:
+      operationId: getParcelsBulk
+      summary: Bulk parcel details
+      description: |
+        Fetch parcel details for up to 50 parcel IDs in a single request.
+      tags:
+        - Parcels
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkParcelRequest'
+      responses:
+        '200':
+          description: Bulk parcel details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkParcelResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkParcelBadRequest'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /planning-applications/search:
+    post:
+      operationId: searchPlanningApplications
+      summary: Search for planning applications
+      description: >
+        Given a geometry, get a list of planning application references, grouped
+        by the planning authority GSS code.
+      tags:
+        - Planning Applications
+      requestBody:
+        description: A payload, including a GeoJSON geometry.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                geometry:
+                  oneOf:
+                    - $ref: '#/components/schemas/Point'
+                    - $ref: '#/components/schemas/Polygon'
+                    - $ref: '#/components/schemas/MultiPolygon'
+      responses:
+        '200':
+          description: Planning Application Refs
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - applications
+                additionalProperties: false
+                properties:
+                  applications:
+                    $ref: '#/components/schemas/PlanningApplicationRefs'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                errorResponse:
+                  value:
+                    error: 'Missing required body parameter: ''geometry'''
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /planning-applications/{gss_code}/{ref}:
+    get:
+      operationId: getPlanningApplication
+      summary: Details of a planning application
+      description: >
+        Get detailed information about a planning application, given its local
+        authority GSS code and application reference.
+      tags:
+        - Planning Applications
+      parameters:
+        - in: path
+          name: gss_code
+          required: true
+          schema:
+            $ref: '#/components/schemas/GSSCode'
+          description: The GSS code of a planning authority, e.g. `E09000033`.
+          example: E09000033
+        - in: path
+          name: ref
+          required: true
+          description: >-
+            The planning application reference declared by the planning
+            authority. It may contain slashes, e.g. `16/11109/FULL`. It's
+            sensible, but not necessary, to "URL encode" this value.
+          schema:
+            type: string
+            minLength: 1
+            example: 16%2F11109%2FFULL
+      responses:
+        '200':
+          description: Planning application details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanningApplication'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: Application not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                errorResponse:
+                  value:
+                    error: Planning application not found
+  /planning-applications/{app_id}:
+    get:
+      operationId: getPlanningApplicationById
+      summary: Details of a planning application via app ID
+      description: >
+        Get detailed information about a planning application, given a unique
+        planning application ID e.g. a local authority GSS code and reference
+        separated by a plus sign (`+`).
+      tags:
+        - Planning Applications
+      parameters:
+        - in: path
+          name: app_id
+          required: true
+          description: >
+            An ID comprised of a GSS code and ref separated by a plus sign (`+`)
+            e.g. `E07000112+Y18/1381/FH`. It's sensible, but not necessary, to
+            "URL encode" this value.
+          schema:
+            $ref: '#/components/schemas/PlanningApplicationId'
+          example: E07000112%2BY18%2F1381%2FFH
+      responses:
+        '200':
+          description: Planning application details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanningApplication'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: Application not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                errorResponse:
+                  value:
+                    error: Planning application not found
+  /planning-applications:
+    post:
+      operationId: getPlanningApplicationByIds
+      summary: Bulk planning application details
+      description: >
+        Get detailed information about a set of planning applications, given a
+        set of unique planning application IDs e.g. a local authority GSS code
+        and reference separated by a plus sign (`+`).
+         
+        **Schema is subject to change.**
+        ![Beta](https://img.shields.io/badge/Status-Beta-yellow)
+      tags:
+        - Planning Applications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                planning_applications:
+                  type: array
+                  description: >
+                    List of IDs comprised of a GSS code and ref separated by a
+                    plus sign (`+`) e.g. `E07000112+Y18/1381/FH`.
+                  items:
+                    $ref: '#/components/schemas/PlanningApplicationId'
+              required:
+                - planning_applications
+            example:
+              planning_applications:
+                - E07000112+Y18/1381/FH
+                - E09000033+16/02592/LBC
+      responses:
+        '200':
+          description: Planning application details
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlanningApplication'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: Application not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                errorResponse:
+                  value:
+                    error: Planning application not found
+  /titles/{title_number}:
+    get:
+      operationId: getTitleDetails
+      summary: Details of a registered title
+      description: |
+        Get information about a title, given a HM Land Registry title number.
+      tags:
+        - Ownership
+      parameters:
+        - in: path
+          name: title_number
+          required: true
+          schema:
+            $ref: '#/components/schemas/TitleNumber'
+          description: Title number for a parcel of land.
+          example: WT77573
+      responses:
+        '200':
+          description: Title details found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TitleDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /titles:
+    post:
+      operationId: getTitlesBulk
+      summary: Bulk title details
+      description: |
+        Fetch details for up to 200 titles in a single request.
+      tags:
+        - Ownership
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkTitleRequest'
+      responses:
+        '200':
+          description: Bulk title details or error response.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/BulkTitleResponse'
+                  - $ref: '#/components/schemas/BulkTitleError'
+  /properties/{uprn}:
+    get:
+      operationId: getPropertyDetails
+      summary: Details about a property
+      description: >
+        Get information about a property, given a Unique Property Reference
+        Number (UPRN).
+      tags:
+        - Ownership
+      parameters:
+        - in: path
+          name: uprn
+          required: true
+          schema:
+            $ref: '#/components/schemas/UPRN'
+          description: UPRN for a specific property.
+          example: '100010716016'
+      responses:
+        '200':
+          description: Property Information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyInformation'
+              examples:
+                validResponse:
+                  summary: Valid property information
+                  value:
+                    data:
+                      propertyInformation:
+                        address:
+                          uprn: '100010716016'
+                          full_address: 17 Manor Road, Lancashire, Garstang, PR3 1JR
+                          property_type: Semi-Detached
+                          property_state: In Use
+                          property_class_code: RD03
+                          use_class: Residential (C3)
+                        building_height:
+                          highest_point: 3.7
+                          roof_height: 1.2
+                          no_floors_estimate: 1
+                        epc:
+                          current_energy_rating: D
+                          potential_energy_rating: B
+                          total_floor_area: 103.4
+                nullResponse:
+                  summary: UPRN not found
+                  value:
+                    data:
+                      propertyInformation: null
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+        '404':
+          description: UPRN not supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                errorResponse:
+                  value:
+                    error_msg: route not found
+  /properties:
+    post:
+      operationId: getPropertiesBulk
+      summary: Bulk property details
+      description: |
+        Fetch details for up to 200 properties in a single request.
+      tags:
+        - Ownership
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkPropertyRequest'
+      responses:
+        '200':
+          description: Bulk property details or error response.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/BulkPropertyResponse'
+                  - $ref: '#/components/schemas/BulkPropertyError'
+  /shlaa/{shlaa_id}:
+    get:
+      operationId: getShlaa
+      description: >-
+        Given an ID, get details about an individual Land Availability
+        Assessment
+      summary: Details about an individual SHLAA
+      tags:
+        - Land Availability Assessment
+      parameters:
+        - name: shlaa_id
+          required: true
+          in: path
+          description: ID for a specific Land Availability Assessment
+          schema:
+            $ref: '#/components/schemas/ShlaaID'
+      responses:
+        '200':
+          description: Details about a Land Availability Assessments site
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShlaaFeature'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /development_constraints/{development_constraints_id}:
+    get:
+      operationId: getDevelopmentConstraint
+      description: >-
+        Given a development constraints ID, get details about a development
+        constraint
+      summary: Details about a development constraint
+      tags:
+        - Development Constraints
+      parameters:
+        - name: development_constraints_id
+          required: true
+          in: path
+          description: ID for a specific development constraint
+          schema:
+            $ref: '#/components/schemas/DevelopmentConstraintID'
+      responses:
+        '200':
+          description: Details about a development constraint
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DevelopmentConstraintFeature'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /additional_opportunities/{additional_opportunities_id}:
+    get:
+      operationId: getAdditionalOpportunity
+      description: >-
+        Given an additional opportunity ID, get details about a Homes England
+        Land Hub site
+      summary: Details about a Homes England Land Hub site
+      tags:
+        - Additional Opportunities
+      parameters:
+        - name: additional_opportunities_id
+          required: true
+          in: path
+          description: ID for a specific homes england land hub site
+          schema:
+            $ref: '#/components/schemas/AdditionalOpportunityID'
+      responses:
+        '200':
+          description: Details about a Homes England Land Hub site
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdditionalOpportunityFeature'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /additional_opportunities:
+    post:
+      operationId: getAdditionalOpportunities
+      description: >-
+        Given a set of additional opportunity IDs, get details about Homes
+        England Land Hub sites in bulk
+      summary: Bulk - Details about Homes England Land Hub sites
+      tags:
+        - Additional Opportunities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of additional opportunity IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 1679c94a-2158-462f-b924-18acf92e7949
+      responses:
+        '200':
+          description: Details about Homes England Land Hub sites
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdditionalOpportunityFeatureCollection'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /additional_opportunities/lite:
+    post:
+      operationId: getAdditionalOpportunitiesLite
+      description: >-
+        Given a set of additional opportunity IDs, get details about Homes
+        England Land Hub sites in bulk without geometry data
+      summary: Bulk - Details about Homes England Land Hub sites (without geometry)
+      tags:
+        - Additional Opportunities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of additional opportunity IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 1679c94a-2158-462f-b924-18acf92e7949
+      responses:
+        '200':
+          description: Details about Homes England Land Hub sites (without geometry)
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/AdditionalOpportunityFeatureCollectionLite
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /development_opportunities/{development_opportunities_id}:
+    get:
+      operationId: getDevelopmentOpportunity
+      description: >-
+        Given a development opportunity ID, get details about a development
+        opportunity
+      summary: Details about a single development opportunity
+      tags:
+        - Development Opportunities
+      parameters:
+        - name: development_opportunities_id
+          required: true
+          in: path
+          description: ID for a specific development opportunity site
+          schema:
+            $ref: '#/components/schemas/DevelopmentOpportunityID'
+      responses:
+        '200':
+          description: Details about a single development opportunity site
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DevelopmentOpportunityFeature'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /power/{power_id}:
+    get:
+      operationId: getPower
+      description: >-
+        Given a power ID, get details about a single unit of power
+        infrastructure
+      summary: Details about a single unit of power infrastructure
+      tags:
+        - Power
+      parameters:
+        - name: power_id
+          required: true
+          in: path
+          description: ID for a specific piece of power infrastructure
+          schema:
+            $ref: '#/components/schemas/PowerID'
+      responses:
+        '200':
+          description: Details about a single unit of power infrastructure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PowerFeature'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /strategic_industrial_location/{sil_id}:
+    get:
+      operationId: getSil
+      description: >-
+        Given a Strategic Industrial Location ID, get details about a single
+        Strategic Industrial Location
+      summary: Details about a single Strategic Industrial Location
+      tags:
+        - Strategic Industrial Location
+      parameters:
+        - name: sil_id
+          required: true
+          in: path
+          description: ID for a specific Strategic Industrial Locations
+          schema:
+            $ref: '#/components/schemas/SilID'
+      responses:
+        '200':
+          description: Details about a single Strategic Industrial Locations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SilFeature'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /renewable_energy_planning_db/{repd_id}:
+    get:
+      operationId: getRepd
+      description: >-
+        Given a Renewable Energy Planning DB ID, get details about a single
+        Renewable Energy Planning DB site
+      summary: Details about a single Renewable Energy Planning DB site
+      tags:
+        - Renewable Energy Planning DB
+      parameters:
+        - name: repd_id
+          required: true
+          in: path
+          description: ID for a specific Renewable Energy Planning DB site
+          schema:
+            $ref: '#/components/schemas/RepdID'
+      responses:
+        '200':
+          description: Details about a single site from the Renewable Energy Planning DB
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepdFeature'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /local_plan_policy/{local_plan_policy_id}:
+    get:
+      operationId: getLocalPlanPolicy
+      description: Given a local policy ID, get details about a single local plan policy
+      summary: Details about a single local plan policy
+      tags:
+        - Local Policy
+      parameters:
+        - name: local_plan_policy_id
+          required: true
+          in: path
+          description: ID for a specific local plan policy
+          schema:
+            $ref: '#/components/schemas/LocalPlanPolicyID'
+      responses:
+        '200':
+          description: Details about a local plan policy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocalPlanPolicyFeature'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /development_constraints:
+    post:
+      operationId: getDevelopmentConstraints
+      description: >-
+        Given a set of development constraint IDs, get details about development
+        constraints in bulk
+      summary: Bulk - Details about development constraints
+      tags:
+        - Development Constraints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of development constraint IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about development constraints
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DevelopmentConstraintFeatureCollection'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /development_constraints/lite:
+    post:
+      operationId: getDevelopmentConstraintsLite
+      description: >-
+        Given a set of development constraint IDs, get details about development
+        constraints in bulk without geometry data
+      summary: Bulk - Details about development constraints (without geometry)
+      tags:
+        - Development Constraints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of development constraint IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about development constraints (without geometry)
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/DevelopmentConstraintFeatureCollectionLite
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /development_opportunities:
+    post:
+      operationId: getDevelopmentOpportunities
+      description: >-
+        Given a set of development opportunity IDs, get details about
+        development opportunities in bulk
+      summary: Bulk - Details about development opportunities
+      tags:
+        - Development Opportunities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of development opportunity IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about development opportunities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DevelopmentOpportunityFeatureCollection'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /development_opportunities/lite:
+    post:
+      operationId: getDevelopmentOpportunitiesLite
+      description: >-
+        Given a set of development opportunity IDs, get details about
+        development opportunities in bulk without geometry data
+      summary: Bulk - Details about development opportunities (without geometry)
+      tags:
+        - Development Opportunities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of development opportunity IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about development opportunities (without geometry)
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/DevelopmentOpportunityFeatureCollectionLite
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /shlaa:
+    post:
+      operationId: getShlaas
+      description: >-
+        Given a set of IDs, get details about Land Availability Assessments in
+        bulk
+      summary: Bulk - Details about SHLAA
+      tags:
+        - Land Availability Assessment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of SHLAA IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about Land Availability Assessments sites
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SHLAAFeatureCollection'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /shlaa/lite:
+    post:
+      operationId: getShlaasLite
+      description: >-
+        Given a set of IDs, get details about Land Availability Assessments in
+        bulk without geometry data
+      summary: Bulk - Details about SHLAA (without geometry)
+      tags:
+        - Land Availability Assessment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of SHLAA IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about Land Availability Assessments (without geometry)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SHLAAFeatureCollectionLite'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /power:
+    post:
+      operationId: getPowers
+      description: Given a set of power IDs, get details about power infrastructure in bulk
+      summary: Bulk - Details about power infrastructure
+      tags:
+        - Power
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of power IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about power infrastructure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PowerFeatureCollection'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /power/lite:
+    post:
+      operationId: getPowersLite
+      description: >-
+        Given a set of power IDs, get details about power infrastructure in bulk
+        without geometry data
+      summary: Bulk - Details about power infrastructure (without geometry)
+      tags:
+        - Power
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of power IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about power infrastructure (without geometry)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PowerFeatureCollectionLite'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /strategic_industrial_location:
+    post:
+      operationId: getSils
+      description: >-
+        Given a set of Strategic Industrial Location IDs, get details about
+        strategic industrial locations in bulk
+      summary: Bulk - Details about Strategic Industrial Locations
+      tags:
+        - Strategic Industrial Location
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of Strategic Industrial Location IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about Strategic Industrial Locations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SilFeatureCollection'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /strategic_industrial_location/lite:
+    post:
+      operationId: getSilsLite
+      description: >-
+        Given a set of Strategic Industrial Location IDs, get details about
+        strategic industrial locations in bulk without geometry data
+      summary: Bulk - Details about Strategic Industrial Locations (without geometry)
+      tags:
+        - Strategic Industrial Location
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of Strategic Industrial Location IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about Strategic Industrial Locations (without geometry)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SilFeatureCollectionLite'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /renewable_energy_planning_db:
+    post:
+      operationId: getRepds
+      description: >-
+        Given a set of Renewable Energy Planning DB IDs, get details about
+        Renewable Energy Planning DB sites in bulk
+      summary: Bulk - Details about Renewable Energy Planning DB sites
+      tags:
+        - Renewable Energy Planning DB
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of Renewable Energy Planning DB IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about Renewable Energy Planning DB sites
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepdFeatureCollection'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /renewable_energy_planning_db/lite:
+    post:
+      operationId: getRepdsLite
+      description: >-
+        Given a set of Renewable Energy Planning DB IDs, get details about
+        Renewable Energy Planning DB sites in bulk without geometry data
+      summary: >-
+        Bulk - Details about Renewable Energy Planning DB sites (without
+        geometry)
+      tags:
+        - Renewable Energy Planning DB
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of Renewable Energy Planning DB IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about Renewable Energy Planning DB sites (without geometry)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepdFeatureCollectionLite'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /local_plan_policy:
+    post:
+      operationId: getLocalPlanPolicies
+      description: >-
+        Given a set of local plan policy IDs, get details about local plan
+        policies in bulk
+      summary: Bulk - Details about local plan policies
+      tags:
+        - Local Policy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of local plan policy IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about local plan policies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocalPlanPolicyFeatureCollection'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+  /local_plan_policy/lite:
+    post:
+      operationId: getLocalPlanPoliciesLite
+      description: >-
+        Given a set of local plan policy IDs, get details about local plan
+        policies in bulk without geometry data
+      summary: Bulk - Details about local plan policies (without geometry)
+      tags:
+        - Local Policy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ids
+              properties:
+                ids:
+                  type: array
+                  description: List of local plan policy IDs (max 50)
+                  maxItems: 50
+                  items:
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Details about local plan policies (without geometry)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocalPlanPolicyFeatureCollectionLite'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'

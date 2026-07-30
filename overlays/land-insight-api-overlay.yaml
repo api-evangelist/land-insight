@@ -1,0 +1,74 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the LandTech API
+  version: 1.0.0
+extends: openapi/land-insight-api-openapi.yml
+x-generated: '2026-07-19'
+x-method: generated
+x-source: openapi/land-insight-api-openapi.yml
+x-note: >-
+  Captures API Evangelist enrichment as non-destructive Overlay actions. The harvested
+  openapi/land-insight-api-openapi.yml is never mutated. Every operationId referenced below exists
+  verbatim in that spec.
+actions:
+- target: $.info
+  update:
+    x-apievangelist-slug: land-insight
+    x-apievangelist-provider: LandTech
+    x-apievangelist-portal: https://developers.land.tech/openapi
+    x-apievangelist-conventions: conventions/land-insight-conventions.yml
+    x-apievangelist-errors: errors/land-insight-problem-types.yml
+    x-apievangelist-data-model: data-model/land-insight-data-model.yml
+    x-apievangelist-authentication: authentication/land-insight-authentication.yml
+    x-apievangelist-region: United Kingdom
+- target: $.info
+  update:
+    contact:
+      name: LandTech Support
+      url: https://support.land.tech/en/
+    termsOfService: https://land.tech/legal/website_terms_of_use
+- target: $
+  update:
+    externalDocs:
+      description: LandTech API reference
+      url: https://developers.land.tech/openapi
+- target: $.components.securitySchemes.ApiKeyAuth
+  update:
+    description: >-
+      A LandTech-issued API key sent in the X-API-Key request header. Keys are provisioned
+      commercially rather than self-service; call GET /status/auth to confirm a key is active before
+      issuing data requests. A 403 with user.state of expired or blocked indicates a key problem
+      rather than a data-permission problem.
+    x-onboarding: https://land.tech/request-ecosystem-demo
+- target: $.paths['/status/auth'].get
+  update:
+    x-agent-hint: >-
+      Call this first. It is the only zero-cost operation and distinguishes an inactive key from an
+      empty data result.
+- target: $.paths['/parcels/search'].post
+  update:
+    x-result-cap: 100000
+    x-agent-hint: >-
+      Requires a region GSS code from getRegions. Returns bare parcel IDs only; hydrate them through
+      getParcelsBulk in batches of 50.
+- target: $.paths['/parcels/advanced-search'].post
+  update:
+    x-lifecycle: beta
+- target: $.paths['/planning-applications'].post
+  update:
+    x-lifecycle: beta
+- target: $.paths['/parcels'].post
+  update:
+    x-batch-limit: 50
+- target: $.paths['/titles'].post
+  update:
+    x-batch-limit: 200
+- target: $.paths['/properties'].post
+  update:
+    x-batch-limit: 200
+- target: $.components.schemas.Forbidden
+  update:
+    description: >-
+      LandTech's only named error schema. A oneOf of an account-state shape
+      ({user: {state: expired|blocked}}) and a generic message shape ({message: string}). Clients must
+      branch on which member is present. Not RFC 9457 problem+json.

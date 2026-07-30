@@ -1,0 +1,42 @@
+generated: '2026-07-19'
+method: searched
+source: npm registry search, PyPI, github.com/landtechnologies, developers.land.tech
+sdk_clients: none
+note: >-
+  LandTech publishes no first-party client SDK for the LandTech API in any registry. npm, PyPI,
+  Maven Central, NuGet, pkg.go.dev, RubyGems, Packagist and crates.io were searched for landtech /
+  land-tech / landinsight and returned no API client library, and the developer portal offers only
+  the OpenAPI download with no SDK or code-sample section. The packages below are genuine first-party
+  open-source releases from the company's GitHub organisation, but they are geospatial/infrastructure
+  tooling, not clients for this API - so no SDKs pointer is wired in apis.yml.
+github_organization: https://github.com/landtechnologies
+packages:
+- language: javascript
+  registry: npm
+  name: mvt-basic-render
+  url: https://www.npmjs.com/package/mvt-basic-render
+  install: npm install mvt-basic-render
+  repository: https://github.com/landtechnologies/Mapbox-vector-tiles-basic-js-renderer
+  description: A WebGL interactive maps library - a basic renderer for Mapbox vector tiles.
+  official: true
+  api_client: false
+  last_published: '2023-09-18'
+registries_checked:
+- registry: npm
+  query: landtech, landinsight, land-tech
+  api_client_found: false
+- registry: pypi
+  query: landtech, land-tech, landinsight
+  api_client_found: false
+- registry: maven-central
+  api_client_found: false
+- registry: nuget
+  api_client_found: false
+- registry: pkg.go.dev
+  api_client_found: false
+- registry: rubygems
+  api_client_found: false
+- registry: packagist
+  api_client_found: false
+- registry: crates.io
+  api_client_found: false

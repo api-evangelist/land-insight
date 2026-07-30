@@ -1,0 +1,64 @@
+generated: '2026-07-19'
+method: searched
+source: live probes of the LandTech hosts
+note: >-
+  No /.well-known/ discovery documents are published on any LandTech host. app.land.tech answers every
+  unknown path with HTTP 200 and a text/html single-page-app error page ("Oops... Looks like something
+  went wrong!"), so its 200 status codes below are soft 404s and were verified as non-documents by
+  inspecting the body and content-type. land.tech and developers.land.tech return real 404s. One
+  genuine agent-facing discovery file does exist off the /.well-known/ path -
+  https://developers.land.tech/llms.txt - captured in llms/land-insight-llms.txt.
+hosts:
+- host: https://land.tech
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+- host: https://app.land.tech
+  note: API host. Returns 200 text/html SPA error page for all unknown paths; no documents present.
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    document: false
+    content_type: text/html
+    detail: SPA error page, not a security.txt
+  - path: /.well-known/openid-configuration
+    status: 200
+    document: false
+    content_type: text/html
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    document: false
+    content_type: text/html
+  - path: /.well-known/api-catalog
+    status: 200
+    document: false
+    content_type: text/html
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    document: false
+    content_type: text/html
+- host: https://developers.land.tech
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /llms.txt
+    status: 200
+    document: true
+    content_type: text/plain
+    file: ../llms/land-insight-llms.txt

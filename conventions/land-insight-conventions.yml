@@ -1,0 +1,142 @@
+generated: '2026-07-19'
+method: derived
+source: openapi/land-insight-api-openapi.yml
+docs: https://developers.land.tech/openapi
+summary: >-
+  The LandTech API is a read-oriented UK land and planning data API. Every operation is either a GET
+  detail lookup by a natural identifier or a POST that carries a search filter or a batch of IDs in
+  the request body. There are no create, update or delete operations, so the API publishes no
+  idempotency contract and none is inferred here.
+authentication:
+  style: api-key
+  transport: header
+  parameter: X-API-Key
+  scheme: ApiKeyAuth
+  applied: global
+  detail: authentication/land-insight-authentication.yml
+  verify_operation: getAuthStatus
+  note: >-
+    A single API key is applied globally via the root-level security requirement. GET /status/auth
+    echoes the account state (active, or expired/blocked on a 403) and is the documented way to
+    confirm a key works before issuing data calls.
+idempotency:
+  supported: false
+  evidence: >-
+    No Idempotency-Key header, parameter or documented retry-safety contract appears in the OpenAPI
+    or the developer portal. The API exposes no state-changing operations; the POST verb is used only
+    for filter payloads and ID batches, which are naturally repeatable.
+pagination:
+  supported: false
+  style: bounded-result-set
+  evidence: >-
+    The spec declares no page, cursor, limit or offset parameters. Search operations instead return a
+    single bounded array and document a hard ceiling in the operation description.
+  bounds:
+  - operation: searchParcels
+    returns: parcel_ids[]
+    max_results: 100000
+  - operation: searchParcelsAdvanced
+    returns: parcel_ids[]
+    max_results: 100000
+    status: beta
+  - operation: searchPlanningApplications
+    returns: planning application references grouped by planning authority GSS code
+batching:
+  style: bulk-post
+  pattern: >-
+    Most collections expose three shapes - a GET detail endpoint for a single identifier, a POST
+    collection endpoint that accepts an array of identifiers, and a POST /<collection>/lite variant
+    that returns the same records with the geometry omitted for lighter payloads.
+  limits:
+  - operation: getParcelsBulk
+    max_ids: 50
+  - operation: getTitlesBulk
+    max_ids: 200
+  - operation: getPropertiesBulk
+    max_ids: 200
+  lite_variants:
+  - getAdditionalOpportunitiesLite
+  - getDevelopmentConstraintsLite
+  - getDevelopmentOpportunitiesLite
+  - getShlaasLite
+  - getPowersLite
+  - getSilsLite
+  - getRepdsLite
+  - getLocalPlanPoliciesLite
+response_envelope:
+  style: data-wrapper
+  shape: '{ "data": { "<entity>": { ... } } }'
+  examples:
+  - schema: ParcelDetails
+    path: data.parcel
+  - schema: TitleDetails
+    path: data.title
+  - schema: PropertyInformation
+    path: data.propertyInformation
+  - schema: Feature
+    path: data.feature
+  null_semantics: >-
+    A lookup that finds no record returns HTTP 200 with the inner entity set to null rather than a
+    404 - ParcelDetailsItem and propertyInformation are both explicitly nullable. Clients must
+    null-check the inner object, not rely on the status code.
+error_envelope:
+  content_type: application/json
+  rfc9457: false
+  detail: errors/land-insight-problem-types.yml
+  shape: >-
+    403 responses use the Forbidden schema, a oneOf of {"user": {"state": "expired"|"blocked"}} or
+    {"message": "..."}. 400 and 404 responses are described but carry no named schema.
+field_expansion:
+  supported: false
+sparse_fields:
+  supported: false
+  note: >-
+    The /lite bulk variants are the only field-shaping mechanism - they drop geometry from feature
+    responses. There is no generic fields or include parameter.
+metadata:
+  supported: false
+request_tracing:
+  documented: false
+  note: No request-id or correlation header is documented in the spec or portal.
+rate_limiting:
+  documented: false
+  note: >-
+    No rate-limit headers, quotas or throttling policy are published in the OpenAPI or on the
+    developer portal. Access is commercially provisioned per customer, so limits are presumed to be
+    contractual rather than advertised.
+versioning:
+  scheme: spec-version
+  current: 0.3.0
+  in_path: false
+  detail: lifecycle/land-insight-lifecycle.yml
+  note: >-
+    The base URL https://app.land.tech/api carries no version segment. The version is declared only
+    in the OpenAPI info block (0.3.0), a pre-1.0 number consistent with the beta markers on
+    searchParcelsAdvanced and getPlanningApplicationByIds.
+identifiers:
+  note: The API keys entities on UK national reference identifiers rather than vendor-issued IDs.
+  types:
+  - name: parcel_id
+    format: uuid
+    issuer: LandTech
+  - name: title_number
+    format: HM Land Registry title number
+    example: WT77573
+    issuer: HM Land Registry
+  - name: uprn
+    format: numeric string, 1-12 digits
+    issuer: Ordnance Survey AddressBase
+  - name: gss_code
+    format: '^[EWS]\d{8}$'
+    issuer: UK Office for National Statistics
+  - name: planning application id
+    format: '<gss_code>+<ref>'
+    example: E07000112+Y18/1381/FH
+    issuer: LandTech
+geospatial:
+  formats:
+  - GeoJSON geometry (Polygon, Point)
+  - point-with-radius search location
+  note: >-
+    Search operations accept a SearchLocation of either a Polygon or a PointWithRadius. Feature
+    responses carry boundary geometry unless the /lite variant is used.

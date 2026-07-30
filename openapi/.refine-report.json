@@ -1,0 +1,36 @@
+{
+  "provider": "land-insight",
+  "sources": [
+    "land-insight-additional-opportunities-api-openapi.yml",
+    "land-insight-development-constraints-api-openapi.yml",
+    "land-insight-development-opportunities-api-openapi.yml",
+    "land-insight-getting-started-api-openapi.yml",
+    "land-insight-land-availability-assessment-api-openapi.yml",
+    "land-insight-local-policy-api-openapi.yml",
+    "land-insight-ownership-api-openapi.yml",
+    "land-insight-parcels-api-openapi.yml",
+    "land-insight-planning-applications-api-openapi.yml",
+    "land-insight-power-api-openapi.yml",
+    "land-insight-renewable-energy-planning-db-api-openapi.yml",
+    "land-insight-strategic-industrial-location-api-openapi.yml"
+  ],
+  "outputs": [
+    "land-insight-additional-opportunities-api-openapi.yml",
+    "land-insight-development-constraints-api-openapi.yml",
+    "land-insight-development-opportunities-api-openapi.yml",
+    "land-insight-getting-started-api-openapi.yml",
+    "land-insight-land-availability-assessment-api-openapi.yml",
+    "land-insight-local-policy-api-openapi.yml",
+    "land-insight-ownership-api-openapi.yml",
+    "land-insight-parcels-api-openapi.yml",
+    "land-insight-planning-applications-api-openapi.yml",
+    "land-insight-power-api-openapi.yml",
+    "land-insight-renewable-energy-planning-db-api-openapi.yml",
+    "land-insight-strategic-industrial-location-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}

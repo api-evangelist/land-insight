@@ -1,0 +1,76 @@
+generated: '2026-07-19'
+method: derived
+source: openapi/land-insight-api-openapi.yml
+format: json
+note: 'The LandTech API does not use RFC 9457 application/problem+json. Errors are returned as plain application/json.
+  403 responses use the Forbidden schema, a oneOf of {user:{state: expired|blocked}} or {message: string}.
+  400 and 404 responses carry a description only.'
+envelope:
+  content_type: application/json
+  shapes:
+  - schema: Forbidden
+    oneOf:
+    - user:
+        state:
+        - expired
+        - blocked
+    - message: string, e.g. "User not found"
+problems:
+- status: 403
+  title: Forbidden
+  operations:
+  - getAdditionalOpportunities
+  - getAdditionalOpportunitiesLite
+  - getAdditionalOpportunity
+  - getAuthStatus
+  - getDevelopmentConstraint
+  - getDevelopmentConstraints
+  - getDevelopmentConstraintsLite
+  - getDevelopmentOpportunities
+  - getDevelopmentOpportunitiesLite
+  - getDevelopmentOpportunity
+  - getLocalPlanPolicies
+  - getLocalPlanPoliciesLite
+  - getLocalPlanPolicy
+  - getParcel
+  - getParcelsBulk
+  - getPlanningApplication
+  - getPlanningApplicationById
+  - getPlanningApplicationByIds
+  - getPower
+  - getPowers
+  - getPowersLite
+  - getPropertyDetails
+  - getRegions
+  - getRepd
+  - getRepds
+  - getRepdsLite
+  - getShlaa
+  - getShlaas
+  - getShlaasLite
+  - getSil
+  - getSils
+  - getSilsLite
+  - getTitleDetails
+  - searchParcels
+  - searchParcelsAdvanced
+  - searchPlanningApplications
+  schema: Forbidden
+- status: 400
+  title: Bad Request
+  operations:
+  - getParcelsBulk
+- status: 400
+  title: Invalid request
+  operations:
+  - searchPlanningApplications
+- status: 404
+  title: Application not found
+  operations:
+  - getPlanningApplication
+  - getPlanningApplicationById
+  - getPlanningApplicationByIds
+- status: 404
+  title: UPRN not supplied
+  operations:
+  - getPropertyDetails

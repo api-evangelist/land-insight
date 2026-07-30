@@ -1,0 +1,128 @@
+generated: '2026-07-19'
+method: derived
+source: openapi/land-insight-api-openapi.yml
+status: candidate
+note: No official LandTech MCP server was found on the developer portal, npm, or the MCP registries during
+  this pass. The tool list below is a candidate derived one-to-one from the OpenAPI operations.
+server:
+  name: land-insight
+  transport: stdio
+  auth:
+    type: apiKey
+    in: header
+    name: X-API-Key
+tools:
+- name: get_auth_status
+  description: Check your authentication is valid
+  source_operation: openapi/land-insight-api-openapi.yml#getAuthStatus
+- name: get_regions
+  description: List available regions
+  source_operation: openapi/land-insight-api-openapi.yml#getRegions
+- name: search_parcels
+  description: Search for parcels
+  source_operation: openapi/land-insight-api-openapi.yml#searchParcels
+- name: search_parcels_advanced
+  description: Advanced parcel search - beta
+  source_operation: openapi/land-insight-api-openapi.yml#searchParcelsAdvanced
+- name: get_parcel
+  description: Details about a parcel
+  source_operation: openapi/land-insight-api-openapi.yml#getParcel
+- name: get_parcels_bulk
+  description: Bulk parcel details
+  source_operation: openapi/land-insight-api-openapi.yml#getParcelsBulk
+- name: search_planning_applications
+  description: Search for planning applications
+  source_operation: openapi/land-insight-api-openapi.yml#searchPlanningApplications
+- name: get_planning_application
+  description: Details of a planning application
+  source_operation: openapi/land-insight-api-openapi.yml#getPlanningApplication
+- name: get_planning_application_by_id
+  description: Details of a planning application via app ID
+  source_operation: openapi/land-insight-api-openapi.yml#getPlanningApplicationById
+- name: get_planning_application_by_ids
+  description: Bulk planning application details
+  source_operation: openapi/land-insight-api-openapi.yml#getPlanningApplicationByIds
+- name: get_title_details
+  description: Details of a registered title
+  source_operation: openapi/land-insight-api-openapi.yml#getTitleDetails
+- name: get_titles_bulk
+  description: Bulk title details
+  source_operation: openapi/land-insight-api-openapi.yml#getTitlesBulk
+- name: get_property_details
+  description: Details about a property
+  source_operation: openapi/land-insight-api-openapi.yml#getPropertyDetails
+- name: get_properties_bulk
+  description: Bulk property details
+  source_operation: openapi/land-insight-api-openapi.yml#getPropertiesBulk
+- name: get_shlaa
+  description: Details about an individual SHLAA
+  source_operation: openapi/land-insight-api-openapi.yml#getShlaa
+- name: get_development_constraint
+  description: Details about a development constraint
+  source_operation: openapi/land-insight-api-openapi.yml#getDevelopmentConstraint
+- name: get_additional_opportunity
+  description: Details about a Homes England Land Hub site
+  source_operation: openapi/land-insight-api-openapi.yml#getAdditionalOpportunity
+- name: get_additional_opportunities
+  description: Bulk - Details about Homes England Land Hub sites
+  source_operation: openapi/land-insight-api-openapi.yml#getAdditionalOpportunities
+- name: get_additional_opportunities_lite
+  description: Bulk - Details about Homes England Land Hub sites (without geometry)
+  source_operation: openapi/land-insight-api-openapi.yml#getAdditionalOpportunitiesLite
+- name: get_development_opportunity
+  description: Details about a single development opportunity
+  source_operation: openapi/land-insight-api-openapi.yml#getDevelopmentOpportunity
+- name: get_power
+  description: Details about a single unit of power infrastructure
+  source_operation: openapi/land-insight-api-openapi.yml#getPower
+- name: get_sil
+  description: Details about a single Strategic Industrial Location
+  source_operation: openapi/land-insight-api-openapi.yml#getSil
+- name: get_repd
+  description: Details about a single Renewable Energy Planning DB site
+  source_operation: openapi/land-insight-api-openapi.yml#getRepd
+- name: get_local_plan_policy
+  description: Details about a single local plan policy
+  source_operation: openapi/land-insight-api-openapi.yml#getLocalPlanPolicy
+- name: get_development_constraints
+  description: Bulk - Details about development constraints
+  source_operation: openapi/land-insight-api-openapi.yml#getDevelopmentConstraints
+- name: get_development_constraints_lite
+  description: Bulk - Details about development constraints (without geometry)
+  source_operation: openapi/land-insight-api-openapi.yml#getDevelopmentConstraintsLite
+- name: get_development_opportunities
+  description: Bulk - Details about development opportunities
+  source_operation: openapi/land-insight-api-openapi.yml#getDevelopmentOpportunities
+- name: get_development_opportunities_lite
+  description: Bulk - Details about development opportunities (without geometry)
+  source_operation: openapi/land-insight-api-openapi.yml#getDevelopmentOpportunitiesLite
+- name: get_shlaas
+  description: Bulk - Details about SHLAA
+  source_operation: openapi/land-insight-api-openapi.yml#getShlaas
+- name: get_shlaas_lite
+  description: Bulk - Details about SHLAA (without geometry)
+  source_operation: openapi/land-insight-api-openapi.yml#getShlaasLite
+- name: get_powers
+  description: Bulk - Details about power infrastructure
+  source_operation: openapi/land-insight-api-openapi.yml#getPowers
+- name: get_powers_lite
+  description: Bulk - Details about power infrastructure (without geometry)
+  source_operation: openapi/land-insight-api-openapi.yml#getPowersLite
+- name: get_sils
+  description: Bulk - Details about Strategic Industrial Locations
+  source_operation: openapi/land-insight-api-openapi.yml#getSils
+- name: get_sils_lite
+  description: Bulk - Details about Strategic Industrial Locations (without geometry)
+  source_operation: openapi/land-insight-api-openapi.yml#getSilsLite
+- name: get_repds
+  description: Bulk - Details about Renewable Energy Planning DB sites
+  source_operation: openapi/land-insight-api-openapi.yml#getRepds
+- name: get_repds_lite
+  description: Bulk - Details about Renewable Energy Planning DB sites (without geometry)
+  source_operation: openapi/land-insight-api-openapi.yml#getRepdsLite
+- name: get_local_plan_policies
+  description: Bulk - Details about local plan policies
+  source_operation: openapi/land-insight-api-openapi.yml#getLocalPlanPolicies
+- name: get_local_plan_policies_lite
+  description: Bulk - Details about local plan policies (without geometry)
+  source_operation: openapi/land-insight-api-openapi.yml#getLocalPlanPoliciesLite

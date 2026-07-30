@@ -1,0 +1,48 @@
+generated: '2026-07-19'
+method: derived
+source: openapi/land-insight-api-openapi.yml
+docs: https://developers.land.tech/openapi
+versioning:
+  scheme: spec-version
+  current: 0.3.0
+  in_path: false
+  in_header: false
+  base_url: https://app.land.tech/api
+  policy_url: null
+  note: >-
+    LandTech publishes a version number in the OpenAPI info block only (0.3.0). The base URL carries
+    no version segment and no version header is documented, so there is no client-selectable version.
+    No written versioning or breaking-change policy was found on the developer portal.
+beta_operations:
+- operation: searchParcelsAdvanced
+  path: POST /parcels/advanced-search
+  marker: '!Beta in the published docs'
+- operation: getPlanningApplicationByIds
+  path: POST /planning-applications
+  marker: '!Beta in the published docs'
+deprecation:
+  policy_url: null
+  sunset_header: false
+  deprecation_header: false
+  note: >-
+    No deprecation or sunset policy is published, and no RFC 8594 Sunset/Deprecation header support is
+    documented. No operation in the spec carries deprecated: true.
+deprecated_operations: []
+sla:
+  url: null
+  uptime_target: null
+  note: No public SLA or uptime commitment was found; the API is sold as a commercial product.
+status_page: null
+status_page_note: >-
+  No status page was found. https://status.land.tech returns 404 and no status link appears on
+  land.tech, the support centre, or the developer portal.
+support:
+  url: https://support.land.tech/en/
+  tutorials: https://tutorials.land.tech/
+access:
+  model: commercial
+  note: >-
+    The API is a paid product that does not require a LandInsight licence. Access is arranged through
+    a demo request rather than self-service signup.
+  request_url: https://land.tech/request-ecosystem-demo
+  pricing: https://land.tech/pricing

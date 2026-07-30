@@ -1,0 +1,24 @@
+generated: '2026-07-19'
+method: generated
+source: openapi/land-insight-api-openapi.yml
+note: >-
+  LandTech publishes no AGENTS.md or provider-authored agent skills; these are generated from the
+  LandTech API OpenAPI plus conventions/land-insight-conventions.yml and
+  errors/land-insight-problem-types.yml. Every operationId referenced was verified verbatim against
+  the spec.
+skills:
+- file: land-insight-source-development-sites.md
+  name: Source UK development sites with the LandTech API
+  api: openapi/land-insight-api-openapi.yml
+  operations: [getAuthStatus, getRegions, searchParcels, searchParcelsAdvanced, getParcelsBulk, getParcel]
+- file: land-insight-trace-land-ownership.md
+  name: Trace UK land ownership with the LandTech API
+  api: openapi/land-insight-api-openapi.yml
+  operations: [getAuthStatus, getParcel, getTitleDetails, getTitlesBulk, getPropertyDetails, getPropertiesBulk]
+- file: land-insight-assess-planning-and-constraints.md
+  name: Assess planning history and development constraints with the LandTech API
+  api: openapi/land-insight-api-openapi.yml
+  operations: [getAuthStatus, getRegions, searchPlanningApplications, getPlanningApplication,
+    getPlanningApplicationById, getPlanningApplicationByIds, getDevelopmentConstraints,
+    getDevelopmentConstraintsLite, getDevelopmentOpportunities, getDevelopmentOpportunitiesLite,
+    getLocalPlanPolicies, getShlaas, getPowers]

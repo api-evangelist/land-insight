@@ -1,0 +1,18 @@
+generated: '2026-07-19'
+method: searched
+source: https://developers.land.tech/llms.txt
+file: land-insight-llms.txt
+status: 200
+content_type: text/plain
+bytes: 94
+note: >-
+  LandTech publishes a real but minimal llms.txt on its developer portal. It contains a single table
+  of contents entry pointing at the markdown rendering of the API reference,
+  https://developers.land.tech/openapi.md, which the portal also exposes per-operation (for example
+  https://developers.land.tech/openapi/parcels/getparcel.md). Saved verbatim; not extended.
+markdown_docs:
+  root: https://developers.land.tech/openapi.md
+  per_operation_pattern: https://developers.land.tech/openapi/<tag-slug>/<operationid-lowercase>.md
+  spec_downloads:
+  - https://developers.land.tech/_spec/openapi.yaml
+  - https://developers.land.tech/_spec/openapi.json
