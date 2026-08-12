@@ -245,6 +245,8 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Overlay
+  url: overlays/land-insight-api-overlay.yaml
 - type: TrustCenter
   url: security/land-insight-trust-center.yml
 - type: Website
