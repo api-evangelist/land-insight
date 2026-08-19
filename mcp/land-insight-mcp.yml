@@ -126,3 +126,9 @@ tools:
 - name: get_local_plan_policies_lite
   description: Bulk - Details about local plan policies (without geometry)
   source_operation: openapi/land-insight-api-openapi.yml#getLocalPlanPoliciesLite
+deployment:
+  mode: none
+  verified: derived
+  tools: 38
+  checked: '2026-08-12'
+  source: catalog MCP census

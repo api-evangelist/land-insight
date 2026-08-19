@@ -1,0 +1,101 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "LandTech Additional Opportunities Parcels API",
+    "version": "0.3.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "X-API-Key",
+      "value": "{{X-API-Key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Parcels",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List available regions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://app.land.tech/api/regions"
+          },
+          "docs": "List the GSS code and name of known regions (local authorities), that can be used when searching for parcels.\n"
+        },
+        {
+          "info": {
+            "name": "Search for parcels",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://app.land.tech/api/parcels/search",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Given a region GSS code and optional parcel size, retrieve a list of parcel IDs. The maximum number of IDs returned is 100,000.\n"
+        },
+        {
+          "info": {
+            "name": "Advanced parcel search - beta",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://app.land.tech/api/parcels/advanced-search",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Retrieve a list of parcel IDs based on a set of filters. The maximum number of IDs returned is 100,000.\n \n**Schema is subject to change.** ![Beta](https://img.shields.io/badge/Status-Beta-yellow)\n"
+        },
+        {
+          "info": {
+            "name": "Details about a parcel",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://app.land.tech/api/parcels/:parcel_id",
+            "params": [
+              {
+                "name": "parcel_id",
+                "value": "2a5ad2c7-29ef-d609-8ade-36eef8e3a072",
+                "type": "path",
+                "description": "A parcel ID"
+              }
+            ]
+          },
+          "docs": "Given a parcel ID, get the parcel details including associated titles, properties and planning applications.\n"
+        },
+        {
+          "info": {
+            "name": "Bulk parcel details",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://app.land.tech/api/parcels",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Fetch parcel details for up to 50 parcel IDs in a single request.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

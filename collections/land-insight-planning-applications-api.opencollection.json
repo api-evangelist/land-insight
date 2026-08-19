@@ -1,0 +1,100 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "LandTech Additional Opportunities Planning Applications API",
+    "version": "0.3.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "X-API-Key",
+      "value": "{{X-API-Key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Planning Applications",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Search for planning applications",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://app.land.tech/api/planning-applications/search",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Given a geometry, get a list of planning application references, grouped by the planning authority GSS code.\n"
+        },
+        {
+          "info": {
+            "name": "Details of a planning application",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://app.land.tech/api/planning-applications/:gss_code/:ref",
+            "params": [
+              {
+                "name": "gss_code",
+                "value": "E09000033",
+                "type": "path",
+                "description": "The GSS code of a planning authority, e.g. `E09000033`."
+              },
+              {
+                "name": "ref",
+                "value": "",
+                "type": "path",
+                "description": "The planning application reference declared by the planning authority. It may contain slashes, e.g. `16/11109/FULL`. It's sensible, but not necessary, to \"URL encode\" this value."
+              }
+            ]
+          },
+          "docs": "Get detailed information about a planning application, given its local authority GSS code and application reference.\n"
+        },
+        {
+          "info": {
+            "name": "Details of a planning application via app ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://app.land.tech/api/planning-applications/:app_id",
+            "params": [
+              {
+                "name": "app_id",
+                "value": "E07000112%2BY18%2F1381%2FFH",
+                "type": "path",
+                "description": "An ID comprised of a GSS code and ref separated by a plus sign (`+`) e.g. `E07000112+Y18/1381/FH`. It's sensible, but not necessary, to \"URL encode\" this value.\n"
+              }
+            ]
+          },
+          "docs": "Get detailed information about a planning application, given a unique planning application ID e.g. a local authority GSS code and reference separated by a plus sign (`+`).\n"
+        },
+        {
+          "info": {
+            "name": "Bulk planning application details",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://app.land.tech/api/planning-applications",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Get detailed information about a set of planning applications, given a set of unique planning application IDs e.g. a local authority GSS code and reference separated by a plus sign (`+`).\n \n**Schema is subject to change.** ![Beta](https://img.shields.io/badge/Status-Beta-yellow)\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

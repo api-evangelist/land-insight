@@ -1,0 +1,595 @@
+{
+  "item": [
+    {
+      "id": "d701fa52-b5b0-465d-8e7b-01790148ee80",
+      "name": "Ownership",
+      "description": {
+        "content": "Endpoints to get details about land ownership and property information.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "56f58543-4e68-4666-83ee-cade304d0dbf",
+          "name": "Details of a registered title",
+          "request": {
+            "name": "Details of a registered title",
+            "description": {
+              "content": "Get information about a title, given a HM Land Registry title number.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "titles",
+                ":title_number"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "title_number",
+                  "description": "(Required) Title number for a parcel of land."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "a649adc1-5813-437b-85fb-916d0c1eef3f",
+              "name": "Title details found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "titles",
+                    ":title_number"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "title_number",
+                      "description": "(Required) Title number for a parcel of land."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"title\": {\n      \"title_no\": \"WT77573\",\n      \"tenure\": \"FREEHOLD\",\n      \"addresses\": [\n        \"Unipart House, Cowley, Oxford, OX4 2PG\"\n      ],\n      \"registered_lease\": {\n        \"start_date\": \"1987-12-18T00:00:00.000Z\",\n        \"end_date\": \"2112-12-18T00:00:00.000Z\"\n      },\n      \"properties\": [\n        \"100080312053\"\n      ],\n      \"properties_intersects\": [\n        \"10091868676\",\n        \"10023302495\"\n      ],\n      \"owners\": [\n        {\n          \"last_ownership_change\": \"2008-10-13T00:00:00.000Z\",\n          \"company\": {\n            \"company_no\": \"string\",\n            \"name\": \"REDWOOD (LIGHT INDUSTRIAL) PROPCO LIMITED\",\n            \"addresses\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"proprietorship\": \"Private Limited Company\",\n            \"is_foreign\": true,\n            \"ultimate_owners\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ]\n          }\n        },\n        {\n          \"last_ownership_change\": \"2008-10-13T00:00:00.000Z\",\n          \"company\": {\n            \"company_no\": \"string\",\n            \"name\": \"REDWOOD (LIGHT INDUSTRIAL) PROPCO LIMITED\",\n            \"addresses\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"proprietorship\": \"Private Limited Company\",\n            \"is_foreign\": true,\n            \"ultimate_owners\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ]\n          }\n        }\n      ]\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "670fc1d2-089d-418e-b2f7-31acb53e7d6e",
+              "name": "Forbidden",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "titles",
+                    ":title_number"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "title_number",
+                      "description": "(Required) Title number for a parcel of land."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"user\": {\n    \"state\": \"expired\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "952adf5d-af5c-4383-af37-e05098c0c6c4",
+          "name": "Bulk title details",
+          "request": {
+            "name": "Bulk title details",
+            "description": {
+              "content": "Fetch details for up to 200 titles in a single request.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "titles"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titles\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "9c59ec56-75da-4756-bf4d-209c1151e4ef",
+              "name": "Bulk title details or error response.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "titles"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"titles\": [\n    \"SGL235730\",\n    \"SGL235730\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"title\": [\n      {\n        \"data\": {\n          \"title\": {\n            \"title_no\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"tenure\": \"FREEHOLD\",\n            \"addresses\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"registered_lease\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"properties\": [\n              \"100080312053\"\n            ],\n            \"properties_intersects\": [\n              \"10091868676\",\n              \"10023302495\"\n            ],\n            \"owners\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ]\n          }\n        }\n      },\n      {\n        \"data\": {\n          \"title\": {\n            \"title_no\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"tenure\": \"FREEHOLD\",\n            \"addresses\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"registered_lease\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"properties\": [\n              \"100080312053\"\n            ],\n            \"properties_intersects\": [\n              \"10091868676\",\n              \"10023302495\"\n            ],\n            \"owners\": [\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            ]\n          }\n        }\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "c2fd9fb5-0ed4-4eab-9241-fc6fdd373bf2",
+          "name": "Details about a property",
+          "request": {
+            "name": "Details about a property",
+            "description": {
+              "content": "Get information about a property, given a Unique Property Reference Number (UPRN).\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "properties",
+                ":uprn"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "uprn",
+                  "description": "(Required) UPRN for a specific property."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "6c7058b4-7642-4048-8617-854630139669",
+              "name": "Property Information",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "properties",
+                    ":uprn"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "uprn",
+                      "description": "(Required) UPRN for a specific property."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"propertyInformation\": {\n      \"address\": {\n        \"uprn\": \"100010716016\",\n        \"full_address\": \"17 Manor Road, Lancashire, Garstang, PR3 1JR\",\n        \"property_type\": \"Semi-Detached\",\n        \"property_state\": \"In Use\",\n        \"property_class_code\": \"RD03\",\n        \"use_class\": \"Residential (C3)\"\n      },\n      \"building_height\": {\n        \"highest_point\": 3.7,\n        \"roof_height\": 1.2,\n        \"no_floors_estimate\": 1\n      },\n      \"epc\": {\n        \"current_energy_rating\": \"D\",\n        \"potential_energy_rating\": \"B\",\n        \"total_floor_area\": 103.4\n      }\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "fc170f73-a7e2-4c69-a597-75fb173e867c",
+              "name": "Forbidden",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "properties",
+                    ":uprn"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "uprn",
+                      "description": "(Required) UPRN for a specific property."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"user\": {\n    \"state\": \"expired\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "cb9b8b47-ec94-40d1-aecf-ed0d3fb83d6c",
+              "name": "UPRN not supplied",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "properties",
+                    ":uprn"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "uprn",
+                      "description": "(Required) UPRN for a specific property."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error_msg\": \"route not found\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "b9fb64de-ed53-4d05-bf29-cf6b708b13d8",
+          "name": "Bulk property details",
+          "request": {
+            "name": "Bulk property details",
+            "description": {
+              "content": "Fetch details for up to 200 properties in a single request.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "properties"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"properties\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "e7c1dd0d-7406-495e-b691-ce23759568fd",
+              "name": "Bulk property details or error response.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "properties"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"properties\": [\n    \"100023523019\",\n    \"100023523019\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"property\": [\n      {\n        \"data\": {\n          \"propertyInformation\": {\n            \"address\": {\n              \"uprn\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"full_address\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"property_type\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"property_state\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"property_class_code\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"use_class\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            \"building_height\": {\n              \"highest_point\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"roof_height\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"no_floors_estimate\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            \"epc\": {\n              \"current_energy_rating\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"potential_energy_rating\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"total_floor_area\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          }\n        }\n      },\n      {\n        \"data\": {\n          \"propertyInformation\": {\n            \"address\": {\n              \"uprn\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"full_address\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"property_type\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"property_state\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"property_class_code\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"use_class\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            \"building_height\": {\n              \"highest_point\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"roof_height\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"no_floors_estimate\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            },\n            \"epc\": {\n              \"current_energy_rating\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"potential_energy_rating\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              },\n              \"total_floor_area\": {\n                \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n              }\n            }\n          }\n        }\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://app.land.tech/api",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "X-API-Key"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "header"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "4a4c2aac-34ce-43d7-8c26-44e97ac5112c",
+    "name": "LandTech Additional Opportunities Ownership API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.\n",
+      "type": "text/plain"
+    }
+  }
+}

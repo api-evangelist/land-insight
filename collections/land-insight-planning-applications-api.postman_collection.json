@@ -1,0 +1,887 @@
+{
+  "item": [
+    {
+      "id": "94db18c7-c67e-4d1c-9b13-7a2a3483cb64",
+      "name": "Planning Applications",
+      "description": {
+        "content": "Endpoints to search for planning applications and get details on individual applications.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "f7b60eba-3e89-489e-8913-8c21288463a3",
+          "name": "Search for planning applications",
+          "request": {
+            "name": "Search for planning applications",
+            "description": {
+              "content": "Given a geometry, get a list of planning application references, grouped by the planning authority GSS code.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "planning-applications",
+                "search"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"geometry\": {\n    \"type\": \"<string>\",\n    \"coordinates\": [\n      \"<number>\",\n      \"<number>\"\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "48812479-3465-4ee9-afab-043163ef7c8a",
+              "name": "Planning Application Refs",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "planning-applications",
+                    "search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"geometry\": {\n    \"type\": \"Point\",\n    \"coordinates\": [\n      -0.12755,\n      51.5073\n    ]\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"applications\": [\n    {\n      \"gss_code\": \"E09000033\",\n      \"refs\": [\n        \"16/02592/LBC\"\n      ]\n    },\n    {\n      \"gss_code\": \"E09000033\",\n      \"refs\": [\n        \"16/02592/LBC\"\n      ]\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "59f25b59-9182-498d-949b-c4dd470d9b1f",
+              "name": "Invalid request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "planning-applications",
+                    "search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"geometry\": {\n    \"type\": \"Point\",\n    \"coordinates\": [\n      -0.12755,\n      51.5073\n    ]\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"Missing required body parameter: 'geometry'\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "f8aed6b6-8163-48e1-bebc-d9a7899808a9",
+              "name": "Forbidden",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "planning-applications",
+                    "search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"geometry\": {\n    \"type\": \"Point\",\n    \"coordinates\": [\n      -0.12755,\n      51.5073\n    ]\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"user\": {\n    \"state\": \"expired\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "0f502b57-3c37-434a-a642-51496b7072fd",
+          "name": "Details of a planning application",
+          "request": {
+            "name": "Details of a planning application",
+            "description": {
+              "content": "Get detailed information about a planning application, given its local authority GSS code and application reference.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "planning-applications",
+                ":gss_code",
+                ":ref"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "gss_code",
+                  "description": "(Required) The GSS code of a planning authority, e.g. `E09000033`."
+                },
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "ref",
+                  "description": "(Required) The planning application reference declared by the planning authority. It may contain slashes, e.g. `16/11109/FULL`. It's sensible, but not necessary, to \"URL encode\" this value."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "069b07ef-36f7-4afb-97b8-9878e83c2ed8",
+              "name": "Planning application details",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "planning-applications",
+                    ":gss_code",
+                    ":ref"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "gss_code",
+                      "description": "(Required) The GSS code of a planning authority, e.g. `E09000033`."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ref",
+                      "description": "(Required) The planning application reference declared by the planning authority. It may contain slashes, e.g. `16/11109/FULL`. It's sensible, but not necessary, to \"URL encode\" this value."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"E09000033+16/02592/LBC\",\n  \"gss_code\": \"E09000033\",\n  \"ref\": \"16/02592/LBC\",\n  \"num_dwellings\": 1,\n  \"address\": \"Victoria Gate Lodge Hyde Park Bayswater Road London SW7 1NR\",\n  \"title\": \"Internal and external alterations of the lodge including general internal and external repairs and refurbishment.\",\n  \"location\": {\n    \"type\": \"Point\",\n    \"coordinates\": [\n      -0.12755,\n      51.5073\n    ]\n  },\n  \"boundary\": {\n    \"type\": \"MultiPolygon\",\n    \"coordinates\": [\n      [\n        [\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        ],\n        [\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        ]\n      ],\n      [\n        [\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        ],\n        [\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        ]\n      ]\n    ]\n  },\n  \"url\": \"https://apps.stratford.gov.uk/eplanning/AppDetail.aspx?appkey=OA70D2PM00E00\",\n  \"types_derived\": [\n    \"Proposal of Application Notice\",\n    \"GPDR\"\n  ],\n  \"status\": \"Permission with conditions\",\n  \"decision\": \"Permission with conditions\",\n  \"date_received\": \"2016-07-07T00:00:00.000Z\",\n  \"decision_date\": \"2016-09-21T00:00:00.000Z\",\n  \"agent_address\": \"The Studio, 42 Placeholder Avenue, Fictiontown-upon-Test, EX4 8MP\",\n  \"agent_name\": \"Joe Doe\",\n  \"applicant_name\": \"John Smith\",\n  \"status_derived\": \"Approved\",\n  \"updated\": \"2023-05-26T03:09:36.191Z\",\n  \"classification\": \"RESIDENTIAL\",\n  \"size\": 1,\n  \"found_num_dwellings\": false,\n  \"tags\": [\n    \"Hotel\",\n    \"Demolition\",\n    \"Retail (A1)\",\n    \"Restaurants and cafés (A3)\",\n    \"Office (B1)\"\n  ],\n  \"appeal_case_number\": \"1234567\",\n  \"appeal_type_of_appeal\": \"Planning Appeal\",\n  \"appeal_type_reason\": \"1. Refused planning permission\",\n  \"appeal_application_ref\": \"P1284/13/OUT\",\n  \"appeal_planning_authority_name\": \"London Borough of Barnet\",\n  \"appeal_site_address\": \"The Annex, 7 Example Crescent, Testford-upon-Mere, XY45 6ZT\",\n  \"appeal_decision\": \"Dismissed\",\n  \"appeal_decision_date\": \"2017-08-02T00:00:00.000Z\",\n  \"appeal_received_date\": \"2014-05-15T00:00:00.000Z\",\n  \"appeal_development_type\": \"Householder developments\",\n  \"appeal_inspector_name\": \"James Smith\",\n  \"appeal_appellant\": \"James Thompson\",\n  \"appeal_updated_at\": \"2023-05-26T03:09:36.191Z\",\n  \"is_full_application\": false,\n  \"is_outline\": false,\n  \"is_discharge_of_conditions\": false,\n  \"is_gpdr\": false,\n  \"is_reserved_matters\": false,\n  \"is_tpo\": false,\n  \"is_listed_building\": true,\n  \"is_eia\": false,\n  \"is_change_of_use\": false,\n  \"is_uncategorised\": false,\n  \"is_minor\": false,\n  \"related_applications\": [\n    {\n      \"gss_code\": \"E09000033\",\n      \"refs\": [\n        \"16/02592/LBC\"\n      ]\n    },\n    {\n      \"gss_code\": \"E09000033\",\n      \"refs\": [\n        \"16/02592/LBC\"\n      ]\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "bcc75c88-0f5e-4d50-93d3-319dd1c082fb",
+              "name": "Forbidden",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "planning-applications",
+                    ":gss_code",
+                    ":ref"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "gss_code",
+                      "description": "(Required) The GSS code of a planning authority, e.g. `E09000033`."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ref",
+                      "description": "(Required) The planning application reference declared by the planning authority. It may contain slashes, e.g. `16/11109/FULL`. It's sensible, but not necessary, to \"URL encode\" this value."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"user\": {\n    \"state\": \"expired\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a09012a8-363c-47e4-bf65-1b601fc81c6c",
+              "name": "Application not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "planning-applications",
+                    ":gss_code",
+                    ":ref"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "gss_code",
+                      "description": "(Required) The GSS code of a planning authority, e.g. `E09000033`."
+                    },
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "ref",
+                      "description": "(Required) The planning application reference declared by the planning authority. It may contain slashes, e.g. `16/11109/FULL`. It's sensible, but not necessary, to \"URL encode\" this value."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"Planning application not found\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "b472c7f8-e853-44bf-87c5-fc31f61617aa",
+          "name": "Details of a planning application via app ID",
+          "request": {
+            "name": "Details of a planning application via app ID",
+            "description": {
+              "content": "Get detailed information about a planning application, given a unique planning application ID e.g. a local authority GSS code and reference separated by a plus sign (`+`).\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "planning-applications",
+                ":app_id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "app_id",
+                  "description": "(Required) An ID comprised of a GSS code and ref separated by a plus sign (`+`) e.g. `E07000112+Y18/1381/FH`. It's sensible, but not necessary, to \"URL encode\" this value.\n"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "646ead19-3374-4bf2-9ef8-9d2f56cff2bf",
+              "name": "Planning application details",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "planning-applications",
+                    ":app_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "app_id",
+                      "description": "(Required) An ID comprised of a GSS code and ref separated by a plus sign (`+`) e.g. `E07000112+Y18/1381/FH`. It's sensible, but not necessary, to \"URL encode\" this value.\n"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"E09000033+16/02592/LBC\",\n  \"gss_code\": \"E09000033\",\n  \"ref\": \"16/02592/LBC\",\n  \"num_dwellings\": 1,\n  \"address\": \"Victoria Gate Lodge Hyde Park Bayswater Road London SW7 1NR\",\n  \"title\": \"Internal and external alterations of the lodge including general internal and external repairs and refurbishment.\",\n  \"location\": {\n    \"type\": \"Point\",\n    \"coordinates\": [\n      -0.12755,\n      51.5073\n    ]\n  },\n  \"boundary\": {\n    \"type\": \"MultiPolygon\",\n    \"coordinates\": [\n      [\n        [\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        ],\n        [\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        ]\n      ],\n      [\n        [\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        ],\n        [\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        ]\n      ]\n    ]\n  },\n  \"url\": \"https://apps.stratford.gov.uk/eplanning/AppDetail.aspx?appkey=OA70D2PM00E00\",\n  \"types_derived\": [\n    \"Change of Use\",\n    \"Discharge of Conditions\"\n  ],\n  \"status\": \"Permission with conditions\",\n  \"decision\": \"Permission with conditions\",\n  \"date_received\": \"2016-07-07T00:00:00.000Z\",\n  \"decision_date\": \"2016-09-21T00:00:00.000Z\",\n  \"agent_address\": \"The Studio, 42 Placeholder Avenue, Fictiontown-upon-Test, EX4 8MP\",\n  \"agent_name\": \"Joe Doe\",\n  \"applicant_name\": \"John Smith\",\n  \"status_derived\": \"Approved\",\n  \"updated\": \"2023-05-26T03:09:36.191Z\",\n  \"classification\": \"RESIDENTIAL\",\n  \"size\": 1,\n  \"found_num_dwellings\": false,\n  \"tags\": [\n    \"Hotel\",\n    \"Demolition\",\n    \"Retail (A1)\",\n    \"Restaurants and cafés (A3)\",\n    \"Office (B1)\"\n  ],\n  \"appeal_case_number\": \"1234567\",\n  \"appeal_type_of_appeal\": \"Planning Appeal\",\n  \"appeal_type_reason\": \"1. Refused planning permission\",\n  \"appeal_application_ref\": \"P1284/13/OUT\",\n  \"appeal_planning_authority_name\": \"London Borough of Barnet\",\n  \"appeal_site_address\": \"The Annex, 7 Example Crescent, Testford-upon-Mere, XY45 6ZT\",\n  \"appeal_decision\": \"Dismissed\",\n  \"appeal_decision_date\": \"2017-08-02T00:00:00.000Z\",\n  \"appeal_received_date\": \"2014-05-15T00:00:00.000Z\",\n  \"appeal_development_type\": \"Householder developments\",\n  \"appeal_inspector_name\": \"James Smith\",\n  \"appeal_appellant\": \"James Thompson\",\n  \"appeal_updated_at\": \"2023-05-26T03:09:36.191Z\",\n  \"is_full_application\": false,\n  \"is_outline\": false,\n  \"is_discharge_of_conditions\": false,\n  \"is_gpdr\": false,\n  \"is_reserved_matters\": false,\n  \"is_tpo\": false,\n  \"is_listed_building\": true,\n  \"is_eia\": false,\n  \"is_change_of_use\": false,\n  \"is_uncategorised\": false,\n  \"is_minor\": false,\n  \"related_applications\": [\n    {\n      \"gss_code\": \"E09000033\",\n      \"refs\": [\n        \"16/02592/LBC\"\n      ]\n    },\n    {\n      \"gss_code\": \"E09000033\",\n      \"refs\": [\n        \"16/02592/LBC\"\n      ]\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "15b4ca14-58b4-4ac4-9342-b8aa849416d4",
+              "name": "Forbidden",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "planning-applications",
+                    ":app_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "app_id",
+                      "description": "(Required) An ID comprised of a GSS code and ref separated by a plus sign (`+`) e.g. `E07000112+Y18/1381/FH`. It's sensible, but not necessary, to \"URL encode\" this value.\n"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"user\": {\n    \"state\": \"expired\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "cfd8482f-06d9-437a-b0ac-ce5695838c11",
+              "name": "Application not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "planning-applications",
+                    ":app_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "app_id",
+                      "description": "(Required) An ID comprised of a GSS code and ref separated by a plus sign (`+`) e.g. `E07000112+Y18/1381/FH`. It's sensible, but not necessary, to \"URL encode\" this value.\n"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"Planning application not found\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "b2460983-865b-4e66-a419-93a06211f548",
+          "name": "Bulk planning application details",
+          "request": {
+            "name": "Bulk planning application details",
+            "description": {
+              "content": "Get detailed information about a set of planning applications, given a set of unique planning application IDs e.g. a local authority GSS code and reference separated by a plus sign (`+`).\n \n**Schema is subject to change.** ![Beta](https://img.shields.io/badge/Status-Beta-yellow)\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "planning-applications"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planning_applications\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "7bb09a78-31ec-40bf-aadd-26187ccadf67",
+              "name": "Planning application details",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "planning-applications"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"planning_applications\": [\n    \"E07000112+Y18/1381/FH\",\n    \"E09000033+16/02592/LBC\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": \"E09000033+16/02592/LBC\",\n    \"gss_code\": \"E09000033\",\n    \"ref\": \"16/02592/LBC\",\n    \"num_dwellings\": 1,\n    \"address\": \"Victoria Gate Lodge Hyde Park Bayswater Road London SW7 1NR\",\n    \"title\": \"Internal and external alterations of the lodge including general internal and external repairs and refurbishment.\",\n    \"location\": {\n      \"type\": \"Point\",\n      \"coordinates\": [\n        -0.12755,\n        51.5073\n      ]\n    },\n    \"boundary\": {\n      \"type\": \"MultiPolygon\",\n      \"coordinates\": [\n        [\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        ],\n        [\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        ]\n      ]\n    },\n    \"url\": \"https://apps.stratford.gov.uk/eplanning/AppDetail.aspx?appkey=OA70D2PM00E00\",\n    \"types_derived\": [\n      \"EIA\",\n      \"TPO\"\n    ],\n    \"status\": \"Permission with conditions\",\n    \"decision\": \"Permission with conditions\",\n    \"date_received\": \"2016-07-07T00:00:00.000Z\",\n    \"decision_date\": \"2016-09-21T00:00:00.000Z\",\n    \"agent_address\": \"The Studio, 42 Placeholder Avenue, Fictiontown-upon-Test, EX4 8MP\",\n    \"agent_name\": \"Joe Doe\",\n    \"applicant_name\": \"John Smith\",\n    \"status_derived\": \"Approved\",\n    \"updated\": \"2023-05-26T03:09:36.191Z\",\n    \"classification\": \"RESIDENTIAL\",\n    \"size\": 1,\n    \"found_num_dwellings\": false,\n    \"tags\": [\n      \"Hotel\",\n      \"Demolition\",\n      \"Retail (A1)\",\n      \"Restaurants and cafés (A3)\",\n      \"Office (B1)\"\n    ],\n    \"appeal_case_number\": \"1234567\",\n    \"appeal_type_of_appeal\": \"Planning Appeal\",\n    \"appeal_type_reason\": \"1. Refused planning permission\",\n    \"appeal_application_ref\": \"P1284/13/OUT\",\n    \"appeal_planning_authority_name\": \"London Borough of Barnet\",\n    \"appeal_site_address\": \"The Annex, 7 Example Crescent, Testford-upon-Mere, XY45 6ZT\",\n    \"appeal_decision\": \"Dismissed\",\n    \"appeal_decision_date\": \"2017-08-02T00:00:00.000Z\",\n    \"appeal_received_date\": \"2014-05-15T00:00:00.000Z\",\n    \"appeal_development_type\": \"Householder developments\",\n    \"appeal_inspector_name\": \"James Smith\",\n    \"appeal_appellant\": \"James Thompson\",\n    \"appeal_updated_at\": \"2023-05-26T03:09:36.191Z\",\n    \"is_full_application\": false,\n    \"is_outline\": false,\n    \"is_discharge_of_conditions\": false,\n    \"is_gpdr\": false,\n    \"is_reserved_matters\": false,\n    \"is_tpo\": false,\n    \"is_listed_building\": true,\n    \"is_eia\": false,\n    \"is_change_of_use\": false,\n    \"is_uncategorised\": false,\n    \"is_minor\": false,\n    \"related_applications\": [\n      {\n        \"gss_code\": \"E09000033\",\n        \"refs\": [\n          \"16/02592/LBC\"\n        ]\n      },\n      {\n        \"gss_code\": \"E09000033\",\n        \"refs\": [\n          \"16/02592/LBC\"\n        ]\n      }\n    ]\n  },\n  {\n    \"id\": \"E09000033+16/02592/LBC\",\n    \"gss_code\": \"E09000033\",\n    \"ref\": \"16/02592/LBC\",\n    \"num_dwellings\": 1,\n    \"address\": \"Victoria Gate Lodge Hyde Park Bayswater Road London SW7 1NR\",\n    \"title\": \"Internal and external alterations of the lodge including general internal and external repairs and refurbishment.\",\n    \"location\": {\n      \"type\": \"Point\",\n      \"coordinates\": [\n        -0.12755,\n        51.5073\n      ]\n    },\n    \"boundary\": {\n      \"type\": \"MultiPolygon\",\n      \"coordinates\": [\n        [\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        ],\n        [\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        ]\n      ]\n    },\n    \"url\": \"https://apps.stratford.gov.uk/eplanning/AppDetail.aspx?appkey=OA70D2PM00E00\",\n    \"types_derived\": [\n      \"Full Application\",\n      \"GPDR\"\n    ],\n    \"status\": \"Permission with conditions\",\n    \"decision\": \"Permission with conditions\",\n    \"date_received\": \"2016-07-07T00:00:00.000Z\",\n    \"decision_date\": \"2016-09-21T00:00:00.000Z\",\n    \"agent_address\": \"The Studio, 42 Placeholder Avenue, Fictiontown-upon-Test, EX4 8MP\",\n    \"agent_name\": \"Joe Doe\",\n    \"applicant_name\": \"John Smith\",\n    \"status_derived\": \"Approved\",\n    \"updated\": \"2023-05-26T03:09:36.191Z\",\n    \"classification\": \"RESIDENTIAL\",\n    \"size\": 1,\n    \"found_num_dwellings\": false,\n    \"tags\": [\n      \"Hotel\",\n      \"Demolition\",\n      \"Retail (A1)\",\n      \"Restaurants and cafés (A3)\",\n      \"Office (B1)\"\n    ],\n    \"appeal_case_number\": \"1234567\",\n    \"appeal_type_of_appeal\": \"Planning Appeal\",\n    \"appeal_type_reason\": \"1. Refused planning permission\",\n    \"appeal_application_ref\": \"P1284/13/OUT\",\n    \"appeal_planning_authority_name\": \"London Borough of Barnet\",\n    \"appeal_site_address\": \"The Annex, 7 Example Crescent, Testford-upon-Mere, XY45 6ZT\",\n    \"appeal_decision\": \"Dismissed\",\n    \"appeal_decision_date\": \"2017-08-02T00:00:00.000Z\",\n    \"appeal_received_date\": \"2014-05-15T00:00:00.000Z\",\n    \"appeal_development_type\": \"Householder developments\",\n    \"appeal_inspector_name\": \"James Smith\",\n    \"appeal_appellant\": \"James Thompson\",\n    \"appeal_updated_at\": \"2023-05-26T03:09:36.191Z\",\n    \"is_full_application\": false,\n    \"is_outline\": false,\n    \"is_discharge_of_conditions\": false,\n    \"is_gpdr\": false,\n    \"is_reserved_matters\": false,\n    \"is_tpo\": false,\n    \"is_listed_building\": true,\n    \"is_eia\": false,\n    \"is_change_of_use\": false,\n    \"is_uncategorised\": false,\n    \"is_minor\": false,\n    \"related_applications\": [\n      {\n        \"gss_code\": \"E09000033\",\n        \"refs\": [\n          \"16/02592/LBC\"\n        ]\n      },\n      {\n        \"gss_code\": \"E09000033\",\n        \"refs\": [\n          \"16/02592/LBC\"\n        ]\n      }\n    ]\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "4ea1eaa6-9ecc-4fe7-b5c7-5597bfbc0bd2",
+              "name": "Forbidden",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "planning-applications"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"planning_applications\": [\n    \"E07000112+Y18/1381/FH\",\n    \"E09000033+16/02592/LBC\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"user\": {\n    \"state\": \"expired\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "b42633c0-fdde-4aa3-8b05-e6be9d3807a4",
+              "name": "Application not found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "planning-applications"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"planning_applications\": [\n    \"E07000112+Y18/1381/FH\",\n    \"E09000033+16/02592/LBC\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"Planning application not found\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://app.land.tech/api",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "X-API-Key"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "header"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "3b2a59be-f129-4d65-8f06-48fd48f5f428",
+    "name": "LandTech Additional Opportunities Planning Applications API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.\n",
+      "type": "text/plain"
+    }
+  }
+}

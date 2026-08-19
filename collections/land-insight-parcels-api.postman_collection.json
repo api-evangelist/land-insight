@@ -1,0 +1,825 @@
+{
+  "item": [
+    {
+      "id": "a60d4e5b-5486-454f-81a1-c7f1baa9ae48",
+      "name": "Parcels",
+      "description": {
+        "content": "Endpoints to search for parcels and associated attributes.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "c3336180-3fbb-45d6-9fec-863803f602fc",
+          "name": "List available regions",
+          "request": {
+            "name": "List available regions",
+            "description": {
+              "content": "List the GSS code and name of known regions (local authorities), that can be used when searching for parcels.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "regions"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "215c7f7d-8ec0-4931-b765-8ee98134124e",
+              "name": "A list of regions available.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "regions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"regions\": [\n      {\n        \"gss_code\": \"E06000023\",\n        \"name\": \"Bristol, City of\"\n      },\n      {\n        \"gss_code\": \"E09000033\",\n        \"name\": \"Westminster\"\n      },\n      {\n        \"gss_code\": \"E07000112\",\n        \"name\": \"Folkestone and Hythe\"\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "2ea8d5c2-670d-4dca-ad8c-ba241cc64b34",
+              "name": "Forbidden",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "regions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"user\": {\n    \"state\": \"expired\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "5abf32ee-8980-4281-89b1-5b67d89fc543",
+          "name": "Search for parcels",
+          "request": {
+            "name": "Search for parcels",
+            "description": {
+              "content": "Given a region GSS code and optional parcel size, retrieve a list of parcel IDs. The maximum number of IDs returned is 100,000.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "parcels",
+                "search"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"region\": \"<string>\",\n  \"parcel_size\": {\n    \"min\": \"<float>\",\n    \"max\": \"<float>\"\n  },\n  \"tenure\": [\n    \"freehold\",\n    \"freehold\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "9fcb04f1-89ff-4624-8d59-200490cd19ff",
+              "name": "A list of parcel IDs matching the search criteria.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "parcels",
+                    "search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"region\": \"E09000033\",\n  \"parcel_size\": {\n    \"min\": 2023.43,\n    \"max\": 4046.86\n  },\n  \"tenure\": [\n    \"freehold\",\n    \"freehold\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"parcel_ids\": [\n    \"533bdf35-c073-5433-b225-076b625d22f9\",\n    \"7da6fe12-6f0a-3d16-5bf0-3c80839256b5\",\n    \"7fc7684c-bf0f-8710-327e-78d26f9c313e\"\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "3959d15c-5af5-4cd7-a438-1551914dd83f",
+              "name": "Forbidden",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "parcels",
+                    "search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"region\": \"E09000033\",\n  \"parcel_size\": {\n    \"min\": 2023.43,\n    \"max\": 4046.86\n  },\n  \"tenure\": [\n    \"freehold\",\n    \"freehold\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"user\": {\n    \"state\": \"expired\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "dc6e552a-e58a-4bc9-8bde-118295d017b2",
+          "name": "Advanced parcel search - beta",
+          "request": {
+            "name": "Advanced parcel search - beta",
+            "description": {
+              "content": "Retrieve a list of parcel IDs based on a set of filters. The maximum number of IDs returned is 100,000.\n \n**Schema is subject to change.** ![Beta](https://img.shields.io/badge/Status-Beta-yellow)\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "parcels",
+                "advanced-search"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"search_filter\": {\n    \"ALL\": [\n      {\n        \"values\": [\n          {\n            \"key\": \"<string>\",\n            \"checked\": \"<boolean>\"\n          },\n          {\n            \"key\": \"<string>\",\n            \"checked\": \"<boolean>\"\n          }\n        ],\n        \"must\": \"<string>\",\n        \"id\": \"<string>\"\n      }\n    ]\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "66149c2d-09b4-4dc0-8167-f04937080900",
+              "name": "A list of parcel IDs matching the search criteria.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "parcels",
+                    "advanced-search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"search_filter\": {\n    \"ALL\": [\n      {\n        \"id\": \"tenure-uk\",\n        \"values\": [\n          {\n            \"key\": \"freehold\",\n            \"checked\": true\n          },\n          {\n            \"key\": \"leasehold\"\n          }\n        ],\n        \"must\": \"MATCH_ANY\"\n      },\n      {\n        \"id\": \"use-class-nested-id\",\n        \"values\": [\n          {\n            \"key\": \"E\",\n            \"items\": [\n              {\n                \"key\": \"E(a)\",\n                \"checked\": true\n              },\n              {\n                \"key\": \"E(b)\",\n                \"checked\": true\n              }\n            ]\n          },\n          {\n            \"key\": \"sui-generis\",\n            \"items\": [\n              {\n                \"key\": \"i-Agricultural\",\n                \"checked\": true\n              }\n            ]\n          }\n        ],\n        \"must\": \"MATCH_ANY\"\n      },\n      {\n        \"id\": \"adopted-constraints-id\",\n        \"values\": [\n          {\n            \"key\": \"very_low_risk_of_flooding_from_rivers_and_seas\",\n            \"checked\": true\n          },\n          {\n            \"key\": \"low_risk_of_flooding_from_rivers_and_seas\",\n            \"checked\": true\n          }\n        ],\n        \"must\": \"MATCH_NONE\",\n        \"type\": \"nested-checkbox\"\n      },\n      {\n        \"id\": \"ownership-type-id\",\n        \"values\": [\n          {\n            \"key\": \"private\",\n            \"checked\": true\n          }\n        ],\n        \"must\": \"MATCH_NONE\"\n      }\n    ]\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"parcel_ids\": [\n    \"533bdf35-c073-5433-b225-076b625d22f9\",\n    \"7da6fe12-6f0a-3d16-5bf0-3c80839256b5\",\n    \"7fc7684c-bf0f-8710-327e-78d26f9c313e\"\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "ff998a64-e213-405b-8364-969f1d9f9732",
+              "name": "Forbidden",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "parcels",
+                    "advanced-search"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"search_filter\": {\n    \"ALL\": [\n      {\n        \"id\": \"tenure-uk\",\n        \"values\": [\n          {\n            \"key\": \"freehold\",\n            \"checked\": true\n          },\n          {\n            \"key\": \"leasehold\"\n          }\n        ],\n        \"must\": \"MATCH_ANY\"\n      },\n      {\n        \"id\": \"use-class-nested-id\",\n        \"values\": [\n          {\n            \"key\": \"E\",\n            \"items\": [\n              {\n                \"key\": \"E(a)\",\n                \"checked\": true\n              },\n              {\n                \"key\": \"E(b)\",\n                \"checked\": true\n              }\n            ]\n          },\n          {\n            \"key\": \"sui-generis\",\n            \"items\": [\n              {\n                \"key\": \"i-Agricultural\",\n                \"checked\": true\n              }\n            ]\n          }\n        ],\n        \"must\": \"MATCH_ANY\"\n      },\n      {\n        \"id\": \"adopted-constraints-id\",\n        \"values\": [\n          {\n            \"key\": \"very_low_risk_of_flooding_from_rivers_and_seas\",\n            \"checked\": true\n          },\n          {\n            \"key\": \"low_risk_of_flooding_from_rivers_and_seas\",\n            \"checked\": true\n          }\n        ],\n        \"must\": \"MATCH_NONE\",\n        \"type\": \"nested-checkbox\"\n      },\n      {\n        \"id\": \"ownership-type-id\",\n        \"values\": [\n          {\n            \"key\": \"private\",\n            \"checked\": true\n          }\n        ],\n        \"must\": \"MATCH_NONE\"\n      }\n    ]\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"user\": {\n    \"state\": \"expired\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "27466fc7-354b-45ee-a41f-a53f3ab373e4",
+          "name": "Details about a parcel",
+          "request": {
+            "name": "Details about a parcel",
+            "description": {
+              "content": "Given a parcel ID, get the parcel details including associated titles, properties and planning applications.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "parcels",
+                ":parcel_id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<uuid>",
+                  "key": "parcel_id",
+                  "description": "(Required) A parcel ID"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "4db61d58-9c25-402c-9d64-2372fee2a8e9",
+              "name": "Parcel Details",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "parcels",
+                    ":parcel_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "parcel_id",
+                      "description": "(Required) A parcel ID"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"parcel\": {\n      \"parcel_id\": \"2a5ad2c7-29ef-d609-8ade-36eef8e3a072\",\n      \"parcel_size\": 18336.97,\n      \"developed_area_ratio\": 0.2865,\n      \"titles\": [\n        \"K375897\",\n        \"TT17693\"\n      ],\n      \"properties\": [\n        \"50121170\",\n        \"50100934\",\n        \"10015394608\"\n      ],\n      \"properties_intersects\": [\n        \"10091868676\",\n        \"10023302495\"\n      ],\n      \"planning_apps\": [\n        \"E07000112+Y18/1381/FH\",\n        \"E07000112+Y10/0641/SH\"\n      ],\n      \"local_plan_policy\": {\n        \"key_0\": [\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          },\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          }\n        ],\n        \"key_1\": [\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          },\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          }\n        ]\n      },\n      \"development_constraints\": {\n        \"key_0\": [\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          },\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          }\n        ],\n        \"key_1\": [\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          },\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          }\n        ]\n      },\n      \"development_opportunities\": {\n        \"key_0\": [\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          },\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          }\n        ]\n      },\n      \"shlaa\": {\n        \"key_0\": [\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          },\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          }\n        ],\n        \"key_1\": [\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          },\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          }\n        ]\n      },\n      \"strategic_industrial_location\": {\n        \"key_0\": [\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          },\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          }\n        ],\n        \"key_1\": [\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          },\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          }\n        ]\n      },\n      \"additional_opportunities\": {\n        \"key_0\": [\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          },\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          }\n        ],\n        \"key_1\": [\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          },\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          }\n        ]\n      },\n      \"power\": {\n        \"hv_power_substations\": [\n          {\n            \"distance\": 0\n          }\n        ],\n        \"power_cables\": [\n          {\n            \"distance\": 12.5\n          }\n        ]\n      },\n      \"renewable_energy_planning_db\": {\n        \"key_0\": [\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          },\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          }\n        ],\n        \"key_1\": [\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          },\n          {\n            \"id\": \"string\",\n            \"coverage\": 0.618\n          }\n        ]\n      },\n      \"geometry\": {\n        \"type\": \"Polygon\",\n        \"coordinates\": [\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        ]\n      }\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "90a24bf1-1ce6-4433-95c8-70c05db5062e",
+              "name": "Forbidden",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "parcels",
+                    ":parcel_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid>",
+                      "key": "parcel_id",
+                      "description": "(Required) A parcel ID"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"user\": {\n    \"state\": \"expired\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "482efd41-b54a-404c-bd3c-f2df7f00dbb5",
+          "name": "Bulk parcel details",
+          "request": {
+            "name": "Bulk parcel details",
+            "description": {
+              "content": "Fetch parcel details for up to 50 parcel IDs in a single request.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "parcels"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"parcel_ids\": [\n    \"<uuid>\",\n    \"<uuid>\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "ebc7a99a-8202-4c49-bb8d-f9d87b3cacd3",
+              "name": "Bulk parcel details",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "parcels"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"parcel_ids\": [\n    \"2a5ad2c7-29ef-d609-8ade-36eef8e3a072\",\n    \"2a5ad2c7-29ef-d609-8ade-36eef8e3a072\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"parcel\": [\n      {\n        \"parcel_id\": \"2a5ad2c7-29ef-d609-8ade-36eef8e3a072\",\n        \"parcel_size\": 18336.97,\n        \"developed_area_ratio\": 0.2865,\n        \"titles\": [\n          \"K375897\",\n          \"TT17693\"\n        ],\n        \"properties\": [\n          \"50121170\",\n          \"50100934\",\n          \"10015394608\"\n        ],\n        \"properties_intersects\": [\n          \"10091868676\",\n          \"10023302495\"\n        ],\n        \"planning_apps\": [\n          \"E07000112+Y18/1381/FH\",\n          \"E07000112+Y10/0641/SH\"\n        ],\n        \"local_plan_policy\": {\n          \"key_0\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ]\n        },\n        \"development_constraints\": {\n          \"key_0\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_1\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_2\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_3\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ]\n        },\n        \"development_opportunities\": {\n          \"key_0\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_1\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ]\n        },\n        \"shlaa\": {\n          \"key_0\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_1\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_2\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ]\n        },\n        \"strategic_industrial_location\": {\n          \"key_0\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_1\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_2\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_3\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_4\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ]\n        },\n        \"additional_opportunities\": {\n          \"key_0\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_1\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_2\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_3\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ]\n        },\n        \"power\": {\n          \"key_0\": [\n            {\n              \"distance\": 0,\n              \"id\": \"7e47387c-8852-4265-834c-b98f5e3a222d\"\n            },\n            {\n              \"distance\": 0,\n              \"id\": \"7e47387c-8852-4265-834c-b98f5e3a222d\"\n            }\n          ],\n          \"key_1\": [\n            {\n              \"distance\": 0,\n              \"id\": \"7e47387c-8852-4265-834c-b98f5e3a222d\"\n            },\n            {\n              \"distance\": 0,\n              \"id\": \"7e47387c-8852-4265-834c-b98f5e3a222d\"\n            }\n          ]\n        },\n        \"renewable_energy_planning_db\": {\n          \"key_0\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_1\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_2\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_3\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ]\n        },\n        \"geometry\": {\n          \"type\": \"Polygon\",\n          \"coordinates\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      },\n      {\n        \"parcel_id\": \"2a5ad2c7-29ef-d609-8ade-36eef8e3a072\",\n        \"parcel_size\": 18336.97,\n        \"developed_area_ratio\": 0.2865,\n        \"titles\": [\n          \"K375897\",\n          \"TT17693\"\n        ],\n        \"properties\": [\n          \"50121170\",\n          \"50100934\",\n          \"10015394608\"\n        ],\n        \"properties_intersects\": [\n          \"10091868676\",\n          \"10023302495\"\n        ],\n        \"planning_apps\": [\n          \"E07000112+Y18/1381/FH\",\n          \"E07000112+Y10/0641/SH\"\n        ],\n        \"local_plan_policy\": {\n          \"key_0\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_1\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ]\n        },\n        \"development_constraints\": {\n          \"key_0\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ]\n        },\n        \"development_opportunities\": {\n          \"key_0\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ]\n        },\n        \"shlaa\": {\n          \"key_0\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_1\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_2\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ]\n        },\n        \"strategic_industrial_location\": {\n          \"key_0\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_1\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ]\n        },\n        \"additional_opportunities\": {\n          \"key_0\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_1\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_2\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ]\n        },\n        \"power\": {\n          \"key_0\": [\n            {\n              \"distance\": 0,\n              \"id\": \"7e47387c-8852-4265-834c-b98f5e3a222d\"\n            },\n            {\n              \"distance\": 0,\n              \"id\": \"7e47387c-8852-4265-834c-b98f5e3a222d\"\n            }\n          ]\n        },\n        \"renewable_energy_planning_db\": {\n          \"key_0\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ],\n          \"key_1\": [\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            },\n            {\n              \"id\": \"string\",\n              \"coverage\": 0.618\n            }\n          ]\n        },\n        \"geometry\": {\n          \"type\": \"Polygon\",\n          \"coordinates\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      }\n    ]\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "ba3f7fc3-29e0-4ffa-821b-8447623002a0",
+              "name": "Bad Request",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "parcels"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"parcel_ids\": [\n    \"2a5ad2c7-29ef-d609-8ade-36eef8e3a072\",\n    \"2a5ad2c7-29ef-d609-8ade-36eef8e3a072\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error_msg\": \"Body must be valid JSON object in the form of:\\n  { \\\"parcel_ids\\\": [\\\"valid_uuid_0\\\", \\\"valid_uuid_1\\\", \\\"valid_uuid_N\\\"] }\\n\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "d97ffe36-d7db-4d8b-b3b2-30ecf989282a",
+              "name": "Forbidden",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "parcels"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-API-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"parcel_ids\": [\n    \"2a5ad2c7-29ef-d609-8ade-36eef8e3a072\",\n    \"2a5ad2c7-29ef-d609-8ade-36eef8e3a072\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"user\": {\n    \"state\": \"expired\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://app.land.tech/api",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "X-API-Key"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "header"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "cd210089-714c-4925-b745-dc55e8b13608",
+    "name": "LandTech Additional Opportunities Parcels API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.\n",
+      "type": "text/plain"
+    }
+  }
+}

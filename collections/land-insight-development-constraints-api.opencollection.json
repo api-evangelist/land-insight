@@ -1,0 +1,75 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "LandTech Additional Opportunities Development Constraints API",
+    "version": "0.3.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "X-API-Key",
+      "value": "{{X-API-Key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Development Constraints",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Details about a development constraint",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://app.land.tech/api/development_constraints/:development_constraints_id",
+            "params": [
+              {
+                "name": "development_constraints_id",
+                "value": "",
+                "type": "path",
+                "description": "ID for a specific development constraint"
+              }
+            ]
+          },
+          "docs": "Given a development constraints ID, get details about a development constraint"
+        },
+        {
+          "info": {
+            "name": "Bulk - Details about development constraints",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://app.land.tech/api/development_constraints",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Given a set of development constraint IDs, get details about development constraints in bulk"
+        },
+        {
+          "info": {
+            "name": "Bulk - Details about development constraints (without geometry)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://app.land.tech/api/development_constraints/lite",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Given a set of development constraint IDs, get details about development constraints in bulk without geometry data"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,94 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "LandTech Additional Opportunities Ownership API",
+    "version": "0.3.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "X-API-Key",
+      "value": "{{X-API-Key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Ownership",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Details of a registered title",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://app.land.tech/api/titles/:title_number",
+            "params": [
+              {
+                "name": "title_number",
+                "value": "WT77573",
+                "type": "path",
+                "description": "Title number for a parcel of land."
+              }
+            ]
+          },
+          "docs": "Get information about a title, given a HM Land Registry title number.\n"
+        },
+        {
+          "info": {
+            "name": "Bulk title details",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://app.land.tech/api/titles",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Fetch details for up to 200 titles in a single request.\n"
+        },
+        {
+          "info": {
+            "name": "Details about a property",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://app.land.tech/api/properties/:uprn",
+            "params": [
+              {
+                "name": "uprn",
+                "value": "100010716016",
+                "type": "path",
+                "description": "UPRN for a specific property."
+              }
+            ]
+          },
+          "docs": "Get information about a property, given a Unique Property Reference Number (UPRN).\n"
+        },
+        {
+          "info": {
+            "name": "Bulk property details",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://app.land.tech/api/properties",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Fetch details for up to 200 properties in a single request.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

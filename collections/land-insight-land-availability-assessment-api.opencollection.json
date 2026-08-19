@@ -1,0 +1,75 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "LandTech Additional Opportunities Land Availability Assessment API",
+    "version": "0.3.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "X-API-Key",
+      "value": "{{X-API-Key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Land Availability Assessment",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Details about an individual SHLAA",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://app.land.tech/api/shlaa/:shlaa_id",
+            "params": [
+              {
+                "name": "shlaa_id",
+                "value": "",
+                "type": "path",
+                "description": "ID for a specific Land Availability Assessment"
+              }
+            ]
+          },
+          "docs": "Given an ID, get details about an individual Land Availability Assessment"
+        },
+        {
+          "info": {
+            "name": "Bulk - Details about SHLAA",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://app.land.tech/api/shlaa",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Given a set of IDs, get details about Land Availability Assessments in bulk"
+        },
+        {
+          "info": {
+            "name": "Bulk - Details about SHLAA (without geometry)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://app.land.tech/api/shlaa/lite",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Given a set of IDs, get details about Land Availability Assessments in bulk without geometry data"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
