@@ -1,0 +1,34 @@
+slug: land-insight
+provider: Land Insight
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Real Estate
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 2
+edges:
+- tag: Development Opportunities
+  spec_file: land-insight-development-opportunities-api-openapi.yml
+  capability_id: BC-4900.10
+  capability_id_l1: BC-4900
+  capability_name: Development Pipeline & Site Sourcing
+  confidence: 0.7
+  evidence: getDevelopmentOpportunity  Details about a single development opportunity
+  reason: Operations retrieve and bulk-list development opportunities, matching origination/identification
+    of development sites for developers and land agents.
+- tag: Parcels
+  spec_file: land-insight-parcels-api-openapi.yml
+  capability_id: BC-4900.10
+  capability_id_l1: BC-4900
+  capability_name: Development Pipeline & Site Sourcing
+  confidence: 0.7
+  evidence: searchParcelsAdvanced  Advanced parcel search - beta
+  reason: Parcel search with development-relevant filters (ParcelSize, DevelopedArea, LandAvailabilityAssessment,
+    ConstraintsAdopted, PowerDistance, Transport) is the core site-sourcing and screening surface for
+    development opportunity origination.

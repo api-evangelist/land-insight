@@ -268,6 +268,9 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: CapabilityMap
+  url: capabilities/land-insight-capability-edges.yml
+  name: Land Insight Business Capability Map
 - type: Overlay
   url: overlays/land-insight-api-overlay.yaml
 - type: TrustCenter
