@@ -188,6 +188,8 @@ apis:
   humanURL: https://land.tech/api
   baseURL: https://app.land.tech/api
   tags:
+  - Parcel
+  tags_raw:
   - Parcels
   properties:
   - type: OpenAPI
