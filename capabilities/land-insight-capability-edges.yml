@@ -11,8 +11,29 @@ capability_model:
   attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
     CC BY 4.0
   notice: NOTICE
-edge_count: 1
+edge_count: 3
 edges:
+- tag: Development Opportunities
+  spec_file: land-insight-development-opportunities-api-openapi.yml
+  capability_id: BC-4900.10
+  capability_id_l1: BC-4900
+  capability_name: Development Pipeline & Site Sourcing
+  confidence: 0.7
+  evidence: getDevelopmentOpportunity  Details about a single development opportunity
+  reason: Operations retrieve and bulk-list development opportunities, matching origination/identification
+    of development sites for developers and land agents.
+  recovered_from: vertical-real-estate-edges.json
+- tag: Parcels
+  spec_file: land-insight-parcels-api-openapi.yml
+  capability_id: BC-4900.10
+  capability_id_l1: BC-4900
+  capability_name: Development Pipeline & Site Sourcing
+  confidence: 0.7
+  evidence: searchParcelsAdvanced  Advanced parcel search - beta
+  reason: Parcel search with development-relevant filters (ParcelSize, DevelopedArea, LandAvailabilityAssessment,
+    ConstraintsAdopted, PowerDistance, Transport) is the core site-sourcing and screening surface for
+    development opportunity origination.
+  recovered_from: vertical-real-estate-edges.json
 - tag: Planning Applications
   spec_file: land-insight-planning-applications-api-openapi.yml
   capability_id: BC-5010.40
