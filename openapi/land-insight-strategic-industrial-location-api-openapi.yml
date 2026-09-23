@@ -1,9 +1,7 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: LandTech Additional Opportunities Strategic Industrial Location API
-  description: 'Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.
-
-    '
+  title: LandTech Strategic Industrial Location API
+  description: Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.
   version: 0.3.0
 servers:
 - url: https://app.land.tech/api
@@ -115,114 +113,6 @@ paths:
                 $ref: '#/components/schemas/Forbidden'
 components:
   schemas:
-    SilID:
-      type: string
-      format: uuid
-      description: A SIL ID in the form of a UUID.
-      example: c6f0312f-841b-46e3-93f5-eb4257c7b5ae
-    Polygon:
-      externalDocs:
-        url: https://datatracker.ietf.org/doc/html/rfc7946
-      type: object
-      required:
-      - type
-      - coordinates
-      properties:
-        type:
-          type: string
-          enum:
-          - Polygon
-          example: Polygon
-          description: the geometry type
-        coordinates:
-          $ref: '#/components/schemas/PolygonCoordinates'
-    SilFeatureCollectionLite:
-      allOf:
-      - $ref: '#/components/schemas/FeaturesLite'
-      - type: object
-        properties:
-          data:
-            properties:
-              features:
-                type: array
-                items:
-                  $ref: '#/components/schemas/SilFeatureItem'
-    FeatureBase:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-          nullable: true
-        type:
-          type: string
-        attributes:
-          type: array
-          items:
-            type: object
-            properties:
-              key:
-                type: string
-              value:
-                type: string
-          description: Attributes containing any additional details about the feature
-        geometries:
-          type: array
-          description: Array of geometries relating to the feature
-          items:
-            type: object
-            properties:
-              area_hectares:
-                type: number
-                format: float
-                nullable: true
-                example: 0.2023428
-              geometry:
-                type: object
-                description: GeoJSON of the feature.
-                oneOf:
-                - $ref: '#/components/schemas/Polygon'
-                - $ref: '#/components/schemas/MultiPolygon'
-    Feature:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            feature:
-              $ref: '#/components/schemas/FeatureBase'
-    MultiPolygon:
-      description: GeoJSON MultiPolygon
-      externalDocs:
-        url: https://datatracker.ietf.org/doc/html/rfc7946
-      type: object
-      required:
-      - type
-      - coordinates
-      properties:
-        type:
-          type: string
-          enum:
-          - MultiPolygon
-          example: MultiPolygon
-          description: the geometry type
-        coordinates:
-          type: array
-          items:
-            $ref: '#/components/schemas/PolygonCoordinates'
-    SilFeatureCollection:
-      allOf:
-      - $ref: '#/components/schemas/Features'
-      - type: object
-        properties:
-          data:
-            properties:
-              features:
-                type: array
-                items:
-                  $ref: '#/components/schemas/SilFeatureItem'
     PointCoordinates:
       type: array
       maxItems: 2
@@ -232,51 +122,6 @@ components:
       - 51.5073
       items:
         type: number
-    FeatureBaseLite:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-          nullable: true
-        type:
-          type: string
-        attributes:
-          type: array
-          items:
-            type: object
-            properties:
-              key:
-                type: string
-              value:
-                type: string
-          description: Attributes containing any additional details about the feature
-    Forbidden:
-      oneOf:
-      - type: object
-        required:
-        - user
-        properties:
-          user:
-            type: object
-            required:
-            - state
-            properties:
-              state:
-                type: string
-                enum:
-                - expired
-                - blocked
-                example: expired
-      - type: object
-        required:
-        - message
-        properties:
-          message:
-            type: string
-            example: User not found
     PolygonCoordinates:
       type: array
       items:
@@ -311,6 +156,52 @@ components:
       minItems: 4
       items:
         $ref: '#/components/schemas/PointCoordinates'
+    Forbidden:
+      oneOf:
+      - type: object
+        required:
+        - user
+        properties:
+          user:
+            type: object
+            required:
+            - state
+            properties:
+              state:
+                type: string
+                enum:
+                - expired
+                - blocked
+                example: expired
+      - type: object
+        required:
+        - message
+        properties:
+          message:
+            type: string
+            example: User not found
+    FeatureBaseLite:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
     SilFeature:
       allOf:
       - $ref: '#/components/schemas/Feature'
@@ -320,21 +211,131 @@ components:
             properties:
               feature:
                 $ref: '#/components/schemas/SilFeatureItem'
-    PowerID:
-      type: string
-      format: uuid
-      description: A development opportunity ID in the form of a UUID.
-      example: 1679c94a-2158-462f-b924-18acf92e7949
-    Features:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FeatureData'
     FeaturesLite:
       type: object
       properties:
         data:
           $ref: '#/components/schemas/FeatureDataLite'
+    FeatureBase:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+        geometries:
+          type: array
+          description: Array of geometries relating to the feature
+          items:
+            type: object
+            properties:
+              area_hectares:
+                type:
+                - number
+                - 'null'
+                format: float
+                example: 0.2023428
+              geometry:
+                type: object
+                description: GeoJSON of the feature.
+                oneOf:
+                - $ref: '#/components/schemas/Polygon'
+                - $ref: '#/components/schemas/MultiPolygon'
+    Features:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureData'
+    Polygon:
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - Polygon
+          example: Polygon
+          description: the geometry type
+        coordinates:
+          $ref: '#/components/schemas/PolygonCoordinates'
+    SilFeatureCollection:
+      allOf:
+      - $ref: '#/components/schemas/Features'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SilFeatureItem'
+    PowerID:
+      type: string
+      format: uuid
+      description: A development opportunity ID in the form of a UUID.
+      example: 1679c94a-2158-462f-b924-18acf92e7949
+    MultiPolygon:
+      description: GeoJSON MultiPolygon
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - MultiPolygon
+          example: MultiPolygon
+          description: the geometry type
+        coordinates:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolygonCoordinates'
+    SilFeatureCollectionLite:
+      allOf:
+      - $ref: '#/components/schemas/FeaturesLite'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SilFeatureItem'
+    SilID:
+      type: string
+      format: uuid
+      description: A SIL ID in the form of a UUID.
+      example: c6f0312f-841b-46e3-93f5-eb4257c7b5ae
+    Feature:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            feature:
+              $ref: '#/components/schemas/FeatureBase'
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

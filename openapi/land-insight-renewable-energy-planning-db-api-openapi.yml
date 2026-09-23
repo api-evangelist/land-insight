@@ -1,9 +1,7 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: LandTech Additional Opportunities Renewable Energy Planning DB API
-  description: 'Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.
-
-    '
+  title: LandTech Renewable Energy Planning DB API
+  description: Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.
   version: 0.3.0
 servers:
 - url: https://app.land.tech/api
@@ -115,9 +113,9 @@ paths:
                 $ref: '#/components/schemas/Forbidden'
 components:
   schemas:
-    RepdFeatureCollectionLite:
+    RepdFeatureCollection:
       allOf:
-      - $ref: '#/components/schemas/FeaturesLite'
+      - $ref: '#/components/schemas/Features'
       - type: object
         properties:
           data:
@@ -126,15 +124,62 @@ components:
                 type: array
                 items:
                   $ref: '#/components/schemas/RepdFeatureItem'
-    FeatureBase:
+    Forbidden:
+      oneOf:
+      - type: object
+        required:
+        - user
+        properties:
+          user:
+            type: object
+            required:
+            - state
+            properties:
+              state:
+                type: string
+                enum:
+                - expired
+                - blocked
+                example: expired
+      - type: object
+        required:
+        - message
+        properties:
+          message:
+            type: string
+            example: User not found
+    RepdFeature:
+      allOf:
+      - $ref: '#/components/schemas/Feature'
+      - type: object
+        properties:
+          data:
+            properties:
+              feature:
+                $ref: '#/components/schemas/RepdFeatureItem'
+    PolygonCoordinates:
+      type: array
+      items:
+        $ref: '#/components/schemas/LinearRingCoordinates'
+    PointCoordinates:
+      type: array
+      maxItems: 2
+      minItems: 2
+      example:
+      - -0.12755
+      - 51.5073
+      items:
+        type: number
+    FeatureBaseLite:
       type: object
       properties:
         id:
           type: string
           format: uuid
         name:
-          type: string
-          nullable: true
+          type:
+          - string
+          - 'null'
         type:
           type: string
         attributes:
@@ -147,35 +192,11 @@ components:
               value:
                 type: string
           description: Attributes containing any additional details about the feature
-        geometries:
-          type: array
-          description: Array of geometries relating to the feature
-          items:
-            type: object
-            properties:
-              area_hectares:
-                type: number
-                format: float
-                nullable: true
-                example: 0.2023428
-              geometry:
-                type: object
-                description: GeoJSON of the feature.
-                oneOf:
-                - $ref: '#/components/schemas/Polygon'
-                - $ref: '#/components/schemas/MultiPolygon'
-    PolygonCoordinates:
-      type: array
-      items:
-        $ref: '#/components/schemas/LinearRingCoordinates'
-    Feature:
+    FeaturesLite:
       type: object
       properties:
         data:
-          type: object
-          properties:
-            feature:
-              $ref: '#/components/schemas/FeatureBase'
+          $ref: '#/components/schemas/FeatureDataLite'
     MultiPolygon:
       description: GeoJSON MultiPolygon
       externalDocs:
@@ -195,64 +216,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PolygonCoordinates'
-    FeatureDataLite:
-      type: object
-      properties:
-        features:
-          type: array
-          items:
-            $ref: '#/components/schemas/FeatureBaseLite'
-    FeatureData:
-      type: object
-      properties:
-        features:
-          type: array
-          items:
-            $ref: '#/components/schemas/FeatureBase'
-    FeatureBaseLite:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-          nullable: true
-        type:
-          type: string
-        attributes:
-          type: array
-          items:
-            type: object
-            properties:
-              key:
-                type: string
-              value:
-                type: string
-          description: Attributes containing any additional details about the feature
-    LinearRingCoordinates:
-      type: array
-      minItems: 4
-      items:
-        $ref: '#/components/schemas/PointCoordinates'
-    PointCoordinates:
-      type: array
-      maxItems: 2
-      minItems: 2
-      example:
-      - -0.12755
-      - 51.5073
-      items:
-        type: number
-    RepdFeature:
-      allOf:
-      - $ref: '#/components/schemas/Feature'
-      - type: object
-        properties:
-          data:
-            properties:
-              feature:
-                $ref: '#/components/schemas/RepdFeatureItem'
     RepdFeatureItem:
       type: object
       properties:
@@ -292,22 +255,70 @@ components:
             value: '4396'
           - key: last_updated
             value: 01/09/2014
-    RepdFeatureCollection:
-      allOf:
-      - $ref: '#/components/schemas/Features'
-      - type: object
-        properties:
-          data:
+    FeatureBase:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
             properties:
-              features:
-                type: array
-                items:
-                  $ref: '#/components/schemas/RepdFeatureItem'
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+        geometries:
+          type: array
+          description: Array of geometries relating to the feature
+          items:
+            type: object
+            properties:
+              area_hectares:
+                type:
+                - number
+                - 'null'
+                format: float
+                example: 0.2023428
+              geometry:
+                type: object
+                description: GeoJSON of the feature.
+                oneOf:
+                - $ref: '#/components/schemas/Polygon'
+                - $ref: '#/components/schemas/MultiPolygon'
     Features:
       type: object
       properties:
         data:
           $ref: '#/components/schemas/FeatureData'
+    FeatureData:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBase'
+    FeatureDataLite:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBaseLite'
+    RepdID:
+      type: string
+      format: uuid
+      description: A REPD ID in the form of a UUID.
+      example: 947fa210-e051-4256-829e-5f3de5bacbd3
     Polygon:
       externalDocs:
         url: https://datatracker.ietf.org/doc/html/rfc7946
@@ -324,40 +335,30 @@ components:
           description: the geometry type
         coordinates:
           $ref: '#/components/schemas/PolygonCoordinates'
-    RepdID:
-      type: string
-      format: uuid
-      description: A REPD ID in the form of a UUID.
-      example: 947fa210-e051-4256-829e-5f3de5bacbd3
-    FeaturesLite:
+    RepdFeatureCollectionLite:
+      allOf:
+      - $ref: '#/components/schemas/FeaturesLite'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RepdFeatureItem'
+    LinearRingCoordinates:
+      type: array
+      minItems: 4
+      items:
+        $ref: '#/components/schemas/PointCoordinates'
+    Feature:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/FeatureDataLite'
-    Forbidden:
-      oneOf:
-      - type: object
-        required:
-        - user
-        properties:
-          user:
-            type: object
-            required:
-            - state
-            properties:
-              state:
-                type: string
-                enum:
-                - expired
-                - blocked
-                example: expired
-      - type: object
-        required:
-        - message
-        properties:
-          message:
-            type: string
-            example: User not found
+          type: object
+          properties:
+            feature:
+              $ref: '#/components/schemas/FeatureBase'
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

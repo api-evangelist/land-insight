@@ -1,9 +1,7 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: LandTech Additional Opportunities Power API
-  description: 'Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.
-
-    '
+  title: LandTech Power API
+  description: Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.
   version: 0.3.0
 servers:
 - url: https://app.land.tech/api
@@ -115,25 +113,15 @@ paths:
                 $ref: '#/components/schemas/Forbidden'
 components:
   schemas:
-    PowerFeatureCollection:
+    PowerFeature:
       allOf:
-      - $ref: '#/components/schemas/Features'
+      - $ref: '#/components/schemas/Feature'
       - type: object
         properties:
           data:
             properties:
-              features:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PowerFeatureItem'
-    Feature:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            feature:
-              $ref: '#/components/schemas/FeatureBase'
+              feature:
+                $ref: '#/components/schemas/PowerFeatureItem'
     PowerFeatureItem:
       type: object
       properties:
@@ -151,104 +139,17 @@ components:
             value: HV
           - key: voltage_range
             value: 11kV-1kV
-    FeatureDataLite:
-      type: object
-      properties:
-        features:
-          type: array
-          items:
-            $ref: '#/components/schemas/FeatureBaseLite'
-    FeatureBase:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-          nullable: true
-        type:
-          type: string
-        attributes:
-          type: array
-          items:
-            type: object
-            properties:
-              key:
-                type: string
-              value:
-                type: string
-          description: Attributes containing any additional details about the feature
-        geometries:
-          type: array
-          description: Array of geometries relating to the feature
-          items:
-            type: object
-            properties:
-              area_hectares:
-                type: number
-                format: float
-                nullable: true
-                example: 0.2023428
-              geometry:
-                type: object
-                description: GeoJSON of the feature.
-                oneOf:
-                - $ref: '#/components/schemas/Polygon'
-                - $ref: '#/components/schemas/MultiPolygon'
-    PolygonCoordinates:
-      type: array
-      items:
-        $ref: '#/components/schemas/LinearRingCoordinates'
-    MultiPolygon:
-      description: GeoJSON MultiPolygon
-      externalDocs:
-        url: https://datatracker.ietf.org/doc/html/rfc7946
-      type: object
-      required:
-      - type
-      - coordinates
-      properties:
-        type:
-          type: string
-          enum:
-          - MultiPolygon
-          example: MultiPolygon
-          description: the geometry type
-        coordinates:
-          type: array
-          items:
-            $ref: '#/components/schemas/PolygonCoordinates'
-    FeatureData:
-      type: object
-      properties:
-        features:
-          type: array
-          items:
-            $ref: '#/components/schemas/FeatureBase'
-    LinearRingCoordinates:
-      type: array
-      minItems: 4
-      items:
-        $ref: '#/components/schemas/PointCoordinates'
-    PowerFeature:
+    PowerFeatureCollection:
       allOf:
-      - $ref: '#/components/schemas/Feature'
+      - $ref: '#/components/schemas/Features'
       - type: object
         properties:
           data:
             properties:
-              feature:
-                $ref: '#/components/schemas/PowerFeatureItem'
-    PointCoordinates:
-      type: array
-      maxItems: 2
-      minItems: 2
-      example:
-      - -0.12755
-      - 51.5073
-      items:
-        type: number
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PowerFeatureItem'
     PowerID:
       type: string
       format: uuid
@@ -265,53 +166,6 @@ components:
                 type: array
                 items:
                   $ref: '#/components/schemas/PowerFeatureItem'
-    Features:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FeatureData'
-    Polygon:
-      externalDocs:
-        url: https://datatracker.ietf.org/doc/html/rfc7946
-      type: object
-      required:
-      - type
-      - coordinates
-      properties:
-        type:
-          type: string
-          enum:
-          - Polygon
-          example: Polygon
-          description: the geometry type
-        coordinates:
-          $ref: '#/components/schemas/PolygonCoordinates'
-    FeatureBaseLite:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-          nullable: true
-        type:
-          type: string
-        attributes:
-          type: array
-          items:
-            type: object
-            properties:
-              key:
-                type: string
-              value:
-                type: string
-          description: Attributes containing any additional details about the feature
-    FeaturesLite:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FeatureDataLite'
     Forbidden:
       oneOf:
       - type: object
@@ -336,6 +190,153 @@ components:
           message:
             type: string
             example: User not found
+    PolygonCoordinates:
+      type: array
+      items:
+        $ref: '#/components/schemas/LinearRingCoordinates'
+    PointCoordinates:
+      type: array
+      maxItems: 2
+      minItems: 2
+      example:
+      - -0.12755
+      - 51.5073
+      items:
+        type: number
+    FeatureBaseLite:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+    FeaturesLite:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureDataLite'
+    FeatureData:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBase'
+    FeatureBase:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+        geometries:
+          type: array
+          description: Array of geometries relating to the feature
+          items:
+            type: object
+            properties:
+              area_hectares:
+                type:
+                - number
+                - 'null'
+                format: float
+                example: 0.2023428
+              geometry:
+                type: object
+                description: GeoJSON of the feature.
+                oneOf:
+                - $ref: '#/components/schemas/Polygon'
+                - $ref: '#/components/schemas/MultiPolygon'
+    MultiPolygon:
+      description: GeoJSON MultiPolygon
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - MultiPolygon
+          example: MultiPolygon
+          description: the geometry type
+        coordinates:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolygonCoordinates'
+    Features:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureData'
+    FeatureDataLite:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBaseLite'
+    Polygon:
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - Polygon
+          example: Polygon
+          description: the geometry type
+        coordinates:
+          $ref: '#/components/schemas/PolygonCoordinates'
+    LinearRingCoordinates:
+      type: array
+      minItems: 4
+      items:
+        $ref: '#/components/schemas/PointCoordinates'
+    Feature:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            feature:
+              $ref: '#/components/schemas/FeatureBase'
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

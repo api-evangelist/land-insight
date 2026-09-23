@@ -1,9 +1,7 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: LandTech Additional Opportunities Development Constraints API
-  description: 'Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.
-
-    '
+  title: LandTech Development Constraints API
+  description: Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.
   version: 0.3.0
 servers:
 - url: https://app.land.tech/api
@@ -12,9 +10,7 @@ security:
 - ApiKeyAuth: []
 tags:
 - name: Development Constraints
-  description: 'Endpoint to get details of various development constraints. Includes airport, HS2, rail and building (wharf)  safeguarding. Also includes article 4 and national landscape data.
-
-    '
+  description: Endpoint to get details of various development constraints. Includes airport, HS2, rail and building (wharf) safeguarding. Also includes article 4 and national landscape data.
 paths:
   /development_constraints/{development_constraints_id}:
     get:
@@ -122,87 +118,6 @@ components:
       format: uuid
       description: A development constraints ID in the form of a UUID.
       example: 68a586f6-991f-4604-b179-512b61f9696f
-    FeatureDataLite:
-      type: object
-      properties:
-        features:
-          type: array
-          items:
-            $ref: '#/components/schemas/FeatureBaseLite'
-    DevelopmentConstraintFeatureItem:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/DevelopmentConstraintID'
-        type:
-          example: article_4_direction
-        name:
-          example: Victoria Mews, West Green
-        attributes:
-          example:
-          - key: published_date
-            value: 15/06/2022
-          - key: article_4_type
-            value: Article 4(1) affecting other buildings
-          - key: dev_rest_1
-            value: Conversion of single dwellings to HMOs
-    DevelopmentConstraintFeatureCollectionLite:
-      allOf:
-      - $ref: '#/components/schemas/FeaturesLite'
-      - type: object
-        properties:
-          data:
-            properties:
-              features:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
-    DevelopmentConstraintFeatureCollection:
-      allOf:
-      - $ref: '#/components/schemas/FeaturesLite'
-      - type: object
-        properties:
-          data:
-            properties:
-              features:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
-    DevelopmentConstraintFeature:
-      allOf:
-      - $ref: '#/components/schemas/FeatureBaseLite'
-      - type: object
-        properties:
-          data:
-            properties:
-              feature:
-                $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
-    FeatureBaseLite:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-          nullable: true
-        type:
-          type: string
-        attributes:
-          type: array
-          items:
-            type: object
-            properties:
-              key:
-                type: string
-              value:
-                type: string
-          description: Attributes containing any additional details about the feature
-    FeaturesLite:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FeatureDataLite'
     Forbidden:
       oneOf:
       - type: object
@@ -227,6 +142,88 @@ components:
           message:
             type: string
             example: User not found
+    FeatureBaseLite:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+    FeaturesLite:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureDataLite'
+    DevelopmentConstraintFeature:
+      allOf:
+      - $ref: '#/components/schemas/FeatureBaseLite'
+      - type: object
+        properties:
+          data:
+            properties:
+              feature:
+                $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
+    DevelopmentConstraintFeatureCollectionLite:
+      allOf:
+      - $ref: '#/components/schemas/FeaturesLite'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
+    FeatureDataLite:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBaseLite'
+    DevelopmentConstraintFeatureItem:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/DevelopmentConstraintID'
+        type:
+          example: article_4_direction
+        name:
+          example: Victoria Mews, West Green
+        attributes:
+          example:
+          - key: published_date
+            value: 15/06/2022
+          - key: article_4_type
+            value: Article 4(1) affecting other buildings
+          - key: dev_rest_1
+            value: Conversion of single dwellings to HMOs
+    DevelopmentConstraintFeatureCollection:
+      allOf:
+      - $ref: '#/components/schemas/FeaturesLite'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

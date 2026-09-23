@@ -1,9 +1,7 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: LandTech Additional Opportunities Parcels API
-  description: 'Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.
-
-    '
+  title: LandTech Parcels API
+  description: Search for land parcels and retrieve detailed insights on ownership, planning applications and property details.
   version: 0.3.0
 servers:
 - url: https://app.land.tech/api
@@ -18,9 +16,7 @@ paths:
     get:
       operationId: getRegions
       summary: List available regions
-      description: 'List the GSS code and name of known regions (local authorities), that can be used when searching for parcels.
-
-        '
+      description: List the GSS code and name of known regions (local authorities), that can be used when searching for parcels.
       tags:
       - Parcels
       responses:
@@ -60,9 +56,7 @@ paths:
     post:
       operationId: searchParcels
       summary: Search for parcels
-      description: 'Given a region GSS code and optional parcel size, retrieve a list of parcel IDs. The maximum number of IDs returned is 100,000.
-
-        '
+      description: Given a region GSS code and optional parcel size, retrieve a list of parcel IDs. The maximum number of IDs returned is 100,000.
       tags:
       - Parcels
       requestBody:
@@ -101,7 +95,10 @@ paths:
     post:
       operationId: searchParcelsAdvanced
       summary: Advanced parcel search - beta
-      description: "Retrieve a list of parcel IDs based on a set of filters. The maximum number of IDs returned is 100,000.\n \n**Schema is subject to change.** ![Beta](https://img.shields.io/badge/Status-Beta-yellow)\n"
+      description: 'Retrieve a list of parcel IDs based on a set of filters. The maximum number of IDs returned is 100,000.
+
+
+        **Schema is subject to change.** !Beta'
       tags:
       - Parcels
       requestBody:
@@ -175,9 +172,7 @@ paths:
     get:
       operationId: getParcel
       summary: Details about a parcel
-      description: 'Given a parcel ID, get the parcel details including associated titles, properties and planning applications.
-
-        '
+      description: Given a parcel ID, get the parcel details including associated titles, properties and planning applications.
       tags:
       - Parcels
       parameters:
@@ -205,9 +200,7 @@ paths:
     post:
       operationId: getParcelsBulk
       summary: Bulk parcel details
-      description: 'Fetch parcel details for up to 50 parcel IDs in a single request.
-
-        '
+      description: Fetch parcel details for up to 50 parcel IDs in a single request.
       tags:
       - Parcels
       requestBody:
@@ -237,145 +230,6 @@ paths:
                 $ref: '#/components/schemas/Forbidden'
 components:
   schemas:
-    UseClassSuiGenerisItem:
-      type: object
-      title: Use Class - Sui Generis - Item
-      properties:
-        key:
-          type: string
-          enum:
-          - i-Agricultural
-          - ii-Agricultural
-          - iii-Amusements
-          - iv-Bingo-Hall
-          - v-Car
-          - vi-Farm
-          - vii-Garage
-          - ix-Grazing
-          - x-Holiday
-          - xi-Licensed
-          - xii-Lock
-          - xiii-Permanent
-          - xiv-Petrol
-          - xv-car-parking
-          - xvi-Public
-          - xvii-Recreational
-          x-enumDescriptions:
-            i-Agricultural: Agricultural
-            ii-Agricultural: Applicable to land in farm ownership and not run as a separate business enterprise
-            iii-Amusements: Amusements
-            iv-Bingo-Hall: Bingo Hall / Cinema / Conference / Exhibition Centre / Theatre / Concert Hall
-            v-Car: Car / Coach / Commercial Vehicle / Taxi Parking / Park And Ride Site
-            vi-Farm: Farm / Non-Residential Associated Building
-            vii-Garage: Garage
-            ix-Grazing: Grazing Land
-            x-Holiday: Holiday / Campsite
-            xi-Licensed: Licensed Private Members' Club
-            xii-Lock: Lock-Up Garage / Garage Court
-            xiii-Permanent: Permanent Crop / Crop Rotation
-            xiv-Petrol: Petrol Filling Station
-            xv-car-parking: Public Car Parking
-            xvi-Public: Public House / Bar / Nightclub
-            xvii-Recreational: Recreational / Social Club
-          example: i-Agricultural
-        checked:
-          type: boolean
-          enum:
-          - true
-          example: true
-      required:
-      - key
-      - checked
-    UseClassF2:
-      type: object
-      title: Use Class - F2
-      properties:
-        key:
-          type: string
-          x-enumDescriptions:
-            F.2: Local community uses
-          example: F.2
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/UseClassF2Item'
-    Tenure:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The constant ID for this schema.
-          enum:
-          - tenure-uk
-          example: tenure-uk
-        values:
-          type: array
-          description: A list of tenure values with associated keys and checked status.
-          items:
-            type: object
-            required:
-            - key
-            - checked
-            properties:
-              key:
-                type: string
-                description: The key representing the tenure type.
-                enum:
-                - freehold
-                - leasehold
-                x-enumDescriptions:
-                  freehold: Freehold
-                  leasehold: Leasehold
-                example: freehold
-              checked:
-                type: boolean
-                description: Indicates whether this constraint type is selected or not.
-                enum:
-                - true
-                example: true
-        must:
-          type: string
-          enum:
-          - MATCH_ANY
-          - MATCH_NONE
-          description: The match type for filtering the tenure options.
-          example: MATCH_ANY
-      required:
-      - values
-      - must
-      - id
-    UPRN:
-      type: string
-      description: Unique Property Reference Number (UPRN) is a unique numeric identifier for every addressable location in Great Britain, found in Ordnance Survey's AddressBase products.
-      pattern: ^\d{1,12}$
-    TitleNumber:
-      description: The title number is a unique identifier for registered land in England and Wales, governed by HM Land Registry.
-      type: string
-      example: WT77573
-    LeaseEndDate:
-      type: object
-      title: Lease End Date
-      properties:
-        id:
-          type: string
-          description: The constant ID for this schema.
-          enum:
-          - lease-end-date
-          example: lease-end-date
-        range:
-          type: array
-          description: "`[\"2025-02-01T00:00:00.000Z\", \"2025-09-30T23:59:59.999Z\"]` \nrepresents a range from **Feb 1st 2025 to Sep 30th 2025 at 23:59**.\nAn array with 2 items that represent the range of dates for the lease end date.\n\nThe first item is the start date, and the second item is the end date.\n"
-          items:
-            type: string
-            format: date-time
-          minItems: 2
-          maxItems: 2
-          example:
-          - '2025-02-01T00:00:00.000Z'
-          - '2025-09-30T22:59:59.999Z'
-      required:
-      - id
-      - range
     OwnershipType:
       type: object
       title: Ownership Type
@@ -429,17 +283,969 @@ components:
       - values
       - must
       - id
-    ParcelIds:
+    PowerDistanceFilter:
+      type: object
+      title: Power Distance Filter
+      properties:
+        id:
+          type: string
+          enum:
+          - power-distance-filter
+          example: power-distance-filter
+          description: The unique identifier for the power distance filter.
+        value:
+          type: number
+          example: 5000
+          description: The distance value for the power distance filter, in meters.
+      required:
+      - id
+      - value
+    BulkParcelResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            parcel:
+              type: array
+              items:
+                $ref: '#/components/schemas/ParcelDetailsItem'
+    Transport:
+      type: object
+      title: Transport
+      properties:
+        key:
+          type: string
+          enum:
+          - transport
+          description: The key representing the transport category.
+          example: transport
+        checked:
+          type: boolean
+          description: Indicates whether the transport category is selected.
+          example: true
+          enum:
+          - true
+        items:
+          type: array
+          description: A list of specific transport amenities.
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+                enum:
+                - shortest_distance_bus_stop
+                - shortest_distance_train_station
+                - shortest_distance_metro_station
+                x-enumDescriptions:
+                  shortest_distance_bus_stop: Shortest distance to bus stop
+                  shortest_distance_train_station: Shortest distance to train station
+                  shortest_distance_metro_station: Shortest distance to metro station
+                description: The key representing the specific transport amenity.
+                example: shortest_distance_bus_stop
+              checked:
+                description: Indicates whether this specific transport amenity is selected.
+                example: true
+                type: boolean
+                enum:
+                - true
+          example:
+          - key: shortest_distance_bus_stop
+            checked: true
+          - key: shortest_distance_train_station
+            checked: true
+      required:
+      - key
+      - checked
+      - items
+    UseClassE:
+      type: object
+      title: Use Class - E
+      properties:
+        key:
+          type: string
+          enum:
+          - E
+          x-enumDescriptions:
+            E: Commercial, Business and Service
+          example: E
+        checked:
+          type: boolean
+          enum:
+          - true
+          example: true
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/UseClassEItem'
+      required:
+      - key
+      - checked
+      - items
+    ProprietorName:
+      type: object
+      title: Owner Name
+      properties:
+        id:
+          type: string
+          enum:
+          - proprietor-name
+          example: proprietor-name
+          description: The unique identifier for the owner name filter.
+        must:
+          type: string
+          enum:
+          - CONTAIN
+          - NOT_CONTAIN
+          description: The match type for filtering the owner name.
+          example: CONTAIN
+        text:
+          type: string
+          description: The text value to search for in owner name.
+          example: foo
+      required:
+      - id
+      - must
+      - text
+    UseClassB2:
+      type: object
+      title: Use Class - B2
+      properties:
+        key:
+          type: string
+          enum:
+          - B2
+          x-enumDescriptions:
+            B2: General industrial
+          example: B2
+        checked:
+          type: boolean
+          enum:
+          - true
+          example: true
+      required:
+      - key
+      - checked
+    PointCoordinates:
+      type: array
+      maxItems: 2
+      minItems: 2
+      example:
+      - -0.12755
+      - 51.5073
+      items:
+        type: number
+    PolygonCoordinates:
+      type: array
+      items:
+        $ref: '#/components/schemas/LinearRingCoordinates'
+    Healthcare:
+      type: object
+      title: Health Care
+      properties:
+        key:
+          type: string
+          enum:
+          - healthcare
+          description: The key representing the healthcare category.
+          example: healthcare
+        checked:
+          type: boolean
+          enum:
+          - true
+          description: Indicates whether the healthcare category is selected.
+          example: true
+        items:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            title: Healthcare - Sub Categories
+            properties:
+              key:
+                type: string
+                description: The key representing the specific healthcare amenity.
+                enum:
+                - shortest_distance_gp_surgeries
+                - shortest_distance_pharmacies
+                - shortest_distance_clinics
+                - shortest_distance_dentists
+                - shortest_distance_hospitals
+                x-enumDescriptions:
+                  shortest_distance_gp_surgeries: Shortest distance to GP surgeries
+                  shortest_distance_pharmacies: Shortest distance to pharmacies
+                  shortest_distance_clinics: Shortest distance to clinics
+                  shortest_distance_dentists: Shortest distance to dentists
+                  shortest_distance_hospitals: Shortest distance to hospitals
+                example: shortest_distance_gp_surgeries
+              checked:
+                description: Indicates whether this specific healthcare amenity is selected.
+                type: boolean
+                example: true
+                enum:
+                - true
+            required:
+            - key
+            - checked
+          example:
+          - key: shortest_distance_gp_surgeries
+            checked: true
+          - key: shortest_distance_pharmacies
+            checked: true
+      required:
+      - key
+      - checked
+      - items
+    AgriculturalLandClassification:
+      type: object
+      title: Agricultural Land Classification
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+          - agricultural-land-classification-id
+          example: agricultural-land-classification-id
+        values:
+          type: array
+          description: A list of agricultural land classification values with associated keys, names, and checked status.
+          items:
+            type: object
+            required:
+            - key
+            properties:
+              key:
+                type: string
+                description: The key representing the agricultural land classification type.
+                enum:
+                - grade_1
+                - grade_2
+                - grade_3a
+                - grade_3
+                - grade_3b
+                - grade_4
+                - grade_5
+                - non_agricultural
+                x-enumDescriptions:
+                  grade_1: Grade 1
+                  grade_2: Grade 2
+                  grade_3a: Grade 3a
+                  grade_3: Grade 3
+                  grade_3b: Grade 3b
+                  grade_4: Grade 4
+                  grade_5: Grade 5
+                  non_agricultural: Non Agricultural
+                example: grade_1
+              checked:
+                type: boolean
+                description: Indicates whether this agricultural land classification type is selected or not.
+                example: true
+          example:
+          - key: grade_1
+            checked: true
+          - key: grade_3a
+            checked: true
+        must:
+          type: string
+          enum:
+          - MATCH_ANY
+          - MATCH_NONE
+          description: The match type for filtering the agricultural land classification options.
+          example: MATCH_ANY
+      required:
+      - values
+      - must
+      - id
+    UseClassSuiGeneris:
+      type: object
+      title: Use Class - Sui Generis
+      properties:
+        key:
+          type: string
+          enum:
+          - sui-generis
+          x-enumDescriptions:
+            sui-generis: Sui Generis
+          example: sui-generis
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/UseClassSuiGenerisItem'
+    PowerDistanceTypeFilter:
+      type: object
+      title: Power Distance Type Filter
+      properties:
+        id:
+          type: string
+          enum:
+          - power-distance-type-filter
+          example: power-distance-type-filter
+          description: The unique identifier for the power distance type filter.
+        values:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                enum:
+                - shortest_distance_grid_power_substations
+                - shortest_distance_bulk_power_substations
+                - shortest_distance_primary_power_substations
+                - shortest_distance_hv_power_substations
+                - shortest_distance_power_cables
+                - shortest_distance_power_overhead_lines
+                - shortest_distance_power_towers
+                x-enumDescriptions:
+                  shortest_distance_grid_power_substations: Distance to the nearest grid power substation
+                  shortest_distance_bulk_power_substations: Distance to the nearest bulk power substation
+                  shortest_distance_primary_power_substations: Distance to the nearest primary power substation
+                  shortest_distance_hv_power_substations: Distance to the nearest high-voltage power substation
+                  shortest_distance_power_cables: Distance to the nearest power cable
+                  shortest_distance_power_overhead_lines: Distance to the nearest overhead power line
+                  shortest_distance_power_towers: Distance to the nearest power tower
+                description: The key representing the type of power distance.
+              checked:
+                type: boolean
+                description: Indicates whether this specific power type is selected.
+            required:
+            - key
+            - checked
+          description: 'List of power distance types with their selection status.
+
+            '
+          example:
+          - key: shortest_distance_grid_power_substations
+            checked: false
+          - key: shortest_distance_bulk_power_substations
+            checked: false
+          - key: shortest_distance_primary_power_substations
+            checked: false
+          - key: shortest_distance_hv_power_substations
+            checked: false
+          - key: shortest_distance_power_cables
+            checked: false
+          - key: shortest_distance_power_overhead_lines
+            checked: false
+          - key: shortest_distance_power_towers
+            checked: true
+      required:
+      - id
+      - values
+    UseClassF1Item:
+      type: object
+      title: Use Class - F1 Item
+      properties:
+        key:
+          type: string
+          enum:
+          - F.1(a)
+          - F.1(b)
+          - F.1(c)
+          - F.1(d)
+          - F.1(f)
+          - F.1(g)
+          x-enumDescriptions:
+            F.1(a): Provision of education e.g. schools
+            F.1(b): Display of works of art
+            F.1(c): Museums
+            F.1(d): Public libraries or public reading rooms
+            F.1(f): Public worship or religious instruction
+            F.1(g): Law courts
+          example: F.1(a)
+        checked:
+          type: boolean
+          enum:
+          - true
+          example: true
+      required:
+      - key
+      - checked
+    LinearRingCoordinates:
+      type: array
+      minItems: 4
+      items:
+        $ref: '#/components/schemas/PointCoordinates'
+    ParcelId:
+      type: string
+      format: uuid
+      description: A parcel ID in the form of a UUID.
+      example: 2a5ad2c7-29ef-d609-8ade-36eef8e3a072
+    Education:
+      type: object
+      title: Education
+      properties:
+        key:
+          type: string
+          enum:
+          - education
+          description: The key representing the education category.
+          example: education
+        checked:
+          type: boolean
+          description: Indicates whether the education category is selected.
+          example: true
+          enum:
+          - true
+        items:
+          type: array
+          description: A list of specific education amenities.
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+                enum:
+                - shortest_distance_primary_school
+                - shortest_distance_secondary_school
+                - shortest_distance_further_education
+                - shortest_distance_primary_school_independent
+                - shortest_distance_secondary_school_independent
+                - shortest_distance_further_education_independent
+                x-enumDescriptions:
+                  shortest_distance_primary_school: Shortest distance to primary school
+                  shortest_distance_secondary_school: Shortest distance to secondary school
+                  shortest_distance_further_education: Shortest distance to further education
+                  shortest_distance_primary_school_independent: Shortest distance to independent primary school
+                  shortest_distance_secondary_school_independent: Shortest distance to independent secondary school
+                  shortest_distance_further_education_independent: Shortest distance to independent further education
+                description: The key representing the specific education amenity.
+                example: shortest_distance_primary_school
+              checked:
+                description: Indicates whether this specific education amenity is selected.
+                example: true
+                type: boolean
+                enum:
+                - true
+          example:
+          - key: shortest_distance_primary_school
+            checked: true
+          - key: shortest_distance_secondary_school
+            checked: true
+      required:
+      - key
+      - checked
+      - items
+    ParcelSize:
+      type: object
+      properties:
+        min:
+          type: number
+          format: float
+          description: The minimum parcel size in square metres.
+          example: 2023.43
+        max:
+          type: number
+          format: float
+          description: The maximum parcel size in square metres.
+          example: 4046.86
+    ParcelDetails:
+      type: object
+      properties:
+        data:
+          type:
+          - object
+          - 'null'
+          properties:
+            parcel:
+              $ref: '#/components/schemas/ParcelDetailsItem'
+    Retail:
+      type: object
+      title: Retail
+      properties:
+        key:
+          type: string
+          enum:
+          - retail
+          description: The key representing the retail category.
+          example: retail
+        checked:
+          description: Indicates whether the retail category is selected.
+          type: boolean
+          example: true
+          enum:
+          - true
+        items:
+          type: array
+          description: A list of specific retail amenities.
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+                enum:
+                - shortest_distance_supermarkets_and_convenience_stores
+                x-enumDescriptions:
+                  shortest_distance_supermarkets_and_convenience_stores: Shortest distance to supermarkets and convenience stores
+                description: The key representing the specific retail amenity.
+                example: shortest_distance_supermarkets_and_convenience_stores
+              checked:
+                description: Indicates whether this specific retail amenity is selected.
+                example: true
+                type: boolean
+                enum:
+                - true
+          example:
+          - key: shortest_distance_supermarkets_and_convenience_stores
+            checked: true
+      required:
+      - key
+      - checked
+      - items
+    AmenitiesTypeFilter:
+      type: object
+      title: Amenities Filter
+      properties:
+        id:
+          type: string
+          enum:
+          - amenities-type-filter
+          example: amenities-type-filter
+          description: The unique identifier for the amenities filter.
+        values:
+          type: array
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/Transport'
+            - $ref: '#/components/schemas/Education'
+            - $ref: '#/components/schemas/Retail'
+            - $ref: '#/components/schemas/Healthcare'
+          description: "A list of amenities to be filtered. \nEach item in the list represents a specific amenity type and its associated options.\n"
+          minItems: 1
+          example:
+          - key: transport
+            checked: true
+            items:
+            - key: shortest_distance_bus_stop
+              checked: true
+          - key: education
+            checked: true
+            items:
+            - key: shortest_distance_primary_school
+              checked: true
+        must:
+          type: string
+          enum:
+          - MATCH_ANY
+          - MATCH_NONE
+          description: The match type for filtering the use class options.
+          example: MATCH_ANY
+          default: MATCH_ANY
+        type:
+          type: string
+          enum:
+          - nested-checkbox
+          description: The type of filter, which is always nested-checkbox in this case.
+          example: nested-checkbox
+          default: nested-checkbox
+      required:
+      - id
+      - values
+      - must
+      - type
+    RegenerationZonesEmerging:
+      type: object
+      title: Regeneration Zones - Emerging
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+          - regeneration-zones-emerging-id
+          example: regeneration-zones-emerging-id
+        values:
+          type: array
+          description: A list of regeneration zone values with associated keys and checked status.
+          items:
+            type: object
+            required:
+            - key
+            properties:
+              key:
+                type: string
+                description: The key representing the regeneration zone type.
+                enum:
+                - area_action_plans
+                - named_regeneration_areas
+                x-enumDescriptions:
+                  area_action_plans: Area Action Plans
+                  named_regeneration_areas: Named Regeneration Areas
+                example: area_action_plans
+              checked:
+                type: boolean
+                description: Indicates whether this regeneration zone type is selected or not.
+                example: true
+        must:
+          type: string
+          enum:
+          - MATCH_ANY
+          - MATCH_NONE
+          description: The match type for filtering the regeneration zone options.
+          example: MATCH_ANY
+      required:
+      - values
+      - must
+      - id
+    CoveredEntities:
+      type: array
+      items:
+        type: object
+        required:
+        - id
+        properties:
+          id:
+            type: string
+          coverage:
+            type: number
+            description: How much of the site has been overlapped by the entity. Decimal ranging from 0 to 1.0
+            example: 0.618
+    GreyBeltFavourability:
+      type: object
+      title: Grey belt favourability
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+          - grey-belt-type-id
+          example: grey-belt-type-id
+        values:
+          type: array
+          description: A list of grey belt land favourability.
+          items:
+            type: object
+            required:
+            - key
+            - checked
+            properties:
+              key:
+                type: string
+                description: The key representing the grey belt land favourability type.
+                enum:
+                - grey_belt_land_more_favourable
+                - grey_belt_land_average_favourability
+                - grey_belt_land_less_favourable
+                x-enumDescriptions:
+                  grey_belt_land_more_favourable: More favourable
+                  grey_belt_land_average_favourability: Average favourability
+                  grey_belt_land_less_favourable: Less favourable
+                example: grey_belt_land_more_favourable
+              checked:
+                type: boolean
+                description: Indicates whether this favourability type is selected or not.
+                enum:
+                - true
+                example: true
+        must:
+          type: string
+          enum:
+          - MATCH_ANY
+          - MATCH_NONE
+          description: The match type for filtering the grey belt land favourability options.
+          example: MATCH_ANY
+      required:
+      - values
+      - must
+      - id
+    ConstraintsAdopted:
+      type: object
+      title: Constraints - Adopted Constraints
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+          - adopted-constraints-id
+          example: adopted-constraints-id
+        values:
+          type: array
+          description: A list of constraint values with associated keys, checked status.
+          items:
+            type: object
+            required:
+            - key
+            - checked
+            properties:
+              key:
+                type: string
+                description: The key representing the constraint type.
+                enum:
+                - protected_areas_outer
+                - heritage_land_listed_buildings_outer
+                - flood_zone_2_env_agency
+                - flood_zone_3_env_agency
+                - very_low_risk_of_flooding_from_rivers_and_seas
+                - low_risk_of_flooding_from_rivers_and_seas
+                - medium_risk_of_flooding_from_rivers_and_seas
+                - high_risk_of_flooding_from_rivers_and_seas
+                - conservation_areas_outer
+                - employment_area_outer
+                - settlement_boundaries_outer
+                - green_belt_outer
+                - nutrient_neutrality
+                - protected_views_outer
+                - safe_guarding_outer
+                - metropolitan_open_land_outer
+                - open_space_outer
+                - rights_of_way
+                - tree_preservation_orders
+                - national_landscape
+                x-enumDescriptions:
+                  protected_areas_outer: Protected Areas
+                  heritage_land_listed_buildings_outer: Heritage Land/Listed Buildings
+                  flood_zone_2_env_agency: Flood Zone 2
+                  flood_zone_3_env_agency: Flood Zone 3
+                  very_low_risk_of_flooding_from_rivers_and_seas: Very Low Risk (Flood Risk)
+                  low_risk_of_flooding_from_rivers_and_seas: Low Risk (Flood Risk)
+                  medium_risk_of_flooding_from_rivers_and_seas: Medium Risk (Flood Risk)
+                  high_risk_of_flooding_from_rivers_and_seas: High Risk (Flood Risk)
+                  conservation_areas_outer: Conservation Areas
+                  employment_area_outer: Employment Area
+                  settlement_boundaries_outer: Settlement Boundaries
+                  green_belt_outer: Green Belt
+                  nutrient_neutrality: Nutrient Neutrality
+                  protected_views_outer: Protected Views
+                  safe_guarding_outer: Safe Guarded Sites
+                  metropolitan_open_land_outer: Metropolitan Open Land (Open Land/Green Space)
+                  open_space_outer: Open Space (Open Land/Green Space)
+                  rights_of_way: Rights of Way
+                  tree_preservation_orders: Tree Preservation Orders
+                  national_landscape: National Landscape (AONB)
+                example: protected_areas_outer
+              checked:
+                type: boolean
+                description: Indicates whether this constraint type is selected or not.
+                enum:
+                - true
+                example: true
+        must:
+          type: string
+          enum:
+          - MATCH_ALL
+          - MATCH_NONE
+          description: The match type for filtering the constraints options.
+          example: MATCH_NONE
+      required:
+      - values
+      - must
+      - id
+    Article4:
+      type: object
+      title: Article 4 (London)
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+          - article-four-id
+          example: article-four-id
+        values:
+          type: array
+          description: A list of article 4 values with associated keys, checked status.
+          items:
+            type: object
+            required:
+            - key
+            - checked
+            properties:
+              key:
+                type: string
+                description: The key representing the article 4 type.
+                enum:
+                - article_4_ma
+                - article_4_hmo
+                - article_4_other
+                - article_4_unknown
+                x-enumDescriptions:
+                  article_4_ma: MA
+                  article_4_hmo: HMO
+                  article_4_other: Other
+                  article_4_unknown: Unknown
+                example: article_4_hmo
+              checked:
+                type: boolean
+                description: Indicates whether this constraint type is selected or not.
+                enum:
+                - true
+                example: true
+        must:
+          type: string
+          enum:
+          - MATCH_ANY
+          - MATCH_NONE
+          description: The match type for filtering the article 4 options.
+          example: MATCH_NONE
+      required:
+      - id
+      - values
+      - must
+    Forbidden:
+      oneOf:
+      - type: object
+        required:
+        - user
+        properties:
+          user:
+            type: object
+            required:
+            - state
+            properties:
+              state:
+                type: string
+                enum:
+                - expired
+                - blocked
+                example: expired
+      - type: object
+        required:
+        - message
+        properties:
+          message:
+            type: string
+            example: User not found
+    AmenitiesFilter:
+      type: object
+      title: Amenities Filter
+      properties:
+        id:
+          type: string
+          enum:
+          - amenities-filter
+          example: amenities-filter
+          description: The unique identifier for the amenities filter.
+        type:
+          type: string
+          enum:
+          - compound
+          example: compound
+          description: The type of filter, which is always compound in this case.
+        filters:
+          type: array
+          items:
+            minItems: 2
+            maxItems: 2
+            anyOf:
+            - $ref: '#/components/schemas/AmenitiesTypeFilter'
+            - $ref: '#/components/schemas/AmenitiesDistanceFilter'
+          description: "A list of filters to be applied. \nMust include at least one: AmenitiesTypeFilter and only one AmenitiesDistanceFilter.\n"
+          example:
+          - id: amenities-type-filter
+            values:
+            - key: transport
+              checked: true
+              items:
+              - key: shortest_distance_bus_stop
+                checked: true
+            must: MATCH_ANY
+            type: nested-checkbox
+          - id: amenities-distance-filter
+            value: 200
+        must:
+          type: string
+          enum:
+          - MATCH_ALL
+          - MATCH_NONE
+          description: The match type for combining the filters.
+          example: MATCH_ALL
+          default: MATCH_ALL
+      required:
+      - id
+      - filters
+      - must
+      - type
+    ParcelSearchRequestAdvanced:
       type: object
       required:
-      - parcel_ids
+      - search_filter
       properties:
-        parcel_ids:
+        search_filter:
+          type: object
+          required:
+          - ALL
+          properties:
+            ALL:
+              type: array
+              description: Array of search criteria to match using AND logic
+              minItems: 1
+              items:
+                anyOf:
+                - $ref: '#/components/schemas/AdditionalOpportunities'
+                  description: An optional filter for additional opportunities.
+                - $ref: '#/components/schemas/AgriculturalLandClassification'
+                  description: An optional filter for agricultural land classification.
+                - $ref: '#/components/schemas/AmenitiesFilter'
+                  description: An optional filter for amenities.
+                - $ref: '#/components/schemas/Article4'
+                  description: An optional filter for Article 4 constraints within London.
+                - $ref: '#/components/schemas/CompanyStatus'
+                  description: An optional filter for company status.
+                - $ref: '#/components/schemas/ConstraintsAdopted'
+                  description: An optional filter for adopted constraints.
+                - $ref: '#/components/schemas/ConstraintsEmerging'
+                  description: An optional filter for emerging constraints.
+                - $ref: '#/components/schemas/DevelopedArea'
+                  description: An optional filter for developed area percentage.
+                - $ref: '#/components/schemas/GreyBeltFavourability'
+                  description: An optional filter for green belt status.
+                - $ref: '#/components/schemas/LandAvailabilityAssessment'
+                  description: An optional filter for land availability assessment.
+                - $ref: '#/components/schemas/LeaseEndDate'
+                  description: An optional filter for lease end date.
+                - $ref: '#/components/schemas/LeaseStartDate'
+                  description: An optional filter for lease start date.
+                - $ref: '#/components/schemas/OwnershipType'
+                  description: An optional filter for ownership type.
+                - $ref: '#/components/schemas/ParcelSize-2'
+                  description: An optional filter for parcel size in square metres.
+                - $ref: '#/components/schemas/PlanningApplications'
+                  description: An optional filter for planning applications.
+                - $ref: '#/components/schemas/PowerDistance'
+                  description: An optional filter for distance to nearby power sources.
+                - $ref: '#/components/schemas/ProprietorName'
+                  description: An optional filter for proprietor name.
+                - $ref: '#/components/schemas/PropertyState'
+                  description: An optional filter for property state.
+                - $ref: '#/components/schemas/RegionFilter'
+                  description: An optional filter for region.
+                - $ref: '#/components/schemas/RegenerationZonesAdopted'
+                  description: An optional filter for adopted regeneration zones.
+                - $ref: '#/components/schemas/RegenerationZonesEmerging'
+                  description: An optional filter for emerging regeneration zones.
+                - $ref: '#/components/schemas/SearchLocation'
+                  description: An optional filter for searching location.
+                - $ref: '#/components/schemas/SiteAllocationsAdopted'
+                  description: An optional filter for adopted site allocations.
+                - $ref: '#/components/schemas/SiteAllocationsEmerging'
+                  description: An optional filter for emerging site allocations.
+                - $ref: '#/components/schemas/Tenure'
+                  description: An optional filter for tenure type.
+                - $ref: '#/components/schemas/UseClass'
+                  description: An optional filter for use classes.
+    PlanningApplicationsSubmissionDateFilter:
+      type: object
+      title: Planning Applications Submission Date Filter
+      properties:
+        id:
+          type: string
+          enum:
+          - planning-applications-submission-date
+          example: planning-applications-submission-date
+          description: The unique identifier for submission date range to filter.
+        range:
           type: array
-          description: A list of parcel UUIDs.
-          maxItems: 100000
           items:
-            $ref: '#/components/schemas/ParcelId'
+            type: string
+            format: date-time
+          minItems: 2
+          maxItems: 2
+          description: The range of submission dates for filtering the planning applications.
+          example:
+          - '2023-01-01T00:00:00Z'
+          - '2023-12-31T23:59:59Z'
+      required:
+      - id
+      - range
     PropertyState:
       type: object
       title: Property State
@@ -494,39 +1300,6 @@ components:
       - values
       - must
       - id
-    ParcelTenure:
-      type: array
-      items:
-        type: string
-        enum:
-        - freehold
-        - leasehold
-        example: freehold
-        default: freehold
-    PlanningApplicationsSubmissionDateFilter:
-      type: object
-      title: Planning Applications Submission Date Filter
-      properties:
-        id:
-          type: string
-          enum:
-          - planning-applications-submission-date
-          example: planning-applications-submission-date
-          description: The unique identifier for submission date range to filter.
-        range:
-          type: array
-          items:
-            type: string
-            format: date-time
-          minItems: 2
-          maxItems: 2
-          description: The range of submission dates for filtering the planning applications.
-          example:
-          - '2023-01-01T00:00:00Z'
-          - '2023-12-31T23:59:59Z'
-      required:
-      - id
-      - range
     PlanningApplicationsNumberOfUnitsFilter:
       type: object
       title: Planning Applications Number of Units Filter
@@ -560,61 +1333,86 @@ components:
       - id
       - range
       - rangeType
-    BulkParcelRequest:
+    ParcelSize-2:
       type: object
-      required:
-      - parcel_ids
+      title: Parcel Size
       properties:
-        parcel_ids:
+        id:
+          type: string
+          example: lot-area-id
+          enum:
+          - lot-area-id
+          description: The unique identifier for the lot area.
+        range:
           type: array
-          description: List of parcel IDs (max 50)
-          maxItems: 50
+          description: '`[0, 2000]` represents a range from **0 meters to 2000 meters (2km)**.
+
+
+            An array with 2 items that represent the range of values for the parcel size.
+
+            The first item is the minimum value, and the second item is the maximum value.
+
+            '
           items:
-            $ref: '#/components/schemas/ParcelId'
-    UseClass:
+            type: number
+            format: float
+          minItems: 2
+          maxItems: 2
+          example:
+          - 0
+          - 500
+        type:
+          type: string
+          description: The type of range.
+          enum:
+          - number-range
+          example: number-range
+        rangeType:
+          type: string
+          description: The type of range being used (e.g., area).
+          enum:
+          - area
+          example: area
+      required:
+      - id
+      - range
+      - type
+      - rangeType
+    UseClassF1:
       type: object
-      title: Use Class
+      title: Use Class - F1
+      properties:
+        key:
+          type: string
+          x-enumDescriptions:
+            F.1: Learning and non-residential institutions
+          example: F.1
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/UseClassF1Item'
+      required:
+      - key
+      - items
+    AmenitiesDistanceFilter:
+      type: object
+      title: Amenities Distance Filter
       properties:
         id:
           type: string
           enum:
-          - use-class-nested-id
-          example: use-class-nested-id
-          description: The unique identifier for the use class filter.
-        values:
-          type: array
-          items:
-            oneOf:
-            - $ref: '#/components/schemas/UseClassB2'
-            - $ref: '#/components/schemas/UseClassB8'
-            - $ref: '#/components/schemas/UseClassC1'
-            - $ref: '#/components/schemas/UseClassC2'
-            - $ref: '#/components/schemas/UseClassC2A'
-            - $ref: '#/components/schemas/UseClassC3'
-            - $ref: '#/components/schemas/UseClassC4'
-            - $ref: '#/components/schemas/UseClassE'
-            - $ref: '#/components/schemas/UseClassF1'
-            - $ref: '#/components/schemas/UseClassF2'
-            - $ref: '#/components/schemas/UseClassSuiGeneris'
-        must:
-          type: string
-          enum:
-          - MATCH_ANY
-          - MATCH_NONE
-          description: The match type for filtering the use class options.
-          example: MATCH_ANY
-          default: MATCH_ANY
-        type:
-          type: string
-          enum:
-          - nested-checkbox
-          example: nested-checkbox
-          default: nested-checkbox
+          - amenities-distance-filter
+          example: amenities-distance-filter
+          description: The unique identifier for the amenities distance filter.
+        value:
+          type: number
+          format: float
+          description: The maximum distance for filtering amenities, in meters.
+          example: 600
       required:
       - id
-      - values
-      - must
-      - type
+      - value
     UseClassC2A:
       type: object
       title: Use Class - C2A
@@ -634,40 +1432,143 @@ components:
       required:
       - key
       - checked
-    AmenitiesDistanceFilter:
+    UseClassC3:
       type: object
-      title: Amenities Distance Filter
+      title: Use Class - C3
       properties:
-        id:
+        key:
           type: string
           enum:
-          - amenities-distance-filter
-          example: amenities-distance-filter
-          description: The unique identifier for the amenities distance filter.
-        value:
-          type: number
-          format: float
-          description: The maximum distance for filtering amenities, in meters.
-          example: 600
+          - C3
+          x-enumDescriptions:
+            C3: Dwellinghouses
+          example: C3
+        checked:
+          type: boolean
+          enum:
+          - true
+          example: true
       required:
-      - id
-      - value
-    Polygon:
-      externalDocs:
-        url: https://datatracker.ietf.org/doc/html/rfc7946
+      - key
+      - checked
+    TitleNumber:
+      description: The title number is a unique identifier for registered land in England and Wales, governed by HM Land Registry.
+      type: string
+      example: WT77573
+    ParcelSearchRequest:
       type: object
       required:
-      - type
-      - coordinates
+      - region
       properties:
-        type:
+        region:
+          allOf:
+          - $ref: '#/components/schemas/GSSCode'
+          - description: A region code (e.g. GSS code for UK Local Authority Districts).
+          - example: E06000023
+        parcel_size:
+          allOf:
+          - $ref: '#/components/schemas/ParcelSize'
+          - description: 'An optional filter for parcel size in square metres. The max or min can be omitted, so for example to find parcels larger than 1ha (10,000sqm) you can use {"min": 10000}.'
+        tenure:
+          allOf:
+          - $ref: '#/components/schemas/ParcelTenure'
+          description: An optional filter for parcel tenures (i.e. freehold or leasehold). If omitted, only parcels which include freeholdings will be returned. To search for leaseholds, or both, supply ["leasehold"] or ["freehold", "leasehold"].
+    UseClassC2:
+      type: object
+      title: Use Class - C2
+      properties:
+        key:
           type: string
           enum:
-          - Polygon
-          example: Polygon
-          description: the geometry type
-        coordinates:
-          $ref: '#/components/schemas/PolygonCoordinates'
+          - C2
+          x-enumDescriptions:
+            C2: Residential institutions
+          example: C2
+        checked:
+          type: boolean
+          enum:
+          - true
+          example: true
+      required:
+      - key
+      - checked
+    UseClassC4:
+      type: object
+      title: Use Class - C4
+      properties:
+        key:
+          type: string
+          enum:
+          - C4
+          x-enumDescriptions:
+            C4: Houses in multiple occupation
+          example: C4
+        checked:
+          type: boolean
+          enum:
+          - true
+          example: true
+      required:
+      - key
+      - checked
+    UseClassSuiGenerisItem:
+      type: object
+      title: Use Class - Sui Generis - Item
+      properties:
+        key:
+          type: string
+          enum:
+          - i-Agricultural
+          - ii-Agricultural
+          - iii-Amusements
+          - iv-Bingo-Hall
+          - v-Car
+          - vi-Farm
+          - vii-Garage
+          - ix-Grazing
+          - x-Holiday
+          - xi-Licensed
+          - xii-Lock
+          - xiii-Permanent
+          - xiv-Petrol
+          - xv-car-parking
+          - xvi-Public
+          - xvii-Recreational
+          x-enumDescriptions:
+            i-Agricultural: Agricultural
+            ii-Agricultural: Applicable to land in farm ownership and not run as a separate business enterprise
+            iii-Amusements: Amusements
+            iv-Bingo-Hall: Bingo Hall / Cinema / Conference / Exhibition Centre / Theatre / Concert Hall
+            v-Car: Car / Coach / Commercial Vehicle / Taxi Parking / Park And Ride Site
+            vi-Farm: Farm / Non-Residential Associated Building
+            vii-Garage: Garage
+            ix-Grazing: Grazing Land
+            x-Holiday: Holiday / Campsite
+            xi-Licensed: Licensed Private Members' Club
+            xii-Lock: Lock-Up Garage / Garage Court
+            xiii-Permanent: Permanent Crop / Crop Rotation
+            xiv-Petrol: Petrol Filling Station
+            xv-car-parking: Public Car Parking
+            xvi-Public: Public House / Bar / Nightclub
+            xvii-Recreational: Recreational / Social Club
+          example: i-Agricultural
+        checked:
+          type: boolean
+          enum:
+          - true
+          example: true
+      required:
+      - key
+      - checked
+    ParcelTenure:
+      type: array
+      items:
+        type: string
+        enum:
+        - freehold
+        - leasehold
+        example: freehold
+        default: freehold
     PowerDistance:
       type: object
       title: Power Distance Filter
@@ -734,177 +1635,44 @@ components:
       - filters
       - must
       - type
-    LandAvailabilityAssessment:
+    DevelopedArea:
       type: object
-      title: Land Availability Assessment
+      title: Developed Area
       properties:
         id:
           type: string
           description: The constant ID for this schema.
           enum:
-          - land-availability-assessment-id
-          example: land-availability-assessment-id
-        values:
+          - developed-area-id
+          example: developed-area-id
+        range:
           type: array
-          description: A list of land availability assessment types with associated keys and checked status.
+          description: '`[1, 45]` represents a range from **1% to 45%**.
+
+
+            An array with 2 items that represent the range of percentages for the developed area.
+
+            The first item is the minimum value, and the second item is the maximum value.
+
+            '
           items:
-            type: object
-            required:
-            - key
-            - checked
-            properties:
-              key:
-                type: string
-                description: The key representing the land availability assessment type.
-                enum:
-                - negative
-                - neutral
-                - positive
-                x-enumDescriptions:
-                  negative: Negative
-                  neutral: Neutral
-                  positive: Positive
-                example: negative
-              checked:
-                type: boolean
-                description: Indicates whether this land availability assessment type is selected or not.
-                enum:
-                - true
-                example: true
-        must:
+            type: number
+            format: integer
+          minItems: 2
+          maxItems: 2
+          example:
+          - 1
+          - 45
+        rangeType:
           type: string
+          description: The type of range being used (e.g., percentage).
           enum:
-          - MATCH_ANY
-          - MATCH_NONE
-          description: The match type for filtering the land availability assessment options.
-          example: MATCH_ANY
+          - percentage
+          example: percentage
       required:
-      - values
-      - must
       - id
-    SiteAllocationsAdopted:
-      type: object
-      title: Site Allocations - Adopted
-      properties:
-        id:
-          type: string
-          description: The constant ID for this schema.
-          enum:
-          - site-allocations-id
-          example: site-allocations-id
-        values:
-          type: array
-          description: A list of site allocation types with associated keys and checked status.
-          items:
-            type: object
-            required:
-            - key
-            - checked
-            properties:
-              key:
-                type: string
-                description: The key representing the site allocation type.
-                enum:
-                - commercial_allocation
-                - community_allocation
-                - employment_allocation
-                - mixed_use_allocation
-                - residential_allocation
-                - uncategorised_allocation
-                x-enumDescriptions:
-                  commercial_allocation: Commercial Allocation
-                  community_allocation: Community Allocation
-                  employment_allocation: Employment Allocation
-                  mixed_use_allocation: Mixed Use Allocation
-                  residential_allocation: Residential Allocation
-                  uncategorised_allocation: Uncategorised
-                example: commercial_allocation
-              checked:
-                type: boolean
-                description: Indicates whether this site allocation type is selected or not.
-                enum:
-                - true
-                example: true
-        must:
-          type: string
-          enum:
-          - MATCH_ANY
-          - MATCH_NONE
-          description: The match type for filtering the site allocation options.
-          example: MATCH_ANY
-      required:
-      - values
-      - must
-      - id
-    UseClassSuiGeneris:
-      type: object
-      title: Use Class - Sui Generis
-      properties:
-        key:
-          type: string
-          enum:
-          - sui-generis
-          x-enumDescriptions:
-            sui-generis: Sui Generis
-          example: sui-generis
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/UseClassSuiGenerisItem'
-    SiteAllocationsEmerging:
-      type: object
-      title: Site Allocations - Emerging
-      properties:
-        id:
-          type: string
-          description: The constant ID for this schema.
-          enum:
-          - site-allocations-emerging-id
-          example: site-allocations-emerging-id
-        values:
-          type: array
-          description: A list of site allocation types with associated keys and checked status.
-          items:
-            type: object
-            required:
-            - key
-            - checked
-            properties:
-              key:
-                type: string
-                description: The key representing the site allocation type.
-                enum:
-                - commercial_allocation
-                - community_allocation
-                - employment_allocation
-                - mixed_use_allocation
-                - residential_allocation
-                - uncategorised_allocation
-                x-enumDescriptions:
-                  commercial_allocation: Commercial Allocation
-                  community_allocation: Community Allocation
-                  employment_allocation: Employment Allocation
-                  mixed_use_allocation: Mixed Use Allocation
-                  residential_allocation: Residential Allocation
-                  uncategorised_allocation: Uncategorised
-                example: commercial_allocation
-              checked:
-                type: boolean
-                description: Indicates whether this site allocation type is selected or not.
-                enum:
-                - true
-                example: true
-        must:
-          type: string
-          enum:
-          - MATCH_ANY
-          - MATCH_NONE
-          description: The match type for filtering the site allocation options.
-          example: MATCH_ANY
-      required:
-      - values
-      - must
-      - id
+      - range
+      - rangeType
     CompanyStatus:
       type: object
       title: Company Status
@@ -975,337 +1743,6 @@ components:
       - values
       - must
       - id
-    ParcelSize:
-      type: object
-      properties:
-        min:
-          type: number
-          format: float
-          description: The minimum parcel size in square metres.
-          example: 2023.43
-        max:
-          type: number
-          format: float
-          description: The maximum parcel size in square metres.
-          example: 4046.86
-    MultiPolygon:
-      description: GeoJSON MultiPolygon
-      externalDocs:
-        url: https://datatracker.ietf.org/doc/html/rfc7946
-      type: object
-      required:
-      - type
-      - coordinates
-      properties:
-        type:
-          type: string
-          enum:
-          - MultiPolygon
-          example: MultiPolygon
-          description: the geometry type
-        coordinates:
-          type: array
-          items:
-            $ref: '#/components/schemas/PolygonCoordinates'
-    UseClassC2:
-      type: object
-      title: Use Class - C2
-      properties:
-        key:
-          type: string
-          enum:
-          - C2
-          x-enumDescriptions:
-            C2: Residential institutions
-          example: C2
-        checked:
-          type: boolean
-          enum:
-          - true
-          example: true
-      required:
-      - key
-      - checked
-    Healthcare:
-      type: object
-      title: Health Care
-      properties:
-        key:
-          type: string
-          enum:
-          - healthcare
-          description: The key representing the healthcare category.
-          example: healthcare
-        checked:
-          type: boolean
-          enum:
-          - true
-          description: Indicates whether the healthcare category is selected.
-          example: true
-        items:
-          type: array
-          minItems: 1
-          items:
-            type: object
-            title: Healthcare - Sub Categories
-            properties:
-              key:
-                type: string
-                description: The key representing the specific healthcare amenity.
-                enum:
-                - shortest_distance_gp_surgeries
-                - shortest_distance_pharmacies
-                - shortest_distance_clinics
-                - shortest_distance_dentists
-                - shortest_distance_hospitals
-                x-enumDescriptions:
-                  shortest_distance_gp_surgeries: Shortest distance to GP surgeries
-                  shortest_distance_pharmacies: Shortest distance to pharmacies
-                  shortest_distance_clinics: Shortest distance to clinics
-                  shortest_distance_dentists: Shortest distance to dentists
-                  shortest_distance_hospitals: Shortest distance to hospitals
-                example: shortest_distance_gp_surgeries
-              checked:
-                description: Indicates whether this specific healthcare amenity is selected.
-                type: boolean
-                example: true
-                enum:
-                - true
-            required:
-            - key
-            - checked
-          example:
-          - key: shortest_distance_gp_surgeries
-            checked: true
-          - key: shortest_distance_pharmacies
-            checked: true
-      required:
-      - key
-      - checked
-      - items
-    Retail:
-      type: object
-      title: Retail
-      properties:
-        key:
-          type: string
-          enum:
-          - retail
-          description: The key representing the retail category.
-          example: retail
-        checked:
-          description: Indicates whether the retail category is selected.
-          type: boolean
-          example: true
-          enum:
-          - true
-        items:
-          type: array
-          description: A list of specific retail amenities.
-          items:
-            type: object
-            properties:
-              key:
-                type: string
-                enum:
-                - shortest_distance_supermarkets_and_convenience_stores
-                x-enumDescriptions:
-                  shortest_distance_supermarkets_and_convenience_stores: Shortest distance to supermarkets and convenience stores
-                description: The key representing the specific retail amenity.
-                example: shortest_distance_supermarkets_and_convenience_stores
-              checked:
-                description: Indicates whether this specific retail amenity is selected.
-                example: true
-                type: boolean
-                enum:
-                - true
-          example:
-          - key: shortest_distance_supermarkets_and_convenience_stores
-            checked: true
-      required:
-      - key
-      - checked
-      - items
-    UseClassF2Item:
-      type: object
-      title: Use Class - F.2
-      properties:
-        key:
-          type: string
-          enum:
-          - F.2(b)
-          - F.2(c)
-          - F.2(d)
-          x-enumDescriptions:
-            F.2(b): Halls or meeting places for the principal use of the local community
-            F.2(c): Areas for outdoor sports and recreation
-            F.2(d): Indoor or outdoor swimming pools or skating rinks
-          example: F.2(b)
-        checked:
-          type: boolean
-          enum:
-          - true
-          example: true
-      required:
-      - key
-      - checked
-    PointCoordinates:
-      type: array
-      maxItems: 2
-      minItems: 2
-      example:
-      - -0.12755
-      - 51.5073
-      items:
-        type: number
-    DevelopedArea:
-      type: object
-      title: Developed Area
-      properties:
-        id:
-          type: string
-          description: The constant ID for this schema.
-          enum:
-          - developed-area-id
-          example: developed-area-id
-        range:
-          type: array
-          description: '`[1, 45]` represents a range from **1% to 45%**.
-
-
-            An array with 2 items that represent the range of percentages for the developed area.
-
-            The first item is the minimum value, and the second item is the maximum value.
-
-            '
-          items:
-            type: number
-            format: integer
-          minItems: 2
-          maxItems: 2
-          example:
-          - 1
-          - 45
-        rangeType:
-          type: string
-          description: The type of range being used (e.g., percentage).
-          enum:
-          - percentage
-          example: percentage
-      required:
-      - id
-      - range
-      - rangeType
-    AgriculturalLandClassification:
-      type: object
-      title: Agricultural Land Classification
-      properties:
-        id:
-          type: string
-          description: The constant ID for this schema.
-          enum:
-          - agricultural-land-classification-id
-          example: agricultural-land-classification-id
-        values:
-          type: array
-          description: A list of agricultural land classification values with associated keys, names, and checked status.
-          items:
-            type: object
-            required:
-            - key
-            properties:
-              key:
-                type: string
-                description: The key representing the agricultural land classification type.
-                enum:
-                - grade_1
-                - grade_2
-                - grade_3a
-                - grade_3
-                - grade_3b
-                - grade_4
-                - grade_5
-                - non_agricultural
-                x-enumDescriptions:
-                  grade_1: Grade 1
-                  grade_2: Grade 2
-                  grade_3a: Grade 3a
-                  grade_3: Grade 3
-                  grade_3b: Grade 3b
-                  grade_4: Grade 4
-                  grade_5: Grade 5
-                  non_agricultural: Non Agricultural
-                example: grade_1
-              checked:
-                type: boolean
-                description: Indicates whether this agricultural land classification type is selected or not.
-                example: true
-          example:
-          - key: grade_1
-            checked: true
-          - key: grade_3a
-            checked: true
-        must:
-          type: string
-          enum:
-          - MATCH_ANY
-          - MATCH_NONE
-          description: The match type for filtering the agricultural land classification options.
-          example: MATCH_ANY
-      required:
-      - values
-      - must
-      - id
-    Article4:
-      type: object
-      title: Article 4 (London)
-      properties:
-        id:
-          type: string
-          description: The constant ID for this schema.
-          enum:
-          - article-four-id
-          example: article-four-id
-        values:
-          type: array
-          description: A list of article 4 values with associated keys, checked status.
-          items:
-            type: object
-            required:
-            - key
-            - checked
-            properties:
-              key:
-                type: string
-                description: The key representing the article 4 type.
-                enum:
-                - article_4_ma
-                - article_4_hmo
-                - article_4_other
-                - article_4_unknown
-                x-enumDescriptions:
-                  article_4_ma: MA
-                  article_4_hmo: HMO
-                  article_4_other: Other
-                  article_4_unknown: Unknown
-                example: article_4_hmo
-              checked:
-                type: boolean
-                description: Indicates whether this constraint type is selected or not.
-                enum:
-                - true
-                example: true
-        must:
-          type: string
-          enum:
-          - MATCH_ANY
-          - MATCH_NONE
-          description: The match type for filtering the article 4 options.
-          example: MATCH_NONE
-      required:
-      - id
-      - values
-      - must
     ParcelDetailsItem:
       type: object
       description: Parcel details. Will be `null` if the parcel is not found.
@@ -1325,9 +1762,10 @@ components:
           maximum: 1
           example: 0.2865
         titles:
-          type: array
+          type:
+          - array
+          - 'null'
           description: A list of HM Land Registry title numbers associated with the parcel. Can be null.
-          nullable: true
           items:
             $ref: '#/components/schemas/TitleNumber'
           example:
@@ -1471,16 +1909,210 @@ components:
                   - 55.0723
                 - - 1.07466
                   - 55.07292
-    BulkParcelResponse:
+    SiteAllocationsAdopted:
       type: object
+      title: Site Allocations - Adopted
       properties:
-        data:
-          type: object
-          properties:
-            parcel:
-              type: array
-              items:
-                $ref: '#/components/schemas/ParcelDetailsItem'
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+          - site-allocations-id
+          example: site-allocations-id
+        values:
+          type: array
+          description: A list of site allocation types with associated keys and checked status.
+          items:
+            type: object
+            required:
+            - key
+            - checked
+            properties:
+              key:
+                type: string
+                description: The key representing the site allocation type.
+                enum:
+                - commercial_allocation
+                - community_allocation
+                - employment_allocation
+                - mixed_use_allocation
+                - residential_allocation
+                - uncategorised_allocation
+                x-enumDescriptions:
+                  commercial_allocation: Commercial Allocation
+                  community_allocation: Community Allocation
+                  employment_allocation: Employment Allocation
+                  mixed_use_allocation: Mixed Use Allocation
+                  residential_allocation: Residential Allocation
+                  uncategorised_allocation: Uncategorised
+                example: commercial_allocation
+              checked:
+                type: boolean
+                description: Indicates whether this site allocation type is selected or not.
+                enum:
+                - true
+                example: true
+        must:
+          type: string
+          enum:
+          - MATCH_ANY
+          - MATCH_NONE
+          description: The match type for filtering the site allocation options.
+          example: MATCH_ANY
+      required:
+      - values
+      - must
+      - id
+    UseClass:
+      type: object
+      title: Use Class
+      properties:
+        id:
+          type: string
+          enum:
+          - use-class-nested-id
+          example: use-class-nested-id
+          description: The unique identifier for the use class filter.
+        values:
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/UseClassB2'
+            - $ref: '#/components/schemas/UseClassB8'
+            - $ref: '#/components/schemas/UseClassC1'
+            - $ref: '#/components/schemas/UseClassC2'
+            - $ref: '#/components/schemas/UseClassC2A'
+            - $ref: '#/components/schemas/UseClassC3'
+            - $ref: '#/components/schemas/UseClassC4'
+            - $ref: '#/components/schemas/UseClassE'
+            - $ref: '#/components/schemas/UseClassF1'
+            - $ref: '#/components/schemas/UseClassF2'
+            - $ref: '#/components/schemas/UseClassSuiGeneris'
+        must:
+          type: string
+          enum:
+          - MATCH_ANY
+          - MATCH_NONE
+          description: The match type for filtering the use class options.
+          example: MATCH_ANY
+          default: MATCH_ANY
+        type:
+          type: string
+          enum:
+          - nested-checkbox
+          example: nested-checkbox
+          default: nested-checkbox
+      required:
+      - id
+      - values
+      - must
+      - type
+    LandAvailabilityAssessment:
+      type: object
+      title: Land Availability Assessment
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+          - land-availability-assessment-id
+          example: land-availability-assessment-id
+        values:
+          type: array
+          description: A list of land availability assessment types with associated keys and checked status.
+          items:
+            type: object
+            required:
+            - key
+            - checked
+            properties:
+              key:
+                type: string
+                description: The key representing the land availability assessment type.
+                enum:
+                - negative
+                - neutral
+                - positive
+                x-enumDescriptions:
+                  negative: Negative
+                  neutral: Neutral
+                  positive: Positive
+                example: negative
+              checked:
+                type: boolean
+                description: Indicates whether this land availability assessment type is selected or not.
+                enum:
+                - true
+                example: true
+        must:
+          type: string
+          enum:
+          - MATCH_ANY
+          - MATCH_NONE
+          description: The match type for filtering the land availability assessment options.
+          example: MATCH_ANY
+      required:
+      - values
+      - must
+      - id
+    RegionDetail:
+      type: object
+      required:
+      - gss_code
+      properties:
+        gss_code:
+          allOf:
+          - $ref: '#/components/schemas/GSSCode'
+          - description: The GSS code of a local authority, e.g. `E06000023`.
+          - example: E06000023
+        name:
+          type: string
+          description: The descriptive name of the region.
+          example: Bristol, City of
+    BulkParcelRequest:
+      type: object
+      required:
+      - parcel_ids
+      properties:
+        parcel_ids:
+          type: array
+          description: List of parcel IDs (max 50)
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/ParcelId'
+    UseClassEItem:
+      type: object
+      title: Use Class - E Item
+      properties:
+        key:
+          type: string
+          enum:
+          - E(a)
+          - E(b)
+          - E(c)
+          - E(c)(i)
+          - E(d)
+          - E(e)
+          - E(f)
+          - E(g)(i)
+          x-enumDescriptions:
+            E(a): Retail of goods other than hot food
+            E(b): Sale of food and drink for consumption (mostly) on the premises
+            E(c): Provision of financial services, professional services or other commercial/business services
+            E(c)(i): Provision of financial services
+            E(d): Indoor sport and recreation (excluding swimming pools or skating rinks)
+            E(e): Provision of medical or health services
+            E(f): Creche, day nursery or day centre
+            E(g)(i): Offices to carry out operational functions
+          example: E(a)
+        checked:
+          type: boolean
+          enum:
+          - true
+          example: true
+      required:
+      - key
+      - checked
     UseClassC1:
       type: object
       title: Use Class - C1
@@ -1500,219 +2132,53 @@ components:
       required:
       - key
       - checked
-    UseClassF1:
+    Polygon:
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
       type: object
-      title: Use Class - F1
+      required:
+      - type
+      - coordinates
       properties:
-        key:
+        type:
           type: string
-          x-enumDescriptions:
-            F.1: Learning and non-residential institutions
-          example: F.1
-        items:
+          enum:
+          - Polygon
+          example: Polygon
+          description: the geometry type
+        coordinates:
+          $ref: '#/components/schemas/PolygonCoordinates'
+    PlanningApplicationsMultiTextFilter:
+      type: object
+      title: Planning Applications Multi Text Filter
+      properties:
+        id:
+          type: string
+          enum:
+          - planning-applications-multi-text-filter-id
+          description: The unique identifier for the multi-text filter.
+          example: planning-applications-multi-text-filter-id
+        must:
+          type: string
+          description: The match type for filtering the search tags.
+          enum:
+          - MATCH_ALL
+          example: MATCH_ALL
+          default: MATCH_ALL
+        searchTags:
           type: array
           minItems: 1
           items:
-            $ref: '#/components/schemas/UseClassF1Item'
-      required:
-      - key
-      - items
-    PlanningApplicationId:
-      type: string
-      description: A unique planning application ID combining a planning authority GSS code and the application reference, separated by a `+` symbol.
-      example: E07000112+Y18/1381/FH
-      pattern: ^[EWS]\d{8}(?:\+|%2B)[\w\-\/%]+$
-    Education:
-      type: object
-      title: Education
-      properties:
-        key:
-          type: string
-          enum:
-          - education
-          description: The key representing the education category.
-          example: education
-        checked:
-          type: boolean
-          description: Indicates whether the education category is selected.
-          example: true
-          enum:
-          - true
-        items:
-          type: array
-          description: A list of specific education amenities.
-          items:
-            type: object
-            properties:
-              key:
-                type: string
-                enum:
-                - shortest_distance_primary_school
-                - shortest_distance_secondary_school
-                - shortest_distance_further_education
-                - shortest_distance_primary_school_independent
-                - shortest_distance_secondary_school_independent
-                - shortest_distance_further_education_independent
-                x-enumDescriptions:
-                  shortest_distance_primary_school: Shortest distance to primary school
-                  shortest_distance_secondary_school: Shortest distance to secondary school
-                  shortest_distance_further_education: Shortest distance to further education
-                  shortest_distance_primary_school_independent: Shortest distance to independent primary school
-                  shortest_distance_secondary_school_independent: Shortest distance to independent secondary school
-                  shortest_distance_further_education_independent: Shortest distance to independent further education
-                description: The key representing the specific education amenity.
-                example: shortest_distance_primary_school
-              checked:
-                description: Indicates whether this specific education amenity is selected.
-                example: true
-                type: boolean
-                enum:
-                - true
-          example:
-          - key: shortest_distance_primary_school
-            checked: true
-          - key: shortest_distance_secondary_school
-            checked: true
-      required:
-      - key
-      - checked
-      - items
-    RegenerationZonesAdopted:
-      type: object
-      title: Regeneration Zones - Adopted
-      properties:
-        id:
-          type: string
-          description: The constant ID for this schema.
-          enum:
-          - regeneration-zones-adopted-id
-          example: regeneration-zones-adopted-id
-        values:
-          type: array
-          description: A list of regeneration zone values with associated keys and checked status.
-          items:
-            type: object
-            required:
-            - key
-            properties:
-              key:
-                type: string
-                description: The key representing the regeneration zone type.
-                enum:
-                - area_action_plans
-                - named_regeneration_areas
-                x-enumDescriptions:
-                  area_action_plans: Area Action Plans
-                  named_regeneration_areas: Named Regeneration Areas
-                example: area_action_plans
-              checked:
-                type: boolean
-                description: Indicates whether this regeneration zone type is selected or not.
-                example: true
-        must:
-          type: string
-          enum:
-          - MATCH_ANY
-          - MATCH_NONE
-          description: The match type for filtering the regeneration zone options.
-          example: MATCH_ANY
-      required:
-      - values
-      - must
-      - id
-    Forbidden:
-      oneOf:
-      - type: object
-        required:
-        - user
-        properties:
-          user:
-            type: object
-            required:
-            - state
-            properties:
-              state:
-                type: string
-                enum:
-                - expired
-                - blocked
-                example: expired
-      - type: object
-        required:
-        - message
-        properties:
-          message:
             type: string
-            example: User not found
-    BulkParcelBadRequest:
-      type: object
-      required:
-      - error_msg
-      properties:
-        error_msg:
-          type: string
-          example: "Body must be valid JSON object in the form of:\n  { \"parcel_ids\": [\"valid_uuid_0\", \"valid_uuid_1\", \"valid_uuid_N\"] }\n"
-          description: Error message detailing the required request format.
-    PowerDistanceTypeFilter:
-      type: object
-      title: Power Distance Type Filter
-      properties:
-        id:
-          type: string
-          enum:
-          - power-distance-type-filter
-          example: power-distance-type-filter
-          description: The unique identifier for the power distance type filter.
-        values:
-          type: array
-          items:
-            type: object
-            properties:
-              key:
-                enum:
-                - shortest_distance_grid_power_substations
-                - shortest_distance_bulk_power_substations
-                - shortest_distance_primary_power_substations
-                - shortest_distance_hv_power_substations
-                - shortest_distance_power_cables
-                - shortest_distance_power_overhead_lines
-                - shortest_distance_power_towers
-                x-enumDescriptions:
-                  shortest_distance_grid_power_substations: Distance to the nearest grid power substation
-                  shortest_distance_bulk_power_substations: Distance to the nearest bulk power substation
-                  shortest_distance_primary_power_substations: Distance to the nearest primary power substation
-                  shortest_distance_hv_power_substations: Distance to the nearest high-voltage power substation
-                  shortest_distance_power_cables: Distance to the nearest power cable
-                  shortest_distance_power_overhead_lines: Distance to the nearest overhead power line
-                  shortest_distance_power_towers: Distance to the nearest power tower
-                description: The key representing the type of power distance.
-              checked:
-                type: boolean
-                description: Indicates whether this specific power type is selected.
-            required:
-            - key
-            - checked
-          description: 'List of power distance types with their selection status.
-
-            '
+          description: The list of search tags to filter the planning applications.
           example:
-          - key: shortest_distance_grid_power_substations
-            checked: false
-          - key: shortest_distance_bulk_power_substations
-            checked: false
-          - key: shortest_distance_primary_power_substations
-            checked: false
-          - key: shortest_distance_hv_power_substations
-            checked: false
-          - key: shortest_distance_power_cables
-            checked: false
-          - key: shortest_distance_power_overhead_lines
-            checked: false
-          - key: shortest_distance_power_towers
-            checked: true
+          - tag1
+          - tag2
+          - tag3
       required:
       - id
-      - values
+      - must
+      - searchTags
     SearchLocation:
       type: object
       title: Search Location
@@ -1738,473 +2204,59 @@ components:
       - id
       - location
       - must
-    PolygonCoordinates:
-      type: array
-      items:
-        $ref: '#/components/schemas/LinearRingCoordinates'
-    ParcelSize-2:
+    LeaseStartDate:
       type: object
-      title: Parcel Size
-      properties:
-        id:
-          type: string
-          example: lot-area-id
-          enum:
-          - lot-area-id
-          description: The unique identifier for the lot area.
-        range:
-          type: array
-          description: '`[0, 2000]` represents a range from **0 meters to 2000 meters (2km)**.
-
-
-            An array with 2 items that represent the range of values for the parcel size.
-
-            The first item is the minimum value, and the second item is the maximum value.
-
-            '
-          items:
-            type: number
-            format: float
-          minItems: 2
-          maxItems: 2
-          example:
-          - 0
-          - 500
-        type:
-          type: string
-          description: The type of range.
-          enum:
-          - number-range
-          example: number-range
-        rangeType:
-          type: string
-          description: The type of range being used (e.g., area).
-          enum:
-          - area
-          example: area
-      required:
-      - id
-      - range
-      - type
-      - rangeType
-    UseClassB8:
-      type: object
-      title: Use Class - B8
-      properties:
-        key:
-          type: string
-          enum:
-          - B8
-          x-enumDescriptions:
-            B8: Storage or distribution
-          example: B8
-        checked:
-          type: boolean
-          enum:
-          - true
-          example: true
-      required:
-      - key
-      - checked
-    RegionDetail:
-      type: object
-      required:
-      - gss_code
-      properties:
-        gss_code:
-          allOf:
-          - $ref: '#/components/schemas/GSSCode'
-          - description: The GSS code of a local authority, e.g. `E06000023`.
-          - example: E06000023
-        name:
-          type: string
-          description: The descriptive name of the region.
-          example: Bristol, City of
-    GSSCode:
-      type: string
-      description: Geocode as maintained by the United Kingdom's Office for National Statistics (ONS) to represent a wide range of geographical areas of the UK.
-      pattern: ^[EWS]\d{8}$
-      example: E09000033
-    ConstraintsAdopted:
-      type: object
-      title: Constraints - Adopted Constraints
+      title: Lease Start Date
       properties:
         id:
           type: string
           description: The constant ID for this schema.
           enum:
-          - adopted-constraints-id
-          example: adopted-constraints-id
-        values:
+          - lease-start-date
+          example: lease-start-date
+        range:
           type: array
-          description: A list of constraint values with associated keys, checked status.
+          description: "`[\"2025-01-01T00:00:00.000Z\", \"2025-08-31T22:59:59.999Z\"]` \nrepresents a range from **Jan 1st 2025 to Aug 31st 2025 at 22:59**.\nAn array with 2 items that represent the range of dates for the lease start date.\n\nThe first item is the start date, and the second item is the end date.\n"
           items:
-            type: object
-            required:
-            - key
-            - checked
-            properties:
-              key:
-                type: string
-                description: The key representing the constraint type.
-                enum:
-                - protected_areas_outer
-                - heritage_land_listed_buildings_outer
-                - flood_zone_2_env_agency
-                - flood_zone_3_env_agency
-                - very_low_risk_of_flooding_from_rivers_and_seas
-                - low_risk_of_flooding_from_rivers_and_seas
-                - medium_risk_of_flooding_from_rivers_and_seas
-                - high_risk_of_flooding_from_rivers_and_seas
-                - conservation_areas_outer
-                - employment_area_outer
-                - settlement_boundaries_outer
-                - green_belt_outer
-                - nutrient_neutrality
-                - protected_views_outer
-                - safe_guarding_outer
-                - metropolitan_open_land_outer
-                - open_space_outer
-                - rights_of_way
-                - tree_preservation_orders
-                - national_landscape
-                x-enumDescriptions:
-                  protected_areas_outer: Protected Areas
-                  heritage_land_listed_buildings_outer: Heritage Land/Listed Buildings
-                  flood_zone_2_env_agency: Flood Zone 2
-                  flood_zone_3_env_agency: Flood Zone 3
-                  very_low_risk_of_flooding_from_rivers_and_seas: Very Low Risk (Flood Risk)
-                  low_risk_of_flooding_from_rivers_and_seas: Low Risk (Flood Risk)
-                  medium_risk_of_flooding_from_rivers_and_seas: Medium Risk (Flood Risk)
-                  high_risk_of_flooding_from_rivers_and_seas: High Risk (Flood Risk)
-                  conservation_areas_outer: Conservation Areas
-                  employment_area_outer: Employment Area
-                  settlement_boundaries_outer: Settlement Boundaries
-                  green_belt_outer: Green Belt
-                  nutrient_neutrality: Nutrient Neutrality
-                  protected_views_outer: Protected Views
-                  safe_guarding_outer: Safe Guarded Sites
-                  metropolitan_open_land_outer: Metropolitan Open Land (Open Land/Green Space)
-                  open_space_outer: Open Space (Open Land/Green Space)
-                  rights_of_way: Rights of Way
-                  tree_preservation_orders: Tree Preservation Orders
-                  national_landscape: National Landscape (AONB)
-                example: protected_areas_outer
-              checked:
-                type: boolean
-                description: Indicates whether this constraint type is selected or not.
-                enum:
-                - true
-                example: true
-        must:
-          type: string
-          enum:
-          - MATCH_ALL
-          - MATCH_NONE
-          description: The match type for filtering the constraints options.
-          example: MATCH_NONE
-      required:
-      - values
-      - must
-      - id
-    UseClassF1Item:
-      type: object
-      title: Use Class - F1 Item
-      properties:
-        key:
-          type: string
-          enum:
-          - F.1(a)
-          - F.1(b)
-          - F.1(c)
-          - F.1(d)
-          - F.1(f)
-          - F.1(g)
-          x-enumDescriptions:
-            F.1(a): Provision of education e.g. schools
-            F.1(b): Display of works of art
-            F.1(c): Museums
-            F.1(d): Public libraries or public reading rooms
-            F.1(f): Public worship or religious instruction
-            F.1(g): Law courts
-          example: F.1(a)
-        checked:
-          type: boolean
-          enum:
-          - true
-          example: true
-      required:
-      - key
-      - checked
-    RegionFilter:
-      type: object
-      title: Region
-      properties:
-        id:
-          type: string
-          enum:
-          - region-id
-          example: region-id
-          description: The unique identifier for the region filter.
-        region:
-          allOf:
-          - $ref: '#/components/schemas/GSSCode'
-          - description: A region code (e.g. GSS code for UK Local Authority Districts).
-          - example: E06000023
-      required:
-      - id
-      - region
-    UseClassB2:
-      type: object
-      title: Use Class - B2
-      properties:
-        key:
-          type: string
-          enum:
-          - B2
-          x-enumDescriptions:
-            B2: General industrial
-          example: B2
-        checked:
-          type: boolean
-          enum:
-          - true
-          example: true
-      required:
-      - key
-      - checked
-    PointWithRadius:
-      title: Point with Radius
-      externalDocs:
-        url: https://datatracker.ietf.org/doc/html/rfc7946
-      type: object
-      required:
-      - type
-      - coordinates
-      - radius_metres
-      properties:
-        type:
-          type: string
-          enum:
-          - Point
-          example: Point
-          description: the geometry type
-        coordinates:
-          $ref: '#/components/schemas/PointCoordinates'
-        radius_metres:
-          type: number
-          example: 100
-          description: 'The radius around the point in metres.
-
-            '
-    ParcelSearchRequestAdvanced:
-      type: object
-      required:
-      - search_filter
-      properties:
-        search_filter:
-          type: object
-          required:
-          - ALL
-          properties:
-            ALL:
-              type: array
-              description: Array of search criteria to match using AND logic
-              minItems: 1
-              items:
-                anyOf:
-                - $ref: '#/components/schemas/AdditionalOpportunities'
-                  description: An optional filter for additional opportunities.
-                - $ref: '#/components/schemas/AgriculturalLandClassification'
-                  description: An optional filter for agricultural land classification.
-                - $ref: '#/components/schemas/AmenitiesFilter'
-                  description: An optional filter for amenities.
-                - $ref: '#/components/schemas/Article4'
-                  description: An optional filter for Article 4 constraints within London.
-                - $ref: '#/components/schemas/CompanyStatus'
-                  description: An optional filter for company status.
-                - $ref: '#/components/schemas/ConstraintsAdopted'
-                  description: An optional filter for adopted constraints.
-                - $ref: '#/components/schemas/ConstraintsEmerging'
-                  description: An optional filter for emerging constraints.
-                - $ref: '#/components/schemas/DevelopedArea'
-                  description: An optional filter for developed area percentage.
-                - $ref: '#/components/schemas/GreyBeltFavourability'
-                  description: An optional filter for green belt status.
-                - $ref: '#/components/schemas/LandAvailabilityAssessment'
-                  description: An optional filter for land availability assessment.
-                - $ref: '#/components/schemas/LeaseEndDate'
-                  description: An optional filter for lease end date.
-                - $ref: '#/components/schemas/LeaseStartDate'
-                  description: An optional filter for lease start date.
-                - $ref: '#/components/schemas/OwnershipType'
-                  description: An optional filter for ownership type.
-                - $ref: '#/components/schemas/ParcelSize-2'
-                  description: An optional filter for parcel size in square metres.
-                - $ref: '#/components/schemas/PlanningApplications'
-                  description: An optional filter for planning applications.
-                - $ref: '#/components/schemas/PowerDistance'
-                  description: An optional filter for distance to nearby power sources.
-                - $ref: '#/components/schemas/ProprietorName'
-                  description: An optional filter for proprietor name.
-                - $ref: '#/components/schemas/PropertyState'
-                  description: An optional filter for property state.
-                - $ref: '#/components/schemas/RegionFilter'
-                  description: An optional filter for region.
-                - $ref: '#/components/schemas/RegenerationZonesAdopted'
-                  description: An optional filter for adopted regeneration zones.
-                - $ref: '#/components/schemas/RegenerationZonesEmerging'
-                  description: An optional filter for emerging regeneration zones.
-                - $ref: '#/components/schemas/SearchLocation'
-                  description: An optional filter for searching location.
-                - $ref: '#/components/schemas/SiteAllocationsAdopted'
-                  description: An optional filter for adopted site allocations.
-                - $ref: '#/components/schemas/SiteAllocationsEmerging'
-                  description: An optional filter for emerging site allocations.
-                - $ref: '#/components/schemas/Tenure'
-                  description: An optional filter for tenure type.
-                - $ref: '#/components/schemas/UseClass'
-                  description: An optional filter for use classes.
-    Transport:
-      type: object
-      title: Transport
-      properties:
-        key:
-          type: string
-          enum:
-          - transport
-          description: The key representing the transport category.
-          example: transport
-        checked:
-          type: boolean
-          description: Indicates whether the transport category is selected.
-          example: true
-          enum:
-          - true
-        items:
-          type: array
-          description: A list of specific transport amenities.
-          items:
-            type: object
-            properties:
-              key:
-                type: string
-                enum:
-                - shortest_distance_bus_stop
-                - shortest_distance_train_station
-                - shortest_distance_metro_station
-                x-enumDescriptions:
-                  shortest_distance_bus_stop: Shortest distance to bus stop
-                  shortest_distance_train_station: Shortest distance to train station
-                  shortest_distance_metro_station: Shortest distance to metro station
-                description: The key representing the specific transport amenity.
-                example: shortest_distance_bus_stop
-              checked:
-                description: Indicates whether this specific transport amenity is selected.
-                example: true
-                type: boolean
-                enum:
-                - true
+            type: string
+            format: date-time
+          minItems: 2
+          maxItems: 2
           example:
-          - key: shortest_distance_bus_stop
-            checked: true
-          - key: shortest_distance_train_station
-            checked: true
+          - '2025-01-01T00:00:00.000Z'
+          - '2025-08-31T22:59:59.999Z'
       required:
-      - key
-      - checked
-      - items
-    AmenitiesTypeFilter:
+      - id
+      - range
+    LeaseEndDate:
       type: object
-      title: Amenities Filter
+      title: Lease End Date
       properties:
         id:
           type: string
+          description: The constant ID for this schema.
           enum:
-          - amenities-type-filter
-          example: amenities-type-filter
-          description: The unique identifier for the amenities filter.
-        values:
+          - lease-end-date
+          example: lease-end-date
+        range:
           type: array
+          description: "`[\"2025-02-01T00:00:00.000Z\", \"2025-09-30T23:59:59.999Z\"]` \nrepresents a range from **Feb 1st 2025 to Sep 30th 2025 at 23:59**.\nAn array with 2 items that represent the range of dates for the lease end date.\n\nThe first item is the start date, and the second item is the end date.\n"
           items:
-            anyOf:
-            - $ref: '#/components/schemas/Transport'
-            - $ref: '#/components/schemas/Education'
-            - $ref: '#/components/schemas/Retail'
-            - $ref: '#/components/schemas/Healthcare'
-          description: "A list of amenities to be filtered. \nEach item in the list represents a specific amenity type and its associated options.\n"
-          minItems: 1
+            type: string
+            format: date-time
+          minItems: 2
+          maxItems: 2
           example:
-          - key: transport
-            checked: true
-            items:
-            - key: shortest_distance_bus_stop
-              checked: true
-          - key: education
-            checked: true
-            items:
-            - key: shortest_distance_primary_school
-              checked: true
-        must:
-          type: string
-          enum:
-          - MATCH_ANY
-          - MATCH_NONE
-          description: The match type for filtering the use class options.
-          example: MATCH_ANY
-          default: MATCH_ANY
-        type:
-          type: string
-          enum:
-          - nested-checkbox
-          description: The type of filter, which is always nested-checkbox in this case.
-          example: nested-checkbox
-          default: nested-checkbox
+          - '2025-02-01T00:00:00.000Z'
+          - '2025-09-30T22:59:59.999Z'
       required:
       - id
-      - values
-      - must
-      - type
-    PlanningApplications:
-      type: object
-      title: Planning Applications Filter
-      properties:
-        id:
-          type: string
-          enum:
-          - planning-applications-id
-          example: planning-applications-id
-          description: The unique identifier for the planning applications filter.
-        type:
-          type: string
-          enum:
-          - compound
-          example: compound
-          description: The type of filter, which is always compound in this case.
-        filters:
-          type: array
-          minItems: 3
-          maxItems: 3
-          description: "A list of filters to be applied. \nMust include: \n* only one of multi text filter.\n* only one of submission date filter.\n* only one of units filter.\n"
-          items:
-            type: object
-            anyOf:
-            - $ref: '#/components/schemas/PlanningApplicationsMultiTextFilter'
-            - $ref: '#/components/schemas/PlanningApplicationsSubmissionDateFilter'
-            - $ref: '#/components/schemas/PlanningApplicationsNumberOfUnitsFilter'
-        must:
-          type: string
-          enum:
-          - MATCH_ALL
-          - MATCH_NONE
-          description: The match type for combining the filters.
-          example: MATCH_ALL
-          default: MATCH_ALL
-      required:
-      - id
-      - filters
-      - must
-      - type
+      - range
+    GSSCode:
+      type: string
+      description: Geocode as maintained by the United Kingdom's Office for National Statistics (ONS) to represent a wide range of geographical areas of the UK.
+      pattern: ^[EWS]\d{8}$
+      example: E09000033
     AdditionalOpportunities:
       type: object
       title: Additional Opportunities
@@ -2252,112 +2304,270 @@ components:
       - values
       - must
       - id
-    ParcelSearchRequest:
+    UseClassF2Item:
+      type: object
+      title: Use Class - F.2
+      properties:
+        key:
+          type: string
+          enum:
+          - F.2(b)
+          - F.2(c)
+          - F.2(d)
+          x-enumDescriptions:
+            F.2(b): Halls or meeting places for the principal use of the local community
+            F.2(c): Areas for outdoor sports and recreation
+            F.2(d): Indoor or outdoor swimming pools or skating rinks
+          example: F.2(b)
+        checked:
+          type: boolean
+          enum:
+          - true
+          example: true
+      required:
+      - key
+      - checked
+    UseClassB8:
+      type: object
+      title: Use Class - B8
+      properties:
+        key:
+          type: string
+          enum:
+          - B8
+          x-enumDescriptions:
+            B8: Storage or distribution
+          example: B8
+        checked:
+          type: boolean
+          enum:
+          - true
+          example: true
+      required:
+      - key
+      - checked
+    UPRN:
+      type: string
+      description: Unique Property Reference Number (UPRN) is a unique numeric identifier for every addressable location in Great Britain, found in Ordnance Survey's AddressBase products.
+      pattern: ^\d{1,12}$
+    PlanningApplications:
+      type: object
+      title: Planning Applications Filter
+      properties:
+        id:
+          type: string
+          enum:
+          - planning-applications-id
+          example: planning-applications-id
+          description: The unique identifier for the planning applications filter.
+        type:
+          type: string
+          enum:
+          - compound
+          example: compound
+          description: The type of filter, which is always compound in this case.
+        filters:
+          type: array
+          minItems: 3
+          maxItems: 3
+          description: "A list of filters to be applied. \nMust include: \n* only one of multi text filter.\n* only one of submission date filter.\n* only one of units filter.\n"
+          items:
+            type: object
+            anyOf:
+            - $ref: '#/components/schemas/PlanningApplicationsMultiTextFilter'
+            - $ref: '#/components/schemas/PlanningApplicationsSubmissionDateFilter'
+            - $ref: '#/components/schemas/PlanningApplicationsNumberOfUnitsFilter'
+        must:
+          type: string
+          enum:
+          - MATCH_ALL
+          - MATCH_NONE
+          description: The match type for combining the filters.
+          example: MATCH_ALL
+          default: MATCH_ALL
+      required:
+      - id
+      - filters
+      - must
+      - type
+    RegenerationZonesAdopted:
+      type: object
+      title: Regeneration Zones - Adopted
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+          - regeneration-zones-adopted-id
+          example: regeneration-zones-adopted-id
+        values:
+          type: array
+          description: A list of regeneration zone values with associated keys and checked status.
+          items:
+            type: object
+            required:
+            - key
+            properties:
+              key:
+                type: string
+                description: The key representing the regeneration zone type.
+                enum:
+                - area_action_plans
+                - named_regeneration_areas
+                x-enumDescriptions:
+                  area_action_plans: Area Action Plans
+                  named_regeneration_areas: Named Regeneration Areas
+                example: area_action_plans
+              checked:
+                type: boolean
+                description: Indicates whether this regeneration zone type is selected or not.
+                example: true
+        must:
+          type: string
+          enum:
+          - MATCH_ANY
+          - MATCH_NONE
+          description: The match type for filtering the regeneration zone options.
+          example: MATCH_ANY
+      required:
+      - values
+      - must
+      - id
+    PointWithRadius:
+      title: Point with Radius
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
       type: object
       required:
-      - region
+      - type
+      - coordinates
+      - radius_metres
       properties:
+        type:
+          type: string
+          enum:
+          - Point
+          example: Point
+          description: the geometry type
+        coordinates:
+          $ref: '#/components/schemas/PointCoordinates'
+        radius_metres:
+          type: number
+          example: 100
+          description: 'The radius around the point in metres.
+
+            '
+    MultiPolygon:
+      description: GeoJSON MultiPolygon
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - MultiPolygon
+          example: MultiPolygon
+          description: the geometry type
+        coordinates:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolygonCoordinates'
+    ParcelIds:
+      type: object
+      required:
+      - parcel_ids
+      properties:
+        parcel_ids:
+          type: array
+          description: A list of parcel UUIDs.
+          maxItems: 100000
+          items:
+            $ref: '#/components/schemas/ParcelId'
+    Tenure:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The constant ID for this schema.
+          enum:
+          - tenure-uk
+          example: tenure-uk
+        values:
+          type: array
+          description: A list of tenure values with associated keys and checked status.
+          items:
+            type: object
+            required:
+            - key
+            - checked
+            properties:
+              key:
+                type: string
+                description: The key representing the tenure type.
+                enum:
+                - freehold
+                - leasehold
+                x-enumDescriptions:
+                  freehold: Freehold
+                  leasehold: Leasehold
+                example: freehold
+              checked:
+                type: boolean
+                description: Indicates whether this constraint type is selected or not.
+                enum:
+                - true
+                example: true
+        must:
+          type: string
+          enum:
+          - MATCH_ANY
+          - MATCH_NONE
+          description: The match type for filtering the tenure options.
+          example: MATCH_ANY
+      required:
+      - values
+      - must
+      - id
+    UseClassF2:
+      type: object
+      title: Use Class - F2
+      properties:
+        key:
+          type: string
+          x-enumDescriptions:
+            F.2: Local community uses
+          example: F.2
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/UseClassF2Item'
+    PlanningApplicationId:
+      type: string
+      description: A unique planning application ID combining a planning authority GSS code and the application reference, separated by a `+` symbol.
+      example: E07000112+Y18/1381/FH
+      pattern: ^[EWS]\d{8}(?:\+|%2B)[\w\-\/%]+$
+    RegionFilter:
+      type: object
+      title: Region
+      properties:
+        id:
+          type: string
+          enum:
+          - region-id
+          example: region-id
+          description: The unique identifier for the region filter.
         region:
           allOf:
           - $ref: '#/components/schemas/GSSCode'
           - description: A region code (e.g. GSS code for UK Local Authority Districts).
           - example: E06000023
-        parcel_size:
-          allOf:
-          - $ref: '#/components/schemas/ParcelSize'
-          - description: 'An optional filter for parcel size in square metres. The max or min can be omitted, so for example to find parcels larger than 1ha (10,000sqm) you can use {"min": 10000}.'
-        tenure:
-          allOf:
-          - $ref: '#/components/schemas/ParcelTenure'
-          description: An optional filter for parcel tenures (i.e. freehold or leasehold). If omitted, only parcels which include freeholdings will be returned. To search for leaseholds, or both, supply ["leasehold"] or ["freehold", "leasehold"].
-    UseClassC3:
-      type: object
-      title: Use Class - C3
-      properties:
-        key:
-          type: string
-          enum:
-          - C3
-          x-enumDescriptions:
-            C3: Dwellinghouses
-          example: C3
-        checked:
-          type: boolean
-          enum:
-          - true
-          example: true
-      required:
-      - key
-      - checked
-    CoveredEntities:
-      type: array
-      items:
-        type: object
-        required:
-        - id
-        properties:
-          id:
-            type: string
-          coverage:
-            type: number
-            description: How much of the site has been overlapped by the entity. Decimal ranging from 0 to 1.0
-            example: 0.618
-    UseClassE:
-      type: object
-      title: Use Class - E
-      properties:
-        key:
-          type: string
-          enum:
-          - E
-          x-enumDescriptions:
-            E: Commercial, Business and Service
-          example: E
-        checked:
-          type: boolean
-          enum:
-          - true
-          example: true
-        items:
-          type: array
-          minItems: 1
-          items:
-            $ref: '#/components/schemas/UseClassEItem'
-      required:
-      - key
-      - checked
-      - items
-    PlanningApplicationsMultiTextFilter:
-      type: object
-      title: Planning Applications Multi Text Filter
-      properties:
-        id:
-          type: string
-          enum:
-          - planning-applications-multi-text-filter-id
-          description: The unique identifier for the multi-text filter.
-          example: planning-applications-multi-text-filter-id
-        must:
-          type: string
-          description: The match type for filtering the search tags.
-          enum:
-          - MATCH_ALL
-          example: MATCH_ALL
-          default: MATCH_ALL
-        searchTags:
-          type: array
-          minItems: 1
-          items:
-            type: string
-          description: The list of search tags to filter the planning applications.
-          example:
-          - tag1
-          - tag2
-          - tag3
       required:
       - id
-      - must
-      - searchTags
+      - region
     ConstraintsEmerging:
       type: object
       title: Constraints - Emerging Constraints
@@ -2416,140 +2626,28 @@ components:
       - values
       - must
       - id
-    ParcelId:
-      type: string
-      format: uuid
-      description: A parcel ID in the form of a UUID.
-      example: 2a5ad2c7-29ef-d609-8ade-36eef8e3a072
-    LinearRingCoordinates:
-      type: array
-      minItems: 4
-      items:
-        $ref: '#/components/schemas/PointCoordinates'
-    UseClassC4:
+    BulkParcelBadRequest:
       type: object
-      title: Use Class - C4
-      properties:
-        key:
-          type: string
-          enum:
-          - C4
-          x-enumDescriptions:
-            C4: Houses in multiple occupation
-          example: C4
-        checked:
-          type: boolean
-          enum:
-          - true
-          example: true
       required:
-      - key
-      - checked
-    UseClassEItem:
-      type: object
-      title: Use Class - E Item
+      - error_msg
       properties:
-        key:
+        error_msg:
           type: string
-          enum:
-          - E(a)
-          - E(b)
-          - E(c)
-          - E(c)(i)
-          - E(d)
-          - E(e)
-          - E(f)
-          - E(g)(i)
-          x-enumDescriptions:
-            E(a): Retail of goods other than hot food
-            E(b): Sale of food and drink for consumption (mostly) on the premises
-            E(c): Provision of financial services, professional services or other commercial/business services
-            E(c)(i): Provision of financial services
-            E(d): Indoor sport and recreation (excluding swimming pools or skating rinks)
-            E(e): Provision of medical or health services
-            E(f): Creche, day nursery or day centre
-            E(g)(i): Offices to carry out operational functions
-          example: E(a)
-        checked:
-          type: boolean
-          enum:
-          - true
-          example: true
-      required:
-      - key
-      - checked
-    ParcelDetails:
+          example: "Body must be valid JSON object in the form of:\n  { \"parcel_ids\": [\"valid_uuid_0\", \"valid_uuid_1\", \"valid_uuid_N\"] }\n"
+          description: Error message detailing the required request format.
+    SiteAllocationsEmerging:
       type: object
-      properties:
-        data:
-          type: object
-          nullable: true
-          properties:
-            parcel:
-              $ref: '#/components/schemas/ParcelDetailsItem'
-    AmenitiesFilter:
-      type: object
-      title: Amenities Filter
-      properties:
-        id:
-          type: string
-          enum:
-          - amenities-filter
-          example: amenities-filter
-          description: The unique identifier for the amenities filter.
-        type:
-          type: string
-          enum:
-          - compound
-          example: compound
-          description: The type of filter, which is always compound in this case.
-        filters:
-          type: array
-          items:
-            minItems: 2
-            maxItems: 2
-            anyOf:
-            - $ref: '#/components/schemas/AmenitiesTypeFilter'
-            - $ref: '#/components/schemas/AmenitiesDistanceFilter'
-          description: "A list of filters to be applied. \nMust include at least one: AmenitiesTypeFilter and only one AmenitiesDistanceFilter.\n"
-          example:
-          - id: amenities-type-filter
-            values:
-            - key: transport
-              checked: true
-              items:
-              - key: shortest_distance_bus_stop
-                checked: true
-            must: MATCH_ANY
-            type: nested-checkbox
-          - id: amenities-distance-filter
-            value: 200
-        must:
-          type: string
-          enum:
-          - MATCH_ALL
-          - MATCH_NONE
-          description: The match type for combining the filters.
-          example: MATCH_ALL
-          default: MATCH_ALL
-      required:
-      - id
-      - filters
-      - must
-      - type
-    GreyBeltFavourability:
-      type: object
-      title: Grey belt favourability
+      title: Site Allocations - Emerging
       properties:
         id:
           type: string
           description: The constant ID for this schema.
           enum:
-          - grey-belt-type-id
-          example: grey-belt-type-id
+          - site-allocations-emerging-id
+          example: site-allocations-emerging-id
         values:
           type: array
-          description: A list of grey belt land favourability.
+          description: A list of site allocation types with associated keys and checked status.
           items:
             type: object
             required:
@@ -2558,19 +2656,25 @@ components:
             properties:
               key:
                 type: string
-                description: The key representing the grey belt land favourability type.
+                description: The key representing the site allocation type.
                 enum:
-                - grey_belt_land_more_favourable
-                - grey_belt_land_average_favourability
-                - grey_belt_land_less_favourable
+                - commercial_allocation
+                - community_allocation
+                - employment_allocation
+                - mixed_use_allocation
+                - residential_allocation
+                - uncategorised_allocation
                 x-enumDescriptions:
-                  grey_belt_land_more_favourable: More favourable
-                  grey_belt_land_average_favourability: Average favourability
-                  grey_belt_land_less_favourable: Less favourable
-                example: grey_belt_land_more_favourable
+                  commercial_allocation: Commercial Allocation
+                  community_allocation: Community Allocation
+                  employment_allocation: Employment Allocation
+                  mixed_use_allocation: Mixed Use Allocation
+                  residential_allocation: Residential Allocation
+                  uncategorised_allocation: Uncategorised
+                example: commercial_allocation
               checked:
                 type: boolean
-                description: Indicates whether this favourability type is selected or not.
+                description: Indicates whether this site allocation type is selected or not.
                 enum:
                 - true
                 example: true
@@ -2579,116 +2683,7 @@ components:
           enum:
           - MATCH_ANY
           - MATCH_NONE
-          description: The match type for filtering the grey belt land favourability options.
-          example: MATCH_ANY
-      required:
-      - values
-      - must
-      - id
-    ProprietorName:
-      type: object
-      title: Owner Name
-      properties:
-        id:
-          type: string
-          enum:
-          - proprietor-name
-          example: proprietor-name
-          description: The unique identifier for the owner name filter.
-        must:
-          type: string
-          enum:
-          - CONTAIN
-          - NOT_CONTAIN
-          description: The match type for filtering the owner name.
-          example: CONTAIN
-        text:
-          type: string
-          description: The text value to search for in owner name.
-          example: foo
-      required:
-      - id
-      - must
-      - text
-    LeaseStartDate:
-      type: object
-      title: Lease Start Date
-      properties:
-        id:
-          type: string
-          description: The constant ID for this schema.
-          enum:
-          - lease-start-date
-          example: lease-start-date
-        range:
-          type: array
-          description: "`[\"2025-01-01T00:00:00.000Z\", \"2025-08-31T22:59:59.999Z\"]` \nrepresents a range from **Jan 1st 2025 to Aug 31st 2025 at 22:59**.\nAn array with 2 items that represent the range of dates for the lease start date.\n\nThe first item is the start date, and the second item is the end date.\n"
-          items:
-            type: string
-            format: date-time
-          minItems: 2
-          maxItems: 2
-          example:
-          - '2025-01-01T00:00:00.000Z'
-          - '2025-08-31T22:59:59.999Z'
-      required:
-      - id
-      - range
-    PowerDistanceFilter:
-      type: object
-      title: Power Distance Filter
-      properties:
-        id:
-          type: string
-          enum:
-          - power-distance-filter
-          example: power-distance-filter
-          description: The unique identifier for the power distance filter.
-        value:
-          type: number
-          example: 5000
-          description: The distance value for the power distance filter, in meters.
-      required:
-      - id
-      - value
-    RegenerationZonesEmerging:
-      type: object
-      title: Regeneration Zones - Emerging
-      properties:
-        id:
-          type: string
-          description: The constant ID for this schema.
-          enum:
-          - regeneration-zones-emerging-id
-          example: regeneration-zones-emerging-id
-        values:
-          type: array
-          description: A list of regeneration zone values with associated keys and checked status.
-          items:
-            type: object
-            required:
-            - key
-            properties:
-              key:
-                type: string
-                description: The key representing the regeneration zone type.
-                enum:
-                - area_action_plans
-                - named_regeneration_areas
-                x-enumDescriptions:
-                  area_action_plans: Area Action Plans
-                  named_regeneration_areas: Named Regeneration Areas
-                example: area_action_plans
-              checked:
-                type: boolean
-                description: Indicates whether this regeneration zone type is selected or not.
-                example: true
-        must:
-          type: string
-          enum:
-          - MATCH_ANY
-          - MATCH_NONE
-          description: The match type for filtering the regeneration zone options.
+          description: The match type for filtering the site allocation options.
           example: MATCH_ANY
       required:
       - values
