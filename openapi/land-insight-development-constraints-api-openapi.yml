@@ -113,11 +113,59 @@ paths:
                 $ref: '#/components/schemas/Forbidden'
 components:
   schemas:
-    DevelopmentConstraintID:
-      type: string
-      format: uuid
-      description: A development constraints ID in the form of a UUID.
-      example: 68a586f6-991f-4604-b179-512b61f9696f
+    DevelopmentConstraintFeatureCollection:
+      allOf:
+      - $ref: '#/components/schemas/FeaturesLite'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
+    DevelopmentConstraintFeatureCollectionLite:
+      allOf:
+      - $ref: '#/components/schemas/FeaturesLite'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
+    FeatureBaseLite:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+    DevelopmentConstraintFeature:
+      allOf:
+      - $ref: '#/components/schemas/FeatureBaseLite'
+      - type: object
+        properties:
+          data:
+            properties:
+              feature:
+                $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
     Forbidden:
       oneOf:
       - type: object
@@ -142,60 +190,6 @@ components:
           message:
             type: string
             example: User not found
-    FeatureBaseLite:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type:
-          - string
-          - 'null'
-        type:
-          type: string
-        attributes:
-          type: array
-          items:
-            type: object
-            properties:
-              key:
-                type: string
-              value:
-                type: string
-          description: Attributes containing any additional details about the feature
-    FeaturesLite:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FeatureDataLite'
-    DevelopmentConstraintFeature:
-      allOf:
-      - $ref: '#/components/schemas/FeatureBaseLite'
-      - type: object
-        properties:
-          data:
-            properties:
-              feature:
-                $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
-    DevelopmentConstraintFeatureCollectionLite:
-      allOf:
-      - $ref: '#/components/schemas/FeaturesLite'
-      - type: object
-        properties:
-          data:
-            properties:
-              features:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
-    FeatureDataLite:
-      type: object
-      properties:
-        features:
-          type: array
-          items:
-            $ref: '#/components/schemas/FeatureBaseLite'
     DevelopmentConstraintFeatureItem:
       type: object
       properties:
@@ -213,17 +207,23 @@ components:
             value: Article 4(1) affecting other buildings
           - key: dev_rest_1
             value: Conversion of single dwellings to HMOs
-    DevelopmentConstraintFeatureCollection:
-      allOf:
-      - $ref: '#/components/schemas/FeaturesLite'
-      - type: object
-        properties:
-          data:
-            properties:
-              features:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
+    FeaturesLite:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureDataLite'
+    FeatureDataLite:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBaseLite'
+    DevelopmentConstraintID:
+      type: string
+      format: uuid
+      description: A development constraints ID in the form of a UUID.
+      example: 68a586f6-991f-4604-b179-512b61f9696f
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

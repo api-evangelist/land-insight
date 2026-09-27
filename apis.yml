@@ -47,7 +47,7 @@ modified: '2026-07-19'
 image: https://land.tech/favicon.ico
 tags:
 - Company
-- Real-Estate
+- Real Estate
 - Property
 - Land
 - Planning
@@ -67,6 +67,7 @@ tags_raw:
 - United Kingdom
 - PropTech
 - Construction
+- Real-Estate
 apis:
 - aid: land-insight:land-insight-additional-opportunities-api
   name: Land Insight Additional Opportunities API

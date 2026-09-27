@@ -113,130 +113,6 @@ paths:
                 $ref: '#/components/schemas/Forbidden'
 components:
   schemas:
-    PowerFeature:
-      allOf:
-      - $ref: '#/components/schemas/Feature'
-      - type: object
-        properties:
-          data:
-            properties:
-              feature:
-                $ref: '#/components/schemas/PowerFeatureItem'
-    PowerFeatureItem:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/PowerID'
-        type:
-          example: hv_power_substations
-        name:
-          example: '1172992'
-        attributes:
-          example:
-          - key: rag_status
-            value: UNKNOWN
-          - key: substation_type
-            value: HV
-          - key: voltage_range
-            value: 11kV-1kV
-    PowerFeatureCollection:
-      allOf:
-      - $ref: '#/components/schemas/Features'
-      - type: object
-        properties:
-          data:
-            properties:
-              features:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PowerFeatureItem'
-    PowerID:
-      type: string
-      format: uuid
-      description: A development opportunity ID in the form of a UUID.
-      example: 1679c94a-2158-462f-b924-18acf92e7949
-    PowerFeatureCollectionLite:
-      allOf:
-      - $ref: '#/components/schemas/FeaturesLite'
-      - type: object
-        properties:
-          data:
-            properties:
-              features:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PowerFeatureItem'
-    Forbidden:
-      oneOf:
-      - type: object
-        required:
-        - user
-        properties:
-          user:
-            type: object
-            required:
-            - state
-            properties:
-              state:
-                type: string
-                enum:
-                - expired
-                - blocked
-                example: expired
-      - type: object
-        required:
-        - message
-        properties:
-          message:
-            type: string
-            example: User not found
-    PolygonCoordinates:
-      type: array
-      items:
-        $ref: '#/components/schemas/LinearRingCoordinates'
-    PointCoordinates:
-      type: array
-      maxItems: 2
-      minItems: 2
-      example:
-      - -0.12755
-      - 51.5073
-      items:
-        type: number
-    FeatureBaseLite:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type:
-          - string
-          - 'null'
-        type:
-          type: string
-        attributes:
-          type: array
-          items:
-            type: object
-            properties:
-              key:
-                type: string
-              value:
-                type: string
-          description: Attributes containing any additional details about the feature
-    FeaturesLite:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FeatureDataLite'
-    FeatureData:
-      type: object
-      properties:
-        features:
-          type: array
-          items:
-            $ref: '#/components/schemas/FeatureBase'
     FeatureBase:
       type: object
       properties:
@@ -277,6 +153,115 @@ components:
                 oneOf:
                 - $ref: '#/components/schemas/Polygon'
                 - $ref: '#/components/schemas/MultiPolygon'
+    PowerFeatureCollectionLite:
+      allOf:
+      - $ref: '#/components/schemas/FeaturesLite'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PowerFeatureItem'
+    Polygon:
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - Polygon
+          example: Polygon
+          description: the geometry type
+        coordinates:
+          $ref: '#/components/schemas/PolygonCoordinates'
+    PowerFeatureItem:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/PowerID'
+        type:
+          example: hv_power_substations
+        name:
+          example: '1172992'
+        attributes:
+          example:
+          - key: rag_status
+            value: UNKNOWN
+          - key: substation_type
+            value: HV
+          - key: voltage_range
+            value: 11kV-1kV
+    LinearRingCoordinates:
+      type: array
+      minItems: 4
+      items:
+        $ref: '#/components/schemas/PointCoordinates'
+    PowerID:
+      type: string
+      format: uuid
+      description: A development opportunity ID in the form of a UUID.
+      example: 1679c94a-2158-462f-b924-18acf92e7949
+    Feature:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            feature:
+              $ref: '#/components/schemas/FeatureBase'
+    Features:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureData'
+    FeatureBaseLite:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+    PowerFeatureCollection:
+      allOf:
+      - $ref: '#/components/schemas/Features'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PowerFeatureItem'
+    PointCoordinates:
+      type: array
+      maxItems: 2
+      minItems: 2
+      example:
+      - -0.12755
+      - 51.5073
+      items:
+        type: number
     MultiPolygon:
       description: GeoJSON MultiPolygon
       externalDocs:
@@ -296,11 +281,51 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PolygonCoordinates'
-    Features:
+    FeatureData:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBase'
+    Forbidden:
+      oneOf:
+      - type: object
+        required:
+        - user
+        properties:
+          user:
+            type: object
+            required:
+            - state
+            properties:
+              state:
+                type: string
+                enum:
+                - expired
+                - blocked
+                example: expired
+      - type: object
+        required:
+        - message
+        properties:
+          message:
+            type: string
+            example: User not found
+    PowerFeature:
+      allOf:
+      - $ref: '#/components/schemas/Feature'
+      - type: object
+        properties:
+          data:
+            properties:
+              feature:
+                $ref: '#/components/schemas/PowerFeatureItem'
+    FeaturesLite:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/FeatureData'
+          $ref: '#/components/schemas/FeatureDataLite'
     FeatureDataLite:
       type: object
       properties:
@@ -308,35 +333,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FeatureBaseLite'
-    Polygon:
-      externalDocs:
-        url: https://datatracker.ietf.org/doc/html/rfc7946
-      type: object
-      required:
-      - type
-      - coordinates
-      properties:
-        type:
-          type: string
-          enum:
-          - Polygon
-          example: Polygon
-          description: the geometry type
-        coordinates:
-          $ref: '#/components/schemas/PolygonCoordinates'
-    LinearRingCoordinates:
+    PolygonCoordinates:
       type: array
-      minItems: 4
       items:
-        $ref: '#/components/schemas/PointCoordinates'
-    Feature:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            feature:
-              $ref: '#/components/schemas/FeatureBase'
+        $ref: '#/components/schemas/LinearRingCoordinates'
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

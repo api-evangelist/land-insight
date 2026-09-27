@@ -113,120 +113,34 @@ paths:
                 $ref: '#/components/schemas/Forbidden'
 components:
   schemas:
-    AdditionalOpportunityFeatureCollection:
+    AdditionalOpportunityFeatureItem:
       allOf:
-      - $ref: '#/components/schemas/Features'
       - type: object
         properties:
-          data:
-            properties:
-              features:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AdditionalOpportunityFeatureItem'
-    AdditionalOpportunityFeature:
-      allOf:
-      - $ref: '#/components/schemas/Feature'
-      - type: object
-        properties:
-          data:
-            properties:
-              feature:
-                $ref: '#/components/schemas/AdditionalOpportunityFeatureItem'
-    AdditionalOpportunityFeatureCollectionLite:
-      allOf:
-      - $ref: '#/components/schemas/FeaturesLite'
-      - type: object
-        properties:
-          data:
-            properties:
-              features:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AdditionalOpportunityFeatureItem'
-    Forbidden:
-      oneOf:
-      - type: object
-        required:
-        - user
-        properties:
-          user:
-            type: object
-            required:
-            - state
-            properties:
-              state:
-                type: string
-                enum:
-                - expired
-                - blocked
-                example: expired
-      - type: object
-        required:
-        - message
-        properties:
-          message:
-            type: string
-            example: User not found
-    PointCoordinates:
-      type: array
-      maxItems: 2
-      minItems: 2
-      example:
-      - -0.12755
-      - 51.5073
-      items:
-        type: number
-    PolygonCoordinates:
-      type: array
-      items:
-        $ref: '#/components/schemas/LinearRingCoordinates'
-    FeatureBaseLite:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
+          id:
+            $ref: '#/components/schemas/AdditionalOpportunityID'
           type:
-          - string
-          - 'null'
-        type:
-          type: string
-        attributes:
-          type: array
-          items:
-            type: object
-            properties:
-              key:
-                type: string
-              value:
-                type: string
-          description: Attributes containing any additional details about the feature
-    FeaturesLite:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FeatureDataLite'
-    MultiPolygon:
-      description: GeoJSON MultiPolygon
-      externalDocs:
-        url: https://datatracker.ietf.org/doc/html/rfc7946
-      type: object
-      required:
-      - type
-      - coordinates
-      properties:
-        type:
-          type: string
-          enum:
-          - MultiPolygon
-          example: MultiPolygon
-          description: the geometry type
-        coordinates:
-          type: array
-          items:
-            $ref: '#/components/schemas/PolygonCoordinates'
+            example: land_hub_on_market
+          name:
+            example: Land Hub Site 824
+          attributes:
+            example:
+            - key: zz_land_hub_developer_guidance
+              value: https://www.gov.uk/guidance/how-homes-england-sells-land-for-housing-led-developments
+            - key: site_name
+              value: Land retained in Crawley including Car Park At Boulevard East & W and Adv. Pillars Crawley RH10 1XH
+            - key: site_size_(acres)
+              value: '2'
+            - key: disposal_route
+              value: Advertised
+            - key: current_market_status
+              value: On market
+            - key: contact_details
+              value: landenquiries@homesengland.gov.uk
+            - key: zz_land_hub_register_for_access
+              value: https://www.gov.uk/guidance/apply-to-join-the-delivery-partner-dynamic-purchasing-system
+            - key: proposed_use
+              value: Employment
     FeatureBase:
       type: object
       properties:
@@ -267,53 +181,6 @@ components:
                 oneOf:
                 - $ref: '#/components/schemas/Polygon'
                 - $ref: '#/components/schemas/MultiPolygon'
-    FeatureData:
-      type: object
-      properties:
-        features:
-          type: array
-          items:
-            $ref: '#/components/schemas/FeatureBase'
-    Features:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FeatureData'
-    AdditionalOpportunityFeatureItem:
-      allOf:
-      - type: object
-        properties:
-          id:
-            $ref: '#/components/schemas/AdditionalOpportunityID'
-          type:
-            example: land_hub_on_market
-          name:
-            example: Land Hub Site 824
-          attributes:
-            example:
-            - key: zz_land_hub_developer_guidance
-              value: https://www.gov.uk/guidance/how-homes-england-sells-land-for-housing-led-developments
-            - key: site_name
-              value: Land retained in Crawley including Car Park At Boulevard East & W and Adv. Pillars Crawley RH10 1XH
-            - key: site_size_(acres)
-              value: '2'
-            - key: disposal_route
-              value: Advertised
-            - key: current_market_status
-              value: On market
-            - key: contact_details
-              value: landenquiries@homesengland.gov.uk
-            - key: zz_land_hub_register_for_access
-              value: https://www.gov.uk/guidance/apply-to-join-the-delivery-partner-dynamic-purchasing-system
-            - key: proposed_use
-              value: Employment
-    FeatureDataLite:
-      type: object
-      properties:
-        features:
-          type: array
-          items:
-            $ref: '#/components/schemas/FeatureBaseLite'
     Polygon:
       externalDocs:
         url: https://datatracker.ietf.org/doc/html/rfc7946
@@ -335,11 +202,11 @@ components:
       minItems: 4
       items:
         $ref: '#/components/schemas/PointCoordinates'
-    AdditionalOpportunityID:
-      type: string
-      format: uuid
-      description: A Homes England Land Hub ID in the form of a UUID.
-      example: 1540e735-9df0-4095-8df2-03f370847609
+    Features:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureData'
     Feature:
       type: object
       properties:
@@ -348,6 +215,139 @@ components:
           properties:
             feature:
               $ref: '#/components/schemas/FeatureBase'
+    AdditionalOpportunityFeatureCollection:
+      allOf:
+      - $ref: '#/components/schemas/Features'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdditionalOpportunityFeatureItem'
+    FeatureBaseLite:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+    AdditionalOpportunityID:
+      type: string
+      format: uuid
+      description: A Homes England Land Hub ID in the form of a UUID.
+      example: 1540e735-9df0-4095-8df2-03f370847609
+    PointCoordinates:
+      type: array
+      maxItems: 2
+      minItems: 2
+      example:
+      - -0.12755
+      - 51.5073
+      items:
+        type: number
+    MultiPolygon:
+      description: GeoJSON MultiPolygon
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - MultiPolygon
+          example: MultiPolygon
+          description: the geometry type
+        coordinates:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolygonCoordinates'
+    FeatureData:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBase'
+    FeaturesLite:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureDataLite'
+    AdditionalOpportunityFeature:
+      allOf:
+      - $ref: '#/components/schemas/Feature'
+      - type: object
+        properties:
+          data:
+            properties:
+              feature:
+                $ref: '#/components/schemas/AdditionalOpportunityFeatureItem'
+    Forbidden:
+      oneOf:
+      - type: object
+        required:
+        - user
+        properties:
+          user:
+            type: object
+            required:
+            - state
+            properties:
+              state:
+                type: string
+                enum:
+                - expired
+                - blocked
+                example: expired
+      - type: object
+        required:
+        - message
+        properties:
+          message:
+            type: string
+            example: User not found
+    AdditionalOpportunityFeatureCollectionLite:
+      allOf:
+      - $ref: '#/components/schemas/FeaturesLite'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdditionalOpportunityFeatureItem'
+    FeatureDataLite:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBaseLite'
+    PolygonCoordinates:
+      type: array
+      items:
+        $ref: '#/components/schemas/LinearRingCoordinates'
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
