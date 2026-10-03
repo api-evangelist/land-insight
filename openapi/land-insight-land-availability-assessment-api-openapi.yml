@@ -113,6 +113,18 @@ paths:
                 $ref: '#/components/schemas/Forbidden'
 components:
   schemas:
+    FeatureData:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBase'
+    ShlaaID:
+      type: string
+      format: uuid
+      description: A SHLAA ID in the form of a UUID.
+      example: 6b3cda6f-5c0e-4415-8f4e-4b7a4b4e1574
     FeatureBase:
       type: object
       properties:
@@ -153,15 +165,10 @@ components:
                 oneOf:
                 - $ref: '#/components/schemas/Polygon'
                 - $ref: '#/components/schemas/MultiPolygon'
-    ShlaaFeature:
-      allOf:
-      - $ref: '#/components/schemas/Feature'
-      - type: object
-        properties:
-          data:
-            properties:
-              feature:
-                $ref: '#/components/schemas/ShlaaFeatureItem'
+    PolygonCoordinates:
+      type: array
+      items:
+        $ref: '#/components/schemas/LinearRingCoordinates'
     Polygon:
       externalDocs:
         url: https://datatracker.ietf.org/doc/html/rfc7946
@@ -178,113 +185,6 @@ components:
           description: the geometry type
         coordinates:
           $ref: '#/components/schemas/PolygonCoordinates'
-    LinearRingCoordinates:
-      type: array
-      minItems: 4
-      items:
-        $ref: '#/components/schemas/PointCoordinates'
-    SHLAAFeatureCollection:
-      allOf:
-      - $ref: '#/components/schemas/Features'
-      - type: object
-        properties:
-          data:
-            properties:
-              features:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ShlaaFeatureItem'
-    ShlaaID:
-      type: string
-      format: uuid
-      description: A SHLAA ID in the form of a UUID.
-      example: 6b3cda6f-5c0e-4415-8f4e-4b7a4b4e1574
-    SHLAAFeatureCollectionLite:
-      allOf:
-      - $ref: '#/components/schemas/FeaturesLite'
-      - type: object
-        properties:
-          data:
-            properties:
-              features:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ShlaaFeatureItem'
-    FeatureBaseLite:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type:
-          - string
-          - 'null'
-        type:
-          type: string
-        attributes:
-          type: array
-          items:
-            type: object
-            properties:
-              key:
-                type: string
-              value:
-                type: string
-          description: Attributes containing any additional details about the feature
-    Features:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FeatureData'
-    Feature:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            feature:
-              $ref: '#/components/schemas/FeatureBase'
-    PointCoordinates:
-      type: array
-      maxItems: 2
-      minItems: 2
-      example:
-      - -0.12755
-      - 51.5073
-      items:
-        type: number
-    FeatureData:
-      type: object
-      properties:
-        features:
-          type: array
-          items:
-            $ref: '#/components/schemas/FeatureBase'
-    MultiPolygon:
-      description: GeoJSON MultiPolygon
-      externalDocs:
-        url: https://datatracker.ietf.org/doc/html/rfc7946
-      type: object
-      required:
-      - type
-      - coordinates
-      properties:
-        type:
-          type: string
-          enum:
-          - MultiPolygon
-          example: MultiPolygon
-          description: the geometry type
-        coordinates:
-          type: array
-          items:
-            $ref: '#/components/schemas/PolygonCoordinates'
-    FeaturesLite:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FeatureDataLite'
     Forbidden:
       oneOf:
       - type: object
@@ -309,6 +209,108 @@ components:
           message:
             type: string
             example: User not found
+    LinearRingCoordinates:
+      type: array
+      minItems: 4
+      items:
+        $ref: '#/components/schemas/PointCoordinates'
+    FeatureBaseLite:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+    Feature:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            feature:
+              $ref: '#/components/schemas/FeatureBase'
+    PointCoordinates:
+      type: array
+      maxItems: 2
+      minItems: 2
+      example:
+      - -0.12755
+      - 51.5073
+      items:
+        type: number
+    SHLAAFeatureCollectionLite:
+      allOf:
+      - $ref: '#/components/schemas/FeaturesLite'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShlaaFeatureItem'
+    FeaturesLite:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureDataLite'
+    SHLAAFeatureCollection:
+      allOf:
+      - $ref: '#/components/schemas/Features'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShlaaFeatureItem'
+    MultiPolygon:
+      description: GeoJSON MultiPolygon
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - MultiPolygon
+          example: MultiPolygon
+          description: the geometry type
+        coordinates:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolygonCoordinates'
+    Features:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureData'
+    FeatureDataLite:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBaseLite'
     ShlaaFeatureItem:
       type: object
       properties:
@@ -322,17 +324,15 @@ components:
           example:
           - key: conclusion
             value: Developable Sites - Years 11-15
-    FeatureDataLite:
-      type: object
-      properties:
-        features:
-          type: array
-          items:
-            $ref: '#/components/schemas/FeatureBaseLite'
-    PolygonCoordinates:
-      type: array
-      items:
-        $ref: '#/components/schemas/LinearRingCoordinates'
+    ShlaaFeature:
+      allOf:
+      - $ref: '#/components/schemas/Feature'
+      - type: object
+        properties:
+          data:
+            properties:
+              feature:
+                $ref: '#/components/schemas/ShlaaFeatureItem'
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

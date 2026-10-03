@@ -113,6 +113,22 @@ paths:
                 $ref: '#/components/schemas/Forbidden'
 components:
   schemas:
+    FeatureData:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBase'
+    DevelopmentOpportunityFeature:
+      allOf:
+      - $ref: '#/components/schemas/Feature'
+      - type: object
+        properties:
+          data:
+            properties:
+              feature:
+                $ref: '#/components/schemas/DevelopmentOpportunityFeatureItem'
     FeatureBase:
       type: object
       properties:
@@ -153,6 +169,15 @@ components:
                 oneOf:
                 - $ref: '#/components/schemas/Polygon'
                 - $ref: '#/components/schemas/MultiPolygon'
+    DevelopmentOpportunityID:
+      type: string
+      format: uuid
+      description: A development opportunity ID in the form of a UUID.
+      example: 836cc2d8-4596-4bb6-9630-a6429c93305f
+    PolygonCoordinates:
+      type: array
+      items:
+        $ref: '#/components/schemas/LinearRingCoordinates'
     Polygon:
       externalDocs:
         url: https://datatracker.ietf.org/doc/html/rfc7946
@@ -169,55 +194,30 @@ components:
           description: the geometry type
         coordinates:
           $ref: '#/components/schemas/PolygonCoordinates'
-    DevelopmentOpportunityFeatureCollection:
-      allOf:
-      - $ref: '#/components/schemas/Features'
+    Forbidden:
+      oneOf:
       - type: object
+        required:
+        - user
         properties:
-          data:
+          user:
+            type: object
+            required:
+            - state
             properties:
-              features:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DevelopmentOpportunityFeatureItem'
-    DevelopmentOpportunityFeatureItem:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/DevelopmentOpportunityID'
-        type:
-          example: area_action_plans
-        name:
-          example: Action Areas
-        attributes:
-          example: null
-    LinearRingCoordinates:
-      type: array
-      minItems: 4
-      items:
-        $ref: '#/components/schemas/PointCoordinates'
-    Features:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FeatureData'
-    Feature:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            feature:
-              $ref: '#/components/schemas/FeatureBase'
-    DevelopmentOpportunityFeature:
-      allOf:
-      - $ref: '#/components/schemas/Feature'
+              state:
+                type: string
+                enum:
+                - expired
+                - blocked
+                example: expired
       - type: object
+        required:
+        - message
         properties:
-          data:
-            properties:
-              feature:
-                $ref: '#/components/schemas/DevelopmentOpportunityFeatureItem'
+          message:
+            type: string
+            example: User not found
     FeatureBaseLite:
       type: object
       properties:
@@ -240,6 +240,22 @@ components:
               value:
                 type: string
           description: Attributes containing any additional details about the feature
+    DevelopmentOpportunityFeatureCollection:
+      allOf:
+      - $ref: '#/components/schemas/Features'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DevelopmentOpportunityFeatureItem'
+    LinearRingCoordinates:
+      type: array
+      minItems: 4
+      items:
+        $ref: '#/components/schemas/PointCoordinates'
     PointCoordinates:
       type: array
       maxItems: 2
@@ -249,6 +265,19 @@ components:
       - 51.5073
       items:
         type: number
+    Feature:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            feature:
+              $ref: '#/components/schemas/FeatureBase'
+    Features:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureData'
     DevelopmentOpportunityFeatureCollectionLite:
       allOf:
       - $ref: '#/components/schemas/FeaturesLite'
@@ -279,47 +308,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PolygonCoordinates'
-    FeaturesLite:
+    DevelopmentOpportunityFeatureItem:
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/FeatureDataLite'
-    Forbidden:
-      oneOf:
-      - type: object
-        required:
-        - user
-        properties:
-          user:
-            type: object
-            required:
-            - state
-            properties:
-              state:
-                type: string
-                enum:
-                - expired
-                - blocked
-                example: expired
-      - type: object
-        required:
-        - message
-        properties:
-          message:
-            type: string
-            example: User not found
-    FeatureData:
-      type: object
-      properties:
-        features:
-          type: array
-          items:
-            $ref: '#/components/schemas/FeatureBase'
-    DevelopmentOpportunityID:
-      type: string
-      format: uuid
-      description: A development opportunity ID in the form of a UUID.
-      example: 836cc2d8-4596-4bb6-9630-a6429c93305f
+        id:
+          $ref: '#/components/schemas/DevelopmentOpportunityID'
+        type:
+          example: area_action_plans
+        name:
+          example: Action Areas
+        attributes:
+          example: null
     FeatureDataLite:
       type: object
       properties:
@@ -327,10 +326,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FeatureBaseLite'
-    PolygonCoordinates:
-      type: array
-      items:
-        $ref: '#/components/schemas/LinearRingCoordinates'
+    FeaturesLite:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureDataLite'
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

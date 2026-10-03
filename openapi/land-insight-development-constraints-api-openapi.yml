@@ -113,17 +113,6 @@ paths:
                 $ref: '#/components/schemas/Forbidden'
 components:
   schemas:
-    DevelopmentConstraintFeatureCollection:
-      allOf:
-      - $ref: '#/components/schemas/FeaturesLite'
-      - type: object
-        properties:
-          data:
-            properties:
-              features:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
     DevelopmentConstraintFeatureCollectionLite:
       allOf:
       - $ref: '#/components/schemas/FeaturesLite'
@@ -135,6 +124,30 @@ components:
                 type: array
                 items:
                   $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
+    Forbidden:
+      oneOf:
+      - type: object
+        required:
+        - user
+        properties:
+          user:
+            type: object
+            required:
+            - state
+            properties:
+              state:
+                type: string
+                enum:
+                - expired
+                - blocked
+                example: expired
+      - type: object
+        required:
+        - message
+        properties:
+          message:
+            type: string
+            example: User not found
     FeatureBaseLite:
       type: object
       properties:
@@ -166,30 +179,29 @@ components:
             properties:
               feature:
                 $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
-    Forbidden:
-      oneOf:
+    DevelopmentConstraintFeatureCollection:
+      allOf:
+      - $ref: '#/components/schemas/FeaturesLite'
       - type: object
-        required:
-        - user
         properties:
-          user:
-            type: object
-            required:
-            - state
+          data:
             properties:
-              state:
-                type: string
-                enum:
-                - expired
-                - blocked
-                example: expired
-      - type: object
-        required:
-        - message
-        properties:
-          message:
-            type: string
-            example: User not found
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
+    DevelopmentConstraintID:
+      type: string
+      format: uuid
+      description: A development constraints ID in the form of a UUID.
+      example: 68a586f6-991f-4604-b179-512b61f9696f
+    FeatureDataLite:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBaseLite'
     DevelopmentConstraintFeatureItem:
       type: object
       properties:
@@ -212,18 +224,6 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/FeatureDataLite'
-    FeatureDataLite:
-      type: object
-      properties:
-        features:
-          type: array
-          items:
-            $ref: '#/components/schemas/FeatureBaseLite'
-    DevelopmentConstraintID:
-      type: string
-      format: uuid
-      description: A development constraints ID in the form of a UUID.
-      example: 68a586f6-991f-4604-b179-512b61f9696f
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

@@ -113,34 +113,24 @@ paths:
                 $ref: '#/components/schemas/Forbidden'
 components:
   schemas:
-    AdditionalOpportunityFeatureItem:
+    FeatureData:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBase'
+    AdditionalOpportunityFeatureCollectionLite:
       allOf:
+      - $ref: '#/components/schemas/FeaturesLite'
       - type: object
         properties:
-          id:
-            $ref: '#/components/schemas/AdditionalOpportunityID'
-          type:
-            example: land_hub_on_market
-          name:
-            example: Land Hub Site 824
-          attributes:
-            example:
-            - key: zz_land_hub_developer_guidance
-              value: https://www.gov.uk/guidance/how-homes-england-sells-land-for-housing-led-developments
-            - key: site_name
-              value: Land retained in Crawley including Car Park At Boulevard East & W and Adv. Pillars Crawley RH10 1XH
-            - key: site_size_(acres)
-              value: '2'
-            - key: disposal_route
-              value: Advertised
-            - key: current_market_status
-              value: On market
-            - key: contact_details
-              value: landenquiries@homesengland.gov.uk
-            - key: zz_land_hub_register_for_access
-              value: https://www.gov.uk/guidance/apply-to-join-the-delivery-partner-dynamic-purchasing-system
-            - key: proposed_use
-              value: Employment
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdditionalOpportunityFeatureItem'
     FeatureBase:
       type: object
       properties:
@@ -181,6 +171,10 @@ components:
                 oneOf:
                 - $ref: '#/components/schemas/Polygon'
                 - $ref: '#/components/schemas/MultiPolygon'
+    PolygonCoordinates:
+      type: array
+      items:
+        $ref: '#/components/schemas/LinearRingCoordinates'
     Polygon:
       externalDocs:
         url: https://datatracker.ietf.org/doc/html/rfc7946
@@ -197,111 +191,6 @@ components:
           description: the geometry type
         coordinates:
           $ref: '#/components/schemas/PolygonCoordinates'
-    LinearRingCoordinates:
-      type: array
-      minItems: 4
-      items:
-        $ref: '#/components/schemas/PointCoordinates'
-    Features:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FeatureData'
-    Feature:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            feature:
-              $ref: '#/components/schemas/FeatureBase'
-    AdditionalOpportunityFeatureCollection:
-      allOf:
-      - $ref: '#/components/schemas/Features'
-      - type: object
-        properties:
-          data:
-            properties:
-              features:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AdditionalOpportunityFeatureItem'
-    FeatureBaseLite:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type:
-          - string
-          - 'null'
-        type:
-          type: string
-        attributes:
-          type: array
-          items:
-            type: object
-            properties:
-              key:
-                type: string
-              value:
-                type: string
-          description: Attributes containing any additional details about the feature
-    AdditionalOpportunityID:
-      type: string
-      format: uuid
-      description: A Homes England Land Hub ID in the form of a UUID.
-      example: 1540e735-9df0-4095-8df2-03f370847609
-    PointCoordinates:
-      type: array
-      maxItems: 2
-      minItems: 2
-      example:
-      - -0.12755
-      - 51.5073
-      items:
-        type: number
-    MultiPolygon:
-      description: GeoJSON MultiPolygon
-      externalDocs:
-        url: https://datatracker.ietf.org/doc/html/rfc7946
-      type: object
-      required:
-      - type
-      - coordinates
-      properties:
-        type:
-          type: string
-          enum:
-          - MultiPolygon
-          example: MultiPolygon
-          description: the geometry type
-        coordinates:
-          type: array
-          items:
-            $ref: '#/components/schemas/PolygonCoordinates'
-    FeatureData:
-      type: object
-      properties:
-        features:
-          type: array
-          items:
-            $ref: '#/components/schemas/FeatureBase'
-    FeaturesLite:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FeatureDataLite'
-    AdditionalOpportunityFeature:
-      allOf:
-      - $ref: '#/components/schemas/Feature'
-      - type: object
-        properties:
-          data:
-            properties:
-              feature:
-                $ref: '#/components/schemas/AdditionalOpportunityFeatureItem'
     Forbidden:
       oneOf:
       - type: object
@@ -326,9 +215,126 @@ components:
           message:
             type: string
             example: User not found
-    AdditionalOpportunityFeatureCollectionLite:
+    AdditionalOpportunityFeatureItem:
       allOf:
-      - $ref: '#/components/schemas/FeaturesLite'
+      - type: object
+        properties:
+          id:
+            $ref: '#/components/schemas/AdditionalOpportunityID'
+          type:
+            example: land_hub_on_market
+          name:
+            example: Land Hub Site 824
+          attributes:
+            example:
+            - key: zz_land_hub_developer_guidance
+              value: https://www.gov.uk/guidance/how-homes-england-sells-land-for-housing-led-developments
+            - key: site_name
+              value: Land retained in Crawley including Car Park At Boulevard East & W and Adv. Pillars Crawley RH10 1XH
+            - key: site_size_(acres)
+              value: '2'
+            - key: disposal_route
+              value: Advertised
+            - key: current_market_status
+              value: On market
+            - key: contact_details
+              value: landenquiries@homesengland.gov.uk
+            - key: zz_land_hub_register_for_access
+              value: https://www.gov.uk/guidance/apply-to-join-the-delivery-partner-dynamic-purchasing-system
+            - key: proposed_use
+              value: Employment
+    LinearRingCoordinates:
+      type: array
+      minItems: 4
+      items:
+        $ref: '#/components/schemas/PointCoordinates'
+    FeatureBaseLite:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+    PointCoordinates:
+      type: array
+      maxItems: 2
+      minItems: 2
+      example:
+      - -0.12755
+      - 51.5073
+      items:
+        type: number
+    Feature:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            feature:
+              $ref: '#/components/schemas/FeatureBase'
+    Features:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureData'
+    MultiPolygon:
+      description: GeoJSON MultiPolygon
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - MultiPolygon
+          example: MultiPolygon
+          description: the geometry type
+        coordinates:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolygonCoordinates'
+    AdditionalOpportunityID:
+      type: string
+      format: uuid
+      description: A Homes England Land Hub ID in the form of a UUID.
+      example: 1540e735-9df0-4095-8df2-03f370847609
+    AdditionalOpportunityFeature:
+      allOf:
+      - $ref: '#/components/schemas/Feature'
+      - type: object
+        properties:
+          data:
+            properties:
+              feature:
+                $ref: '#/components/schemas/AdditionalOpportunityFeatureItem'
+    FeatureDataLite:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeatureBaseLite'
+    AdditionalOpportunityFeatureCollection:
+      allOf:
+      - $ref: '#/components/schemas/Features'
       - type: object
         properties:
           data:
@@ -337,17 +343,11 @@ components:
                 type: array
                 items:
                   $ref: '#/components/schemas/AdditionalOpportunityFeatureItem'
-    FeatureDataLite:
+    FeaturesLite:
       type: object
       properties:
-        features:
-          type: array
-          items:
-            $ref: '#/components/schemas/FeatureBaseLite'
-    PolygonCoordinates:
-      type: array
-      items:
-        $ref: '#/components/schemas/LinearRingCoordinates'
+        data:
+          $ref: '#/components/schemas/FeatureDataLite'
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
