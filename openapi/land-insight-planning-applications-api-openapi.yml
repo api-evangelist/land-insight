@@ -204,108 +204,6 @@ paths:
                     error: Planning application not found
 components:
   schemas:
-    PlanningApplicationRefs:
-      type: array
-      items:
-        type: object
-        required:
-        - gss_code
-        - refs
-        additionalProperties: false
-        properties:
-          gss_code:
-            allOf:
-            - $ref: '#/components/schemas/GSSCode'
-            - description: The GSS code of a planning authority, e.g. `E09000033`.
-            - example: E09000033
-          refs:
-            type: array
-            minItems: 1
-            items:
-              type: string
-              description: The planning application reference declared by the planning authority. It may contain slashes, e.g. `16/11109/FULL`.
-              minLength: 1
-              example: 16/02592/LBC
-    PolygonCoordinates:
-      type: array
-      items:
-        $ref: '#/components/schemas/LinearRingCoordinates'
-    PlanningApplicationId:
-      type: string
-      description: A unique planning application ID combining a planning authority GSS code and the application reference, separated by a `+` symbol.
-      example: E07000112+Y18/1381/FH
-      pattern: ^[EWS]\d{8}(?:\+|%2B)[\w\-\/%]+$
-    Forbidden:
-      oneOf:
-      - type: object
-        required:
-        - user
-        properties:
-          user:
-            type: object
-            required:
-            - state
-            properties:
-              state:
-                type: string
-                enum:
-                - expired
-                - blocked
-                example: expired
-      - type: object
-        required:
-        - message
-        properties:
-          message:
-            type: string
-            example: User not found
-    Polygon:
-      externalDocs:
-        url: https://datatracker.ietf.org/doc/html/rfc7946
-      type: object
-      required:
-      - type
-      - coordinates
-      properties:
-        type:
-          type: string
-          enum:
-          - Polygon
-          example: Polygon
-          description: the geometry type
-        coordinates:
-          $ref: '#/components/schemas/PolygonCoordinates'
-    Error:
-      type: object
-      anyOf:
-      - properties:
-          error:
-            type: string
-      - properties:
-          error_msg:
-            type: string
-    LinearRingCoordinates:
-      type: array
-      minItems: 4
-      items:
-        $ref: '#/components/schemas/PointCoordinates'
-    Point:
-      description: GeoJSON Point
-      externalDocs:
-        url: https://datatracker.ietf.org/doc/html/rfc7946
-      type: object
-      required:
-      - type
-      - coordinates
-      properties:
-        type:
-          type: string
-          enum:
-          - Point
-          example: Point
-          description: the geometry type
-        coordinates:
-          $ref: '#/components/schemas/PointCoordinates'
     PointCoordinates:
       type: array
       maxItems: 2
@@ -315,25 +213,6 @@ components:
       - 51.5073
       items:
         type: number
-    MultiPolygon:
-      description: GeoJSON MultiPolygon
-      externalDocs:
-        url: https://datatracker.ietf.org/doc/html/rfc7946
-      type: object
-      required:
-      - type
-      - coordinates
-      properties:
-        type:
-          type: string
-          enum:
-          - MultiPolygon
-          example: MultiPolygon
-          description: the geometry type
-        coordinates:
-          type: array
-          items:
-            $ref: '#/components/schemas/PolygonCoordinates'
     PlanningApplication:
       type: object
       properties:
@@ -611,6 +490,127 @@ components:
           allOf:
           - description: Related planning applications
           - $ref: '#/components/schemas/PlanningApplicationRefs'
+    PlanningApplicationRefs:
+      type: array
+      items:
+        type: object
+        required:
+        - gss_code
+        - refs
+        additionalProperties: false
+        properties:
+          gss_code:
+            allOf:
+            - $ref: '#/components/schemas/GSSCode'
+            - description: The GSS code of a planning authority, e.g. `E09000033`.
+            - example: E09000033
+          refs:
+            type: array
+            minItems: 1
+            items:
+              type: string
+              description: The planning application reference declared by the planning authority. It may contain slashes, e.g. `16/11109/FULL`.
+              minLength: 1
+              example: 16/02592/LBC
+    Point:
+      description: GeoJSON Point
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - Point
+          example: Point
+          description: the geometry type
+        coordinates:
+          $ref: '#/components/schemas/PointCoordinates'
+    PlanningApplicationId:
+      type: string
+      description: A unique planning application ID combining a planning authority GSS code and the application reference, separated by a `+` symbol.
+      example: E07000112+Y18/1381/FH
+      pattern: ^[EWS]\d{8}(?:\+|%2B)[\w\-\/%]+$
+    Forbidden:
+      oneOf:
+      - type: object
+        required:
+        - user
+        properties:
+          user:
+            type: object
+            required:
+            - state
+            properties:
+              state:
+                type: string
+                enum:
+                - expired
+                - blocked
+                example: expired
+      - type: object
+        required:
+        - message
+        properties:
+          message:
+            type: string
+            example: User not found
+    Error:
+      type: object
+      anyOf:
+      - properties:
+          error:
+            type: string
+      - properties:
+          error_msg:
+            type: string
+    Polygon:
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - Polygon
+          example: Polygon
+          description: the geometry type
+        coordinates:
+          $ref: '#/components/schemas/PolygonCoordinates'
+    LinearRingCoordinates:
+      type: array
+      minItems: 4
+      items:
+        $ref: '#/components/schemas/PointCoordinates'
+    MultiPolygon:
+      description: GeoJSON MultiPolygon
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - MultiPolygon
+          example: MultiPolygon
+          description: the geometry type
+        coordinates:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolygonCoordinates'
+    PolygonCoordinates:
+      type: array
+      items:
+        $ref: '#/components/schemas/LinearRingCoordinates'
     GSSCode:
       type: string
       description: Geocode as maintained by the United Kingdom's Office for National Statistics (ONS) to represent a wide range of geographical areas of the UK.

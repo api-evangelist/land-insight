@@ -113,7 +113,29 @@ paths:
                 $ref: '#/components/schemas/Forbidden'
 components:
   schemas:
-    DevelopmentConstraintFeatureCollectionLite:
+    DevelopmentConstraintFeatureItem:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/DevelopmentConstraintID'
+        type:
+          example: article_4_direction
+        name:
+          example: Victoria Mews, West Green
+        attributes:
+          example:
+          - key: published_date
+            value: 15/06/2022
+          - key: article_4_type
+            value: Article 4(1) affecting other buildings
+          - key: dev_rest_1
+            value: Conversion of single dwellings to HMOs
+    DevelopmentConstraintID:
+      type: string
+      format: uuid
+      description: A development constraints ID in the form of a UUID.
+      example: 68a586f6-991f-4604-b179-512b61f9696f
+    DevelopmentConstraintFeatureCollection:
       allOf:
       - $ref: '#/components/schemas/FeaturesLite'
       - type: object
@@ -124,6 +146,33 @@ components:
                 type: array
                 items:
                   $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
+    FeaturesLite:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureDataLite'
+    FeatureBaseLite:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
     Forbidden:
       oneOf:
       - type: object
@@ -148,38 +197,7 @@ components:
           message:
             type: string
             example: User not found
-    FeatureBaseLite:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type:
-          - string
-          - 'null'
-        type:
-          type: string
-        attributes:
-          type: array
-          items:
-            type: object
-            properties:
-              key:
-                type: string
-              value:
-                type: string
-          description: Attributes containing any additional details about the feature
-    DevelopmentConstraintFeature:
-      allOf:
-      - $ref: '#/components/schemas/FeatureBaseLite'
-      - type: object
-        properties:
-          data:
-            properties:
-              feature:
-                $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
-    DevelopmentConstraintFeatureCollection:
+    DevelopmentConstraintFeatureCollectionLite:
       allOf:
       - $ref: '#/components/schemas/FeaturesLite'
       - type: object
@@ -190,11 +208,15 @@ components:
                 type: array
                 items:
                   $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
-    DevelopmentConstraintID:
-      type: string
-      format: uuid
-      description: A development constraints ID in the form of a UUID.
-      example: 68a586f6-991f-4604-b179-512b61f9696f
+    DevelopmentConstraintFeature:
+      allOf:
+      - $ref: '#/components/schemas/FeatureBaseLite'
+      - type: object
+        properties:
+          data:
+            properties:
+              feature:
+                $ref: '#/components/schemas/DevelopmentConstraintFeatureItem'
     FeatureDataLite:
       type: object
       properties:
@@ -202,28 +224,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FeatureBaseLite'
-    DevelopmentConstraintFeatureItem:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/DevelopmentConstraintID'
-        type:
-          example: article_4_direction
-        name:
-          example: Victoria Mews, West Green
-        attributes:
-          example:
-          - key: published_date
-            value: 15/06/2022
-          - key: article_4_type
-            value: Article 4(1) affecting other buildings
-          - key: dev_rest_1
-            value: Conversion of single dwellings to HMOs
-    FeaturesLite:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FeatureDataLite'
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

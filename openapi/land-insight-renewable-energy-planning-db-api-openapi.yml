@@ -113,6 +113,43 @@ paths:
                 $ref: '#/components/schemas/Forbidden'
 components:
   schemas:
+    PointCoordinates:
+      type: array
+      maxItems: 2
+      minItems: 2
+      example:
+      - -0.12755
+      - 51.5073
+      items:
+        type: number
+    RepdFeatureCollectionLite:
+      allOf:
+      - $ref: '#/components/schemas/FeaturesLite'
+      - type: object
+        properties:
+          data:
+            properties:
+              features:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RepdFeatureItem'
+    Feature:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            feature:
+              $ref: '#/components/schemas/FeatureBase'
+    RepdFeature:
+      allOf:
+      - $ref: '#/components/schemas/Feature'
+      - type: object
+        properties:
+          data:
+            properties:
+              feature:
+                $ref: '#/components/schemas/RepdFeatureItem'
     FeatureData:
       type: object
       properties:
@@ -120,6 +157,127 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FeatureBase'
+    RepdFeatureItem:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/RepdID'
+        type:
+          example: repd_wind
+        name:
+          example: Loganswell Farm
+        attributes:
+          example:
+          - key: planning_authority
+            value: East Renfrewshire Council
+          - key: planning_application_submitted
+            value: 15/04/2014
+          - key: planning_application_withdrawn
+            value: 18/09/2014
+          - key: abc_planning_application_reference
+            value: 2014/0250/TP
+          - key: number_of_turbines
+            value: '66'
+          - key: abc_development_status
+            value: Planning Application Withdrawn
+          - key: abc_installed_capacity_(mw)
+            value: '16'
+          - key: a_site_name
+            value: Loganswell Farm
+          - key: turbine_capacity_(mw)
+            value: '0.25'
+          - key: a_technology_type
+            value: Wind Onshore
+          - key: ab_operator_or_applicant
+            value: Lifetime Energy
+          - key: abc_site_address
+            value: Land At Loganswell Farm 443 Ayr Road Loganswell East Renfrewshire G77 6RY
+          - key: reference
+            value: '4396'
+          - key: last_updated
+            value: 01/09/2014
+    FeaturesLite:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureDataLite'
+    Forbidden:
+      oneOf:
+      - type: object
+        required:
+        - user
+        properties:
+          user:
+            type: object
+            required:
+            - state
+            properties:
+              state:
+                type: string
+                enum:
+                - expired
+                - blocked
+                example: expired
+      - type: object
+        required:
+        - message
+        properties:
+          message:
+            type: string
+            example: User not found
+    FeatureBaseLite:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
+    Features:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureData'
+    Polygon:
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - Polygon
+          example: Polygon
+          description: the geometry type
+        coordinates:
+          $ref: '#/components/schemas/PolygonCoordinates'
+    RepdID:
+      type: string
+      format: uuid
+      description: A REPD ID in the form of a UUID.
+      example: 947fa210-e051-4256-829e-5f3de5bacbd3
+    LinearRingCoordinates:
+      type: array
+      minItems: 4
+      items:
+        $ref: '#/components/schemas/PointCoordinates'
     FeatureBase:
       type: object
       properties:
@@ -160,50 +318,6 @@ components:
                 oneOf:
                 - $ref: '#/components/schemas/Polygon'
                 - $ref: '#/components/schemas/MultiPolygon'
-    PolygonCoordinates:
-      type: array
-      items:
-        $ref: '#/components/schemas/LinearRingCoordinates'
-    Polygon:
-      externalDocs:
-        url: https://datatracker.ietf.org/doc/html/rfc7946
-      type: object
-      required:
-      - type
-      - coordinates
-      properties:
-        type:
-          type: string
-          enum:
-          - Polygon
-          example: Polygon
-          description: the geometry type
-        coordinates:
-          $ref: '#/components/schemas/PolygonCoordinates'
-    Forbidden:
-      oneOf:
-      - type: object
-        required:
-        - user
-        properties:
-          user:
-            type: object
-            required:
-            - state
-            properties:
-              state:
-                type: string
-                enum:
-                - expired
-                - blocked
-                example: expired
-      - type: object
-        required:
-        - message
-        properties:
-          message:
-            type: string
-            example: User not found
     RepdFeatureCollection:
       allOf:
       - $ref: '#/components/schemas/Features'
@@ -215,99 +329,17 @@ components:
                 type: array
                 items:
                   $ref: '#/components/schemas/RepdFeatureItem'
-    FeatureBaseLite:
+    PolygonCoordinates:
+      type: array
+      items:
+        $ref: '#/components/schemas/LinearRingCoordinates'
+    FeatureDataLite:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type:
-          - string
-          - 'null'
-        type:
-          type: string
-        attributes:
+        features:
           type: array
           items:
-            type: object
-            properties:
-              key:
-                type: string
-              value:
-                type: string
-          description: Attributes containing any additional details about the feature
-    RepdID:
-      type: string
-      format: uuid
-      description: A REPD ID in the form of a UUID.
-      example: 947fa210-e051-4256-829e-5f3de5bacbd3
-    LinearRingCoordinates:
-      type: array
-      minItems: 4
-      items:
-        $ref: '#/components/schemas/PointCoordinates'
-    Feature:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            feature:
-              $ref: '#/components/schemas/FeatureBase'
-    PointCoordinates:
-      type: array
-      maxItems: 2
-      minItems: 2
-      example:
-      - -0.12755
-      - 51.5073
-      items:
-        type: number
-    Features:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FeatureData'
-    RepdFeatureItem:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/RepdID'
-        type:
-          example: repd_wind
-        name:
-          example: Loganswell Farm
-        attributes:
-          example:
-          - key: planning_authority
-            value: East Renfrewshire Council
-          - key: planning_application_submitted
-            value: 15/04/2014
-          - key: planning_application_withdrawn
-            value: 18/09/2014
-          - key: abc_planning_application_reference
-            value: 2014/0250/TP
-          - key: number_of_turbines
-            value: '66'
-          - key: abc_development_status
-            value: Planning Application Withdrawn
-          - key: abc_installed_capacity_(mw)
-            value: '16'
-          - key: a_site_name
-            value: Loganswell Farm
-          - key: turbine_capacity_(mw)
-            value: '0.25'
-          - key: a_technology_type
-            value: Wind Onshore
-          - key: ab_operator_or_applicant
-            value: Lifetime Energy
-          - key: abc_site_address
-            value: Land At Loganswell Farm 443 Ayr Road Loganswell East Renfrewshire G77 6RY
-          - key: reference
-            value: '4396'
-          - key: last_updated
-            value: 01/09/2014
+            $ref: '#/components/schemas/FeatureBaseLite'
     MultiPolygon:
       description: GeoJSON MultiPolygon
       externalDocs:
@@ -327,38 +359,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PolygonCoordinates'
-    FeatureDataLite:
-      type: object
-      properties:
-        features:
-          type: array
-          items:
-            $ref: '#/components/schemas/FeatureBaseLite'
-    RepdFeature:
-      allOf:
-      - $ref: '#/components/schemas/Feature'
-      - type: object
-        properties:
-          data:
-            properties:
-              feature:
-                $ref: '#/components/schemas/RepdFeatureItem'
-    FeaturesLite:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FeatureDataLite'
-    RepdFeatureCollectionLite:
-      allOf:
-      - $ref: '#/components/schemas/FeaturesLite'
-      - type: object
-        properties:
-          data:
-            properties:
-              features:
-                type: array
-                items:
-                  $ref: '#/components/schemas/RepdFeatureItem'
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

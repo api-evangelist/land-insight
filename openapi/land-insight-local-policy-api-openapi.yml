@@ -113,6 +113,82 @@ paths:
                 $ref: '#/components/schemas/Forbidden'
 components:
   schemas:
+    PointCoordinates:
+      type: array
+      maxItems: 2
+      minItems: 2
+      example:
+      - -0.12755
+      - 51.5073
+      items:
+        type: number
+    LocalPlanPolicyFeatureItem:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/LocalPlanPolicyID'
+        type:
+          example: community_allocation
+        name:
+          example: BURIAL GROUND BRADWELL
+        attributes:
+          example:
+          - key: allocation_type
+            value: Community
+          - key: unit_count
+            value: ''
+          - key: allocation_notes
+            value: Community Facilities
+          - key: hectares
+            value: '1.50'
+          - key: site_reference
+            value: C19
+          - key: policy_reference
+            value: ''
+    Feature:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            feature:
+              $ref: '#/components/schemas/FeatureBase'
+    LocalPlanPolicyFeature:
+      allOf:
+      - $ref: '#/components/schemas/Feature'
+      - type: object
+        properties:
+          data:
+            properties:
+              feature:
+                $ref: '#/components/schemas/LocalPlanPolicyFeatureItem'
+    FeaturesLite:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureDataLite'
+    FeatureBaseLite:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type:
+          - string
+          - 'null'
+        type:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+          description: Attributes containing any additional details about the feature
     FeatureData:
       type: object
       properties:
@@ -120,9 +196,38 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FeatureBase'
-    LocalPlanPolicyFeatureCollectionLite:
+    Forbidden:
+      oneOf:
+      - type: object
+        required:
+        - user
+        properties:
+          user:
+            type: object
+            required:
+            - state
+            properties:
+              state:
+                type: string
+                enum:
+                - expired
+                - blocked
+                example: expired
+      - type: object
+        required:
+        - message
+        properties:
+          message:
+            type: string
+            example: User not found
+    Features:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/FeatureData'
+    LocalPlanPolicyFeatureCollection:
       allOf:
-      - $ref: '#/components/schemas/FeaturesLite'
+      - $ref: '#/components/schemas/Features'
       - type: object
         properties:
           data:
@@ -131,6 +236,32 @@ components:
                 type: array
                 items:
                   $ref: '#/components/schemas/LocalPlanPolicyFeatureItem'
+    LocalPlanPolicyID:
+      type: string
+      format: uuid
+      description: A policy ID in the form of a UUID.
+      example: 038278e1-b3a9-4941-a08e-66fd9610338f
+    Polygon:
+      externalDocs:
+        url: https://datatracker.ietf.org/doc/html/rfc7946
+      type: object
+      required:
+      - type
+      - coordinates
+      properties:
+        type:
+          type: string
+          enum:
+          - Polygon
+          example: Polygon
+          description: the geometry type
+        coordinates:
+          $ref: '#/components/schemas/PolygonCoordinates'
+    LinearRingCoordinates:
+      type: array
+      minItems: 4
+      items:
+        $ref: '#/components/schemas/PointCoordinates'
     FeatureBase:
       type: object
       properties:
@@ -171,9 +302,9 @@ components:
                 oneOf:
                 - $ref: '#/components/schemas/Polygon'
                 - $ref: '#/components/schemas/MultiPolygon'
-    LocalPlanPolicyFeatureCollection:
+    LocalPlanPolicyFeatureCollectionLite:
       allOf:
-      - $ref: '#/components/schemas/Features'
+      - $ref: '#/components/schemas/FeaturesLite'
       - type: object
         properties:
           data:
@@ -182,113 +313,17 @@ components:
                 type: array
                 items:
                   $ref: '#/components/schemas/LocalPlanPolicyFeatureItem'
-    LocalPlanPolicyFeature:
-      allOf:
-      - $ref: '#/components/schemas/Feature'
-      - type: object
-        properties:
-          data:
-            properties:
-              feature:
-                $ref: '#/components/schemas/LocalPlanPolicyFeatureItem'
-    Forbidden:
-      oneOf:
-      - type: object
-        required:
-        - user
-        properties:
-          user:
-            type: object
-            required:
-            - state
-            properties:
-              state:
-                type: string
-                enum:
-                - expired
-                - blocked
-                example: expired
-      - type: object
-        required:
-        - message
-        properties:
-          message:
-            type: string
-            example: User not found
     PolygonCoordinates:
       type: array
       items:
         $ref: '#/components/schemas/LinearRingCoordinates'
-    Polygon:
-      externalDocs:
-        url: https://datatracker.ietf.org/doc/html/rfc7946
-      type: object
-      required:
-      - type
-      - coordinates
-      properties:
-        type:
-          type: string
-          enum:
-          - Polygon
-          example: Polygon
-          description: the geometry type
-        coordinates:
-          $ref: '#/components/schemas/PolygonCoordinates'
-    LocalPlanPolicyID:
-      type: string
-      format: uuid
-      description: A policy ID in the form of a UUID.
-      example: 038278e1-b3a9-4941-a08e-66fd9610338f
-    FeatureBaseLite:
+    FeatureDataLite:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type:
-          - string
-          - 'null'
-        type:
-          type: string
-        attributes:
+        features:
           type: array
           items:
-            type: object
-            properties:
-              key:
-                type: string
-              value:
-                type: string
-          description: Attributes containing any additional details about the feature
-    LinearRingCoordinates:
-      type: array
-      minItems: 4
-      items:
-        $ref: '#/components/schemas/PointCoordinates'
-    Feature:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            feature:
-              $ref: '#/components/schemas/FeatureBase'
-    PointCoordinates:
-      type: array
-      maxItems: 2
-      minItems: 2
-      example:
-      - -0.12755
-      - 51.5073
-      items:
-        type: number
-    Features:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FeatureData'
+            $ref: '#/components/schemas/FeatureBaseLite'
     MultiPolygon:
       description: GeoJSON MultiPolygon
       externalDocs:
@@ -308,41 +343,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PolygonCoordinates'
-    LocalPlanPolicyFeatureItem:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/LocalPlanPolicyID'
-        type:
-          example: community_allocation
-        name:
-          example: BURIAL GROUND BRADWELL
-        attributes:
-          example:
-          - key: allocation_type
-            value: Community
-          - key: unit_count
-            value: ''
-          - key: allocation_notes
-            value: Community Facilities
-          - key: hectares
-            value: '1.50'
-          - key: site_reference
-            value: C19
-          - key: policy_reference
-            value: ''
-    FeatureDataLite:
-      type: object
-      properties:
-        features:
-          type: array
-          items:
-            $ref: '#/components/schemas/FeatureBaseLite'
-    FeaturesLite:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/FeatureDataLite'
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
