@@ -1,0 +1,12 @@
+{
+ "url": "https://developers.land.tech/_spec/openapi.yaml?download",
+ "requested_url": "https://developers.land.tech/_spec/openapi.yaml?download",
+ "status": 200,
+ "content_type": "application/yaml",
+ "bytes": 180023,
+ "sha256": "4608786ac394271d223a24cc62e26dd5b716cee59a0d528b06eacb73eb06a1c7",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}
