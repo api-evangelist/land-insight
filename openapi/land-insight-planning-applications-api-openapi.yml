@@ -621,3 +621,9 @@ components:
       type: apiKey
       in: header
       name: X-API-Key
+x-provenance:
+  method: harvested
+  publisher: Land Insight
+  source: https://developers.land.tech/_spec/openapi.yaml?download
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
